@@ -1,3 +1,13 @@
+## [1.0.1](https://github.com/angelacorte/depot-tasks-environment/compare/1.0.0...1.0.1) (2024-10-29)
+
+### Bug Fixes
+
+* set angelacortecchia as dockerhub owner ([078a15a](https://github.com/angelacorte/depot-tasks-environment/commit/078a15a4e22f823d9b29761d4d53f5c6ca4ae5eb))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.0.0 [skip ci] ([c0b5554](https://github.com/angelacorte/depot-tasks-environment/commit/c0b555451b10c94314961eca176474b516347244))
+
 ## 1.0.0 (2024-10-29)
 
 ### Features
