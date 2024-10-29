@@ -1,3 +1,18 @@
+## 1.0.0 (2024-10-29)
+
+### Features
+
+* add base environment for depots and tasks ([2176241](https://github.com/angelacorte/depot-tasks-environment/commit/2176241b724e38afbcb5ed2172677901a758016f))
+
+### Bug Fixes
+
+* update docker username ([fb73008](https://github.com/angelacorte/depot-tasks-environment/commit/fb730080ccb089a215d65987925b129ee696948d))
+
+### Refactoring
+
+* change project name ([51bff2e](https://github.com/angelacorte/depot-tasks-environment/commit/51bff2e70f267d43fc99816cc2223fa1f775406c))
+* fix typo in file names ([ff6fb7f](https://github.com/angelacorte/depot-tasks-environment/commit/ff6fb7f99a285db7ec7972c951a0773f4f208a4e))
+
 ## [1.2.1](https://github.com/DanySK/alchemist-experiments-bootstrap/compare/1.2.0...1.2.1) (2024-02-09)
 
 
