@@ -17,7 +17,7 @@ services:
     depends_on:
       prepare:
         condition: service_completed_successfully
-    image: danysk/${PROJECT_NAME:-unknown}-simulation:${VERSION:-latest}
+    image: angelacortecchia/${PROJECT_NAME:-unknown}-simulation:${VERSION:-latest}
     build:
       dockerfile: ./docker/sim/Dockerfile
       context: .
