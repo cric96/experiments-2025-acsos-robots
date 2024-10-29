@@ -1,0 +1,23 @@
+incarnation: protelis
+
+network-model:
+  type: ConnectWithinDistance
+  parameters: [5]
+
+deployments:
+  task_points:
+    type: SpecificPositions
+    parameters: [ [-2,-1],[-4,4],[ 1,1 ],[ 2,5 ],[ 3,4 ],[5,-3] ]
+    contents:
+      - molecule: task
+        concentration: true
+      - molecule: depot_station
+        concentration: false
+  depots:
+    type: SpecificPositions
+    parameters: [ [-7,-6],[7,6] ]
+    contents:
+      - molecule: task
+        concentration: false
+      - molecule: depot
+        concentration: true
