@@ -1,3 +1,13 @@
+## [1.0.2](https://github.com/angelacorte/depot-tasks-environment/compare/1.0.1...1.0.2) (2024-10-30)
+
+### Bug Fixes
+
+* add angelacortecchia ad dockerhubowner (again) ([e713ca0](https://github.com/angelacorte/depot-tasks-environment/commit/e713ca0771deed36f4adbe702e60f56300812355))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.0.1 [skip ci] ([78d0abb](https://github.com/angelacorte/depot-tasks-environment/commit/78d0abb2d7abb12e5b8656e6574de6e70896c3f5))
+
 ## [1.0.1](https://github.com/angelacorte/depot-tasks-environment/compare/1.0.0...1.0.1) (2024-10-29)
 
 ### Bug Fixes
