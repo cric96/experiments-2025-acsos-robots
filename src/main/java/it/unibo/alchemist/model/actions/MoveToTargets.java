@@ -26,7 +26,7 @@ public class MoveToTargets<T, P extends Position2D<P>> extends AbstractConfigura
     private final double speed;
 
     protected MoveToTargets(final Environment<T, P> environment,
-                            final Node<T> node,
+            final Node<T> node,
                             final Reaction<T> reaction,
                             final Collection<Molecule> trackedMolecules,
                             final double speed) {
