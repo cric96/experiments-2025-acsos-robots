@@ -33,7 +33,7 @@ deployments:
     parameters: [-4, -4]
     properties:
       - type: CircularArea
-      - type: Percepmo' leggo tive2D
+      - type: Perceptive2D
       - type: Pedestrian
     programs:
       - time-distribution: 3
