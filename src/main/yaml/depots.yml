@@ -1,13 +1,19 @@
 incarnation: protelis
 
+environment: { type: ImageEnvironmentWithGraph, parameters: [depotenv.png, 0.0047, -8, -7] }
+
 network-model:
-  type: ConnectWithinDistance
+  type: ObstaclesBreakConnection
   parameters: [5]
 
+
+_move-agent: &move-drone
+
+
 deployments:
-  task_points:
+  tasks:
     type: SpecificPositions
-    parameters: [ [-2,-1],[-4,4],[ 1,1 ],[ 2,5 ],[ 3,4 ],[5,-3] ]
+    parameters: [ [-2, -1],[-4, 4],[ 1, 1 ],[ 2, 5 ],[ 3, 4 ],[5, -3] ]
     contents:
       - molecule: task
         concentration: true
@@ -15,9 +21,35 @@ deployments:
         concentration: false
   depots:
     type: SpecificPositions
-    parameters: [ [-7,-6],[7,6] ]
+    parameters: [ [-7, -6],[7, 6] ]
     contents:
       - molecule: task
         concentration: false
       - molecule: depot
         concentration: true
+
+  agent1:
+    type: Point
+    parameters: [-4, -4]
+    properties:
+      - type: CircularArea
+      - type: Perceptive2D
+      - type: Pedestrian
+      - type: Social
+    programs:
+      - time-distribution: 3
+        type: PrioritySteering
+        actions:
+          - type: MoveToTargets
+            parameters: [ ["dest1", "dest2", "dest"], 0.1 ]
+          - type: CognitiveAgentObstacleAvoidance
+            parameters: [ 0.1 ]
+    contents:
+      - molecule: dest1
+        concentration: [-4, 4]
+      - molecule: dest2
+        concentration: [2, 5]
+      - molecule: dest
+        concentration: [ 7,6 ]
+
+

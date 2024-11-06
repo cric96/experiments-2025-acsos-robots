@@ -31,7 +31,7 @@
     "size": {
       "max": 100,
       "min": 0,
-      "val": 14
+      "val": 55
     },
     "molFilter": false,
     "molString": "task",
@@ -91,7 +91,7 @@
     "size": {
       "max": 100,
       "min": 0,
-      "val": 39
+      "val": 75
     },
     "molFilter": false,
     "molString": "depot",
