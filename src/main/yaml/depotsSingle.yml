@@ -17,7 +17,7 @@ deployments:
     contents:
       - molecule: task
         concentration: true
-      - molecule: depot
+      - molecule: depot_station
         concentration: false
   depots:
     type: SpecificPositions
@@ -33,14 +33,14 @@ deployments:
     parameters: [-4, -4]
     properties:
       - type: CircularArea
-      - type: Perceptive2D
+      - type: Percepmo' leggo tive2D
       - type: Pedestrian
     programs:
       - time-distribution: 3
         type: PrioritySteering
         actions:
-          - type: MoveToTargets
-            parameters: [ ["dest1", "dest2", "dest"], 0.1 ]
+          - type: MoveToTarget
+            parameters: [ "dest" , 0.1 ]
           - type: CognitiveAgentObstacleAvoidance
             parameters: [ 0.1 ]
     contents:
