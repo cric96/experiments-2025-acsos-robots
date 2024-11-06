@@ -17,7 +17,7 @@ deployments:
     contents:
       - molecule: task
         concentration: true
-      - molecule: depot_station
+      - molecule: depot
         concentration: false
   depots:
     type: SpecificPositions
