@@ -7,7 +7,7 @@ pull_request_rules:
       - -conflict
     actions:
       update:
-        bot_account: angelacortecchia
+        bot_account: angelacorte
 
   - name: rebase-merge working updates
     conditions:
@@ -49,4 +49,4 @@ pull_request_rules:
       - -conflict
     actions:
       rebase:
-        bot_account: angelacortecchia
+        bot_account: angelacorte
