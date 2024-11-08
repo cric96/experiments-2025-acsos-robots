@@ -7,8 +7,11 @@ network-model:
   parameters: [5]
 
 
-_move-agent: &move-drone
-
+variables:
+  speed: &speed
+    formula: 0.005
+  obstaclesRepulsion: &obstaclesRepulsion
+    formula: 0.5
 
 deployments:
   tasks:
@@ -30,19 +33,13 @@ deployments:
 
   agent1:
     type: Point
-    parameters: [-4, -4]
-    properties:
-      - type: CircularArea
-      - type: Perceptive2D
-      - type: Pedestrian
+    parameters: [-7, -6]
     programs:
       - time-distribution: 3
-        type: PrioritySteering
+        type: Event
         actions:
-          - type: MoveToTargets
-            parameters: [ ["dest1", "dest2", "dest"], 0.1 ]
-          - type: CognitiveAgentObstacleAvoidance
-            parameters: [ 0.1 ]
+          - type: MoveToTargetsWithObstaclesAvoidance
+            parameters: [ *speed, *obstaclesRepulsion, "dest1", "dest2", "dest" ]
     contents:
       - molecule: dest1
         concentration: [-4, 4]
@@ -50,5 +47,30 @@ deployments:
         concentration: [2, 5]
       - molecule: dest
         concentration: [ 7,6 ]
+      - molecule: agent
+        concentration: true
+
+  agent2:
+    type: Point
+    parameters: [ -7, -6 ]
+    programs:
+      - time-distribution: 3
+        type: Event
+        actions:
+          - type: MoveToTargetsWithObstaclesAvoidance
+            parameters: [ *speed, *obstaclesRepulsion, "dest1", "dest2", "dest3", "dest4", "dest" ]
+    contents:
+      - molecule: dest1
+        concentration: [ -2, -1 ]
+      - molecule: dest2
+        concentration: [ 1, 1 ]
+      - molecule: dest3
+        concentration: [ 5, -3 ]
+      - molecule: dest4
+        concentration: [ 3, 4 ]
+      - molecule: dest
+        concentration: [ 7,6 ]
+      - molecule: agent
+        concentration: true
 
 
