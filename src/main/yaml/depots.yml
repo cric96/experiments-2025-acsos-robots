@@ -9,7 +9,7 @@ network-model:
 
 variables:
   speed: &speed
-    formula: 0.005
+    formula: 0.05
   obstaclesRepulsion: &obstaclesRepulsion
     formula: 0.5
 
@@ -75,7 +75,7 @@ deployments:
         concentration: [ 1, 1 ]
       - molecule: dest3
         concentration: [ 5, -3 ]
-      - molecule: dest4
+      - molecule: dest4p
         concentration: [ 3, 4 ]
       - molecule: dest
         concentration: [ 7,6 ]
