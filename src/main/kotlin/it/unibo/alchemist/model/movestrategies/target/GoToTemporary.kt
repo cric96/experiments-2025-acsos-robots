@@ -2,18 +2,16 @@ package it.unibo.alchemist.model.movestrategies.target
 
 import it.unibo.alchemist.model.*
 import it.unibo.alchemist.model.geometry.Vector
-import it.unibo.alchemist.model.molecules.SimpleMolecule
 import it.unibo.alchemist.model.movestrategies.TargetSelectionStrategy
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos
-import kotlin.math.hypot
 import kotlin.math.sin
 
 /**
  *
- * IMPORTANT: This is not the final implementation of the GoTo TargetSelectionStrategy.
+ * IMPORTANT: This is not the final implementation of the GoToTemporary TargetSelectionStrategy.
  * This class' final implementation will hold only the final destination of the agent,
  * which is represented as a P in the Environment<*, P>.
  *
@@ -22,14 +20,12 @@ import kotlin.math.sin
  * When the agents will have a program, they will follow a target molecule, as the MoveToTarget TargetSelectionStrategy,
  * but with a custom RoutingStrategy for ObstacleAvoidance.
  */
-class GoTo<T, P>(
+class GoToTemporary<T, P>(
     val environment: Environment<T, P>,
     val node: Node<T>,
     val destination: P,
     val slices: Int = 20,
-): TargetSelectionStrategy<T, P>
-
-where P : Position<P>, P : Vector<P>  {
+): TargetSelectionStrategy<T, P> where P : Position<P>, P : Vector<P>  {
 
     constructor(
         environment: Environment<T, P>,
@@ -66,5 +62,5 @@ where P : Position<P>, P : Vector<P>  {
         destination
     }
 
-    override fun toString() = "${GoTo::class.simpleName}:$destination"
+    override fun toString() = "${GoToTemporary::class.simpleName}:$destination"
 }

@@ -32,29 +32,25 @@ deployments:
         concentration: true
 
   agent1:
-    type: Point
-    parameters: [-7, -6]
+    type: Rectangle
+    parameters: [50, -7, -6, 1, 12]
     programs:
       - time-distribution: 3
         type: Event
         actions:
-          - type: EuclideanConfigurableMoveNode2
+          - type: EuclideanConfigurableMoveNode
             parameters:
-#              - type: Waypoints
-#                parameters:
-#                  - [[-4, 4], [2, 5], [ 7, 6 ]]
-#              - type: GoTo
-#                parameters: [7, 6]
-#              - *speed
+#              routing-strategy:
+#                type: StraightLine
+#              target-selection-strategy:
+#                type: GoToTemporary
               routing-strategy:
-#                type: Waypoints
-#                parameters:
-#                  - [[-4, 4], [2, 5], [ 7, 6 ]]
-                type: StraightLine
+                type: ObstacleAvoidance
               target-selection-strategy:
-                type: GoTo
+                type: GoTo   # To be substituted with a FollowTarget instance
                 parameters: [7, 6]
               speed: *speed
+
     contents:
       - molecule: agent
         concentration: true
