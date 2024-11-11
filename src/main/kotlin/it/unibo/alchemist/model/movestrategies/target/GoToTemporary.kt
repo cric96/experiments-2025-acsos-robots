@@ -11,6 +11,17 @@ import kotlin.math.cos
 import kotlin.math.hypot
 import kotlin.math.sin
 
+/**
+ *
+ * IMPORTANT: This is not the final implementation of the GoTo TargetSelectionStrategy.
+ * This class' final implementation will hold only the final destination of the agent,
+ * which is represented as a P in the Environment<*, P>.
+ *
+ * The obstacle avoidance part will be implemented as a custom routing strategy.
+ *
+ * When the agents will have a program, they will follow a target molecule, as the MoveToTarget TargetSelectionStrategy,
+ * but with a custom RoutingStrategy for ObstacleAvoidance.
+ */
 class GoTo<T, P>(
     val environment: Environment<T, P>,
     val node: Node<T>,
