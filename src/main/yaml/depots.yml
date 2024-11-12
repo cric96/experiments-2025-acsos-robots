@@ -1,11 +1,10 @@
 incarnation: protelis
 
-environment: { type: ImageEnvironmentWithGraph, parameters: [depotenv.png, 0.0047, -8, -7] }
+environment: { type: ImageEnvironment, parameters: [depotenv.png, 0.0047, -8, -7] }
 
 network-model:
   type: ObstaclesBreakConnection
   parameters: [5]
-
 
 variables:
   speed: &speed
@@ -85,5 +84,3 @@ deployments:
         concentration: [ 7,6 ]
       - molecule: agent
         concentration: true
-
-
