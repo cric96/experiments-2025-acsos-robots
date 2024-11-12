@@ -6,6 +6,9 @@ import it.unibo.alchemist.model.movestrategies.target.FollowTarget
 import it.unibo.alchemist.model.positions.Euclidean2DPosition
 import org.apache.commons.math3.util.FastMath
 
+/**
+ * To be deleted
+ */
 class MoveToTargetsWithObstaclesAvoidance<W : Obstacle2D<Euclidean2DPosition>>(
     private val environment: Environment2DWithObstacles<W, Any>,
     private val node: Node<Any>,

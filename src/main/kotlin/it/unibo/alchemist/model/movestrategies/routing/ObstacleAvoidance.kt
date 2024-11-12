@@ -6,6 +6,7 @@ import it.unibo.alchemist.model.Position2D
 import it.unibo.alchemist.model.Route
 import it.unibo.alchemist.model.geometry.Vector
 import it.unibo.alchemist.model.movestrategies.RoutingStrategy
+import it.unibo.alchemist.model.routes.PolygonalChain
 import it.unibo.alchemist.util.Iterables.randomElement
 import it.unibo.alchemist.util.RandomGenerators.nextDouble
 import org.apache.commons.math3.random.RandomGenerator
@@ -19,10 +20,10 @@ import kotlin.math.sin
  * A [StraightLine] [RoutingStrategy] that avoids obstacles in the environment.
  *
  */
-class ObstacleAvoidance<W, T, P> (
+data class ObstacleAvoidance<W, T, P> (
     private val environment: EnvironmentWithObstacles<W, T, P>,
     private val randomGenerator: RandomGenerator,
-): StraightLine<T, P>() where P : Position2D<P>, P: Vector<P>, W : Obstacle<P> {
+): RoutingStrategy<T, P> where P : Position2D<P>, P: Vector<P>, W : Obstacle<P> {
 
     override fun computeRoute(currentPos: P, finalPos: P): Route<P> {
         val slices = 20
@@ -42,9 +43,9 @@ class ObstacleAvoidance<W, T, P> (
                     compareBy<Pair<Double, P>> { (_, it) -> currentPos.distanceTo(it) }
                         .thenByDescending { (angle, _) -> abs(angle % PI) }
                 ).second
-            return super.computeRoute(currentPos, obstacleAvoidanceDestination)
+            return PolygonalChain(currentPos, obstacleAvoidanceDestination)
         } else {
-            return super.computeRoute(currentPos, finalPos)
+            return PolygonalChain(currentPos, finalPos)
         }
     }
 }
