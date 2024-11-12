@@ -1,3 +1,45 @@
+## [1.1.0](https://github.com/angelacorte/depot-tasks-environment/compare/1.0.2...1.1.0) (2024-11-12)
+
+### Features
+
+* add environment to Depot simulation and custom action MoveToTargets ([073b732](https://github.com/angelacorte/depot-tasks-environment/commit/073b732e92d0a80ef3f2857b122fd04703b883d2))
+* add movement to agents ([84dab6f](https://github.com/angelacorte/depot-tasks-environment/commit/84dab6f994d9fd9964795610db06a690b868d4dd))
+* add StraightLine implementation for RoutingStrategy ([63a2b0d](https://github.com/angelacorte/depot-tasks-environment/commit/63a2b0dbf8046208d67cc9d540b5c3393bc3e78a))
+* add working version with single target ([1eef886](https://github.com/angelacorte/depot-tasks-environment/commit/1eef88609cb61a971f8fd437f6f18f17926109ae))
+* implementation of goTo (not Working) ([a358b15](https://github.com/angelacorte/depot-tasks-environment/commit/a358b1550fc440fd940bb8ef3f9c1b5f8eaee096))
+* improve obstacle avoidance and customize alchemist behaviour ([bff0ec7](https://github.com/angelacorte/depot-tasks-environment/commit/bff0ec7aeaafeea9777dcba2549bc36ee9bc032a))
+* update alchemist vesion and refactor of experiment accordingly ([3e42b4a](https://github.com/angelacorte/depot-tasks-environment/commit/3e42b4a245fd5817ea5630f716b1be4e94193b7b))
+
+### Dependency updates
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.114 ([b427cce](https://github.com/angelacorte/depot-tasks-environment/commit/b427ccec7d830f96e1897ae63503ce9c6fcdecd8))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.115 ([d26e0f6](https://github.com/angelacorte/depot-tasks-environment/commit/d26e0f66a93697db0c483b813525ddb7b1b2f380))
+* **deps:** update eclipse-temurin docker tag to v22 ([fa7fcae](https://github.com/angelacorte/depot-tasks-environment/commit/fa7fcae77916334a32d9553e37b8ff859197645d))
+* **deps:** update node.js to v22 ([65d8bab](https://github.com/angelacorte/depot-tasks-environment/commit/65d8babc43b33bad25b05fbb918268b0a979faac))
+* **deps:** update plugin multijvmtesting to v1.3.0 ([02ce4d6](https://github.com/angelacorte/depot-tasks-environment/commit/02ce4d61d9cd9cf05a3e01df564f9a524ae87fe7))
+
+### Bug Fixes
+
+* fix broken GoTo algoritm ([588141e](https://github.com/angelacorte/depot-tasks-environment/commit/588141e6b9ef00e9edd963b012a0a77bddc440ea))
+* remove unused Graph property in the environment ([e593c86](https://github.com/angelacorte/depot-tasks-environment/commit/e593c86d2405a303f71a2d4ecdbd13440d6c9427))
+* remove unused social capability for node ([3821d74](https://github.com/angelacorte/depot-tasks-environment/commit/3821d749feb92429072d3a2f27a347d18d632f90))
+* typo ([b695e6d](https://github.com/angelacorte/depot-tasks-environment/commit/b695e6d686c859ac097f955321ef60fa33f4193e))
+* typo in mergify bot account ([d231a89](https://github.com/angelacorte/depot-tasks-environment/commit/d231a89c7e4d876ad5b7843b4a248b061f655e19))
+* typo in molecule name ([f93fa99](https://github.com/angelacorte/depot-tasks-environment/commit/f93fa99e906d0b4a0f25919b11a858b7d0fa609d))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.0.2 [skip ci] ([08bdaca](https://github.com/angelacorte/depot-tasks-environment/commit/08bdacad7483282edf0135678e3672fb45b1e934))
+* update mergify config ([d177caa](https://github.com/angelacorte/depot-tasks-environment/commit/d177caa5adfe50779a664988ba86d739fb775757))
+
+### Style improvements
+
+* formatting build.gradle.kts to follow kotlin linting rules ([9199af7](https://github.com/angelacorte/depot-tasks-environment/commit/9199af722e20ff3ed2b59756c56dd3d9591a82ab))
+
+### Refactoring
+
+* delete old testing simulations to the experiment ([900ea84](https://github.com/angelacorte/depot-tasks-environment/commit/900ea84165f7afeb94b0c689b40ffd6e3d45a5a6))
+
 ## [1.0.2](https://github.com/angelacorte/depot-tasks-environment/compare/1.0.1...1.0.2) (2024-10-30)
 
 ### Bug Fixes
