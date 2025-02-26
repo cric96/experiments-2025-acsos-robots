@@ -33,7 +33,7 @@ export:
 deployments:
   tasks:
     type: SpecificPositions
-    parameters: [ [-2, -1],[-4, 4],[ 1, 1 ],[ 2, 5 ],[ 3, 4 ],[5, -3] ]
+    parameters: [ [-2, -1], [-4, 4], [1, 1], [2, 5], [3, 4], [5, -3] ]
     contents:
       - molecule: task
         concentration: true
@@ -43,7 +43,7 @@ deployments:
         concentration: *isDone
   depots:
     type: SpecificPositions
-    parameters: [ [-7, -6],[7, 6] ]
+    parameters: [ [-7, -6], [7, 6] ]
     contents:
       - molecule: task
         concentration: false
