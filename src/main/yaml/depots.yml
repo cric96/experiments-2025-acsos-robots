@@ -11,6 +11,24 @@ variables:
     formula: 0.005
   obstaclesRepulsion: &obstaclesRepulsion
     formula: 0.5
+  isDone: &isDone
+    formula: 0.0
+
+seeds:
+  scenario: 0
+  simulation: 1
+
+export:
+  - type: CSVExporter
+    parameters:
+      fileNameRoot: exported-data
+      interval: 1.0
+      exportPath: data
+    data:
+      - time
+      - molecule: isDone
+        aggregators: [sum]
+        value-filter: "onlyFinite"
 
 deployments:
   tasks:
@@ -22,7 +40,7 @@ deployments:
       - molecule: depot
         concentration: false
       - molecule: isDone
-        concentration: 0
+        concentration: *isDone
   depots:
     type: SpecificPositions
     parameters: [ [-7, -6],[7, 6] ]
@@ -31,7 +49,6 @@ deployments:
         concentration: false
       - molecule: depot
         concentration: true
-
   agent1:
     type: Point
     parameters: [-7, -6]
@@ -87,3 +104,9 @@ deployments:
         concentration: [ 7,6 ]
       - molecule: agent
         concentration: true
+
+terminate:
+  type: StableForSteps
+  parameters:
+    equalIntervals: 5
+    checkInterval: 100
