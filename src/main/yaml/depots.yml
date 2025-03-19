@@ -4,7 +4,7 @@ environment: { type: ImageEnvironment, parameters: [depotenv.png, 0.0047, -8, -7
 
 network-model:
   type: ObstaclesBreakConnection
-  parameters: [5]
+  parameters: [0.1]
 
 variables:
   speed: &speed
@@ -21,6 +21,8 @@ deployments:
         concentration: true
       - molecule: depot
         concentration: false
+      - molecule: isDone
+        concentration: 0
   depots:
     type: SpecificPositions
     parameters: [ [-7, -6],[7, 6] ]
@@ -71,6 +73,7 @@ deployments:
 #                speed: *speed
           - type: MoveToTargetsWithObstaclesAvoidance # Only for demonstration, delete this and uncomment previous lines
             parameters: [ *speed, *obstaclesRepulsion, "dest1", "dest2", "dest3", "dest4", "dest" ]
+          - type: LookupTasksToExecute
     contents:
       - molecule: dest1
         concentration: [ -2, -1 ]
