@@ -1,3 +1,13 @@
+## [1.3.0](https://github.com/angelacorte/depot-tasks-environment/compare/1.2.0...1.3.0) (2025-03-19)
+
+### Features
+
+* add exporter for isDone molecule, add termination criteria, fix seeds and variables ([5d9938c](https://github.com/angelacorte/depot-tasks-environment/commit/5d9938c751fc3bf515a9ab8eeb285cf59c054bb5))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.2.0 [skip ci] ([361c28b](https://github.com/angelacorte/depot-tasks-environment/commit/361c28ba7061499eafef92a4b78dee5939bb57c8))
+
 ## [1.2.0](https://github.com/angelacorte/depot-tasks-environment/compare/1.1.0...1.2.0) (2025-03-19)
 
 ### Features
