@@ -18,4 +18,5 @@ fun Aggregate<Int>.followTasks(env: EnvironmentVariables, locationSensor: Locati
     findFirstAvailableTask?.let {
         env["target"] = locationSensor.estimateCoordinates(it)
     }
+
 }
