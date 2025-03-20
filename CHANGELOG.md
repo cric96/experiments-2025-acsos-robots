@@ -1,3 +1,29 @@
+## [1.4.0](https://github.com/angelacorte/depot-tasks-environment/compare/1.3.0...1.4.0) (2025-03-20)
+
+### Features
+
+* put collektive as base incarnation ([b196259](https://github.com/angelacorte/depot-tasks-environment/commit/b196259d6288c2595694f7c3274bb961be9d2be0))
+
+### Dependency updates
+
+* **deps:** update dependency org.jetbrains.kotlin.jvm to v2.1.20 ([fc29a1b](https://github.com/angelacorte/depot-tasks-environment/commit/fc29a1b17f101db2551c75d169fc562316bd469e))
+* **deps:** update plugin kotlin-qa to v0.78.0 ([ef813e4](https://github.com/angelacorte/depot-tasks-environment/commit/ef813e4711877de43111810034ac0f42463ab54a))
+* **deps:** update plugin multijvmtesting to v3.2.4 ([ba98e44](https://github.com/angelacorte/depot-tasks-environment/commit/ba98e44c3ed739f1fac7fce52395da372ec147ba))
+
+### Build and continuous integration
+
+* **deps:** update actions/download-artifact action to v4.2.1 ([edb97af](https://github.com/angelacorte/depot-tasks-environment/commit/edb97af7ef70826ff8208e143c0936f73cad9e54))
+* **deps:** update actions/upload-artifact action to v4.6.2 ([789e2d2](https://github.com/angelacorte/depot-tasks-environment/commit/789e2d23ad691170aa71ad2d49177c94e2927ef7))
+* **deps:** update danysk/build-check-deploy-gradle-action action to v3.7.13 ([72fa211](https://github.com/angelacorte/depot-tasks-environment/commit/72fa2118a1ba0adcbe459a0a0b8b4ae55d7252c0))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.3.0 [skip ci] ([e281290](https://github.com/angelacorte/depot-tasks-environment/commit/e281290e81debd869a62f538e7d88a290f982599))
+
+### Style improvements
+
+* remove space in SpecificPositions ([ae19078](https://github.com/angelacorte/depot-tasks-environment/commit/ae190785444a2be22ce1172e54f9ef9722f5beca))
+
 ## [1.3.0](https://github.com/angelacorte/depot-tasks-environment/compare/1.2.0...1.3.0) (2025-03-19)
 
 ### Features
