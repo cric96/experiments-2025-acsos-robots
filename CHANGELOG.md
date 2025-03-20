@@ -1,3 +1,17 @@
+## [1.6.0](https://github.com/angelacorte/depot-tasks-environment/compare/1.5.0...1.6.0) (2025-03-20)
+
+### Features
+
+* add depot ([a4e856c](https://github.com/angelacorte/depot-tasks-environment/commit/a4e856c8b4ee1f974f21109675c1364913b0742a))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.5.0 [skip ci] ([bc3321a](https://github.com/angelacorte/depot-tasks-environment/commit/bc3321ad8a48d276193710dc59c36a3129f49f08))
+
+### Style improvements
+
+* remove comments in Follower ([7831ac8](https://github.com/angelacorte/depot-tasks-environment/commit/7831ac8f6b867643e9533332db6977fbdd3e6b43))
+
 ## [1.5.0](https://github.com/angelacorte/depot-tasks-environment/compare/1.4.0...1.5.0) (2025-03-20)
 
 ### Features
