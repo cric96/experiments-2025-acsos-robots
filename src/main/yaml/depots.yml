@@ -1,4 +1,4 @@
-incarnation: protelis
+incarnation: collektive
 
 environment: { type: ImageEnvironment, parameters: [depotenv.png, 0.0047, -8, -7] }
 
@@ -29,6 +29,13 @@ export:
       - molecule: isDone
         aggregators: [sum]
         value-filter: "onlyFinite"
+
+_pool: &program
+  - time-distribution: 1
+    type: Event
+    actions:
+      - type: RunCollektiveProgram
+        parameters: [it.unibo.collektive.program.GradientKt.gradientEntrypoint]
 
 deployments:
   tasks:
@@ -66,7 +73,7 @@ deployments:
                 type: GoTo
                 parameters: [7, 6]
               speed: *speed
-
+      - *program
     contents:
       - molecule: destination
         concentration: [7, 6]
@@ -91,6 +98,7 @@ deployments:
           - type: MoveToTargetsWithObstaclesAvoidance # Only for demonstration, delete this and uncomment previous lines
             parameters: [ *speed, *obstaclesRepulsion, "dest1", "dest2", "dest3", "dest4", "dest" ]
           - type: LookupTasksToExecute
+      - *program
     contents:
       - molecule: dest1
         concentration: [ -2, -1 ]
