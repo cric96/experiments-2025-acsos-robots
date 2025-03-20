@@ -24,4 +24,4 @@ fun Aggregate<Int>.gradient(distanceSensor: DistanceSensor, source: Boolean): Do
  * The entrypoint of the simulation running a gradient.
  */
 fun Aggregate<Int>.gradientEntrypoint(env: EnvironmentVariables, distanceSensor: DistanceSensor): Double =
-    10.0
+    gradient(distanceSensor)
