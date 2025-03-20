@@ -1,6 +1,15 @@
 incarnation: collektive
 
-environment: { type: ImageEnvironment, parameters: [depotenv.png, 0.0047, -8, -7] }
+environment:
+  type: ImageEnvironment
+  parameters: [depotenv.png, 0.0047, -8, -7]
+  global-programs:
+    - time-distribution:
+        type: Trigger
+        parameters: [ 0 ]
+      type: DumbAllocationStrategy
+      parameters: [ ]
+
 
 network-model:
   type: ObstaclesBreakConnection
@@ -35,7 +44,7 @@ _pool: &program
     type: Event
     actions:
       - type: RunCollektiveProgram
-        parameters: [it.unibo.collektive.program.GradientKt.gradientEntrypoint]
+        parameters: [it.unibo.collektive.program.FollowerKt.followTasks]
 
 deployments:
   tasks:
@@ -50,7 +59,7 @@ deployments:
         concentration: *isDone
   depots:
     type: SpecificPositions
-    parameters: [ [-7, -6], [7, 6] ]
+    parameters: [ [7, 6] ]
     contents:
       - molecule: task
         concentration: false
@@ -58,7 +67,7 @@ deployments:
         concentration: true
   agent1:
     type: Point
-    parameters: [-7, -6]
+    parameters: [-6, -6]
     programs:
       - time-distribution: 3
         type: Event
@@ -68,17 +77,20 @@ deployments:
               routing-strategy:
                 type: ObstacleAvoidance
               target-selection-strategy:
-#                type: FollowTarget
-#                parameters: destination
-                type: GoTo
-                parameters: [7, 6]
+                type: FollowTarget
+                parameters: target
+#                type: GoTo
+#                parameters: [7, 6]
               speed: *speed
+          - type: LookupTasksToExecute
       - *program
     contents:
       - molecule: destination
         concentration: [7, 6]
       - molecule: agent
         concentration: true
+    properties:
+      - type: it.unibo.alchemist.model.sensors.LocationSensorProperty
 
   agent2:
     type: Point
@@ -87,34 +99,29 @@ deployments:
       - time-distribution: 3
         type: Event
         actions:
-#          - type: EuclideanConfigurableMoveNode
-#              parameters:
-#                routing-strategy:
-#                  type: ObstacleAvoidance
-#                target-selection-strategy:
-#                  type: FollowTarget
-#                  parameters: destination
-#                speed: *speed
-          - type: MoveToTargetsWithObstaclesAvoidance # Only for demonstration, delete this and uncomment previous lines
-            parameters: [ *speed, *obstaclesRepulsion, "dest1", "dest2", "dest3", "dest4", "dest" ]
+          - type: EuclideanConfigurableMoveNode
+            parameters:
+              routing-strategy:
+                type: ObstacleAvoidance
+              target-selection-strategy:
+                type: FollowTarget
+                parameters: target
+              #                type: GoTo
+              #                parameters: [7, 6]
+              speed: *speed
+          # - type: MoveToTargetsWithObstaclesAvoidance # Only for demonstration, delete this and uncomment previous lines
+          #  parameters: [ *speed, *obstaclesRepulsion, "dest1", "dest2", "dest3", "dest4", "dest" ]
           - type: LookupTasksToExecute
       - *program
     contents:
-      - molecule: dest1
-        concentration: [ -2, -1 ]
-      - molecule: dest2
-        concentration: [ 1, 1 ]
-      - molecule: dest3
-        concentration: [ 5, -3 ]
-      - molecule: dest4p
-        concentration: [ 3, 4 ]
-      - molecule: dest
-        concentration: [ 7,6 ]
       - molecule: agent
         concentration: true
 
-terminate:
-  type: StableForSteps
-  parameters:
-    equalIntervals: 5
-    checkInterval: 100
+    properties:
+      - type: it.unibo.alchemist.model.sensors.LocationSensorProperty
+
+#terminate:
+#  type: StableForSteps
+#  parameters:
+#    equalIntervals: 5
+#    checkInterval: 100
