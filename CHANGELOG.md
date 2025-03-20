@@ -1,3 +1,14 @@
+## [1.5.0](https://github.com/angelacorte/depot-tasks-environment/compare/1.4.0...1.5.0) (2025-03-20)
+
+### Features
+
+* add global allocator, add simple movement ([1ed727b](https://github.com/angelacorte/depot-tasks-environment/commit/1ed727beb244040fb66b53a6e7dc120f3588fb6e))
+* start with allocation strategy (centralized) ([a00dcb1](https://github.com/angelacorte/depot-tasks-environment/commit/a00dcb193194c49696fbe0b340ee05afe6e17f0a))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.4.0 [skip ci] ([414ddf2](https://github.com/angelacorte/depot-tasks-environment/commit/414ddf22bba4409c5095193508d0834641c1998e))
+
 ## [1.4.0](https://github.com/angelacorte/depot-tasks-environment/compare/1.3.0...1.4.0) (2025-03-20)
 
 ### Features
