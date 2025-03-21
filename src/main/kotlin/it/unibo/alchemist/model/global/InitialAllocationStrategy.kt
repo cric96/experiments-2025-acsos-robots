@@ -10,7 +10,6 @@ import it.unibo.alchemist.model.molecules.SimpleMolecule
 private const val TASKS_MOLECULE = "tasks"
 private const val TASK_MOLECULE = "task"
 private const val DEPOT_MOLECULE = "depot"
-private const val FINISH = "finish"
 data class Allocation<T>(val robot: Node<T>, val tasks: List<Node<T>>)
 
 abstract class InitialAllocationStrategy<T, P: Position<P>>(
