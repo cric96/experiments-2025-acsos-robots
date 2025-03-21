@@ -1,3 +1,13 @@
+## [1.7.0](https://github.com/angelacorte/depot-tasks-environment/compare/1.6.0...1.7.0) (2025-03-21)
+
+### Features
+
+* remove one useless constant ([59c8b94](https://github.com/angelacorte/depot-tasks-environment/commit/59c8b94c837f51077ae8f9b92b485795cf869026))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.6.0 [skip ci] ([1c8710d](https://github.com/angelacorte/depot-tasks-environment/commit/1c8710d88886f145ad2c559f242714021a115457))
+
 ## [1.6.0](https://github.com/angelacorte/depot-tasks-environment/compare/1.5.0...1.6.0) (2025-03-20)
 
 ### Features
