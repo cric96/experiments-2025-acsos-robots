@@ -11,10 +11,13 @@ fun isTaskDone(node: Node<Any>): Boolean {
     return isDone != null && isDone != 0.0
 }
 
-fun isDepot(node: Node<Any>): Boolean = node.contents[SimpleMolecule("depot")] as Boolean
+fun isTarget(node: Node<Any>): Boolean =
+    node.contents.getOrDefault(SimpleMolecule("destination"), false) as Boolean
+
+
 fun Aggregate<Int>.followTasks(env: EnvironmentVariables, locationSensor: LocationSensor) {
     val tasks = env.getOrNull<List<Node<Any>>>("tasks")
-    val findFirstAvailableTask = tasks?.firstOrNull { task -> !isTaskDone(task) || isDepot(task) }
+    val findFirstAvailableTask = tasks?.firstOrNull { task -> !isTaskDone(task) || isTarget(task) }
     findFirstAvailableTask?.let {
         env["target"] = locationSensor.estimateCoordinates(it)
     }

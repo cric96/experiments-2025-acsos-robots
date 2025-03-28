@@ -2,7 +2,7 @@ incarnation: collektive
 
 environment:
   type: ImageEnvironment
-  parameters: [depotenv.png, 0.0047, -8, -7]
+  parameters: [base.png, 0.0047, -8, -7]
   global-programs:
     - time-distribution:
         type: Trigger
@@ -53,21 +53,27 @@ deployments:
     contents:
       - molecule: task
         concentration: true
-      - molecule: depot
-        concentration: false
       - molecule: isDone
         concentration: *isDone
-  depots:
+  destination_depot:
     type: SpecificPositions
     parameters: [ [7, 6] ]
     contents:
       - molecule: task
         concentration: false
-      - molecule: depot
+      - molecule: destination
+        concentration: true
+  source_depot:
+    type: SpecificPositions
+    parameters: [ [-7, -6] ]
+    contents:
+      - molecule: task
+        concentration: false
+      - molecule: source
         concentration: true
   agent1:
     type: Point
-    parameters: [-6, -6]
+    parameters: [-7, -6]
     programs:
       - time-distribution: 3
         type: Event
