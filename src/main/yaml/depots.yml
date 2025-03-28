@@ -7,7 +7,7 @@ environment:
     - time-distribution:
         type: Trigger
         parameters: [ 0 ]
-      type: DumbAllocationStrategy
+      type: MinimumMakespanAllocationStrategy
       parameters: [ ]
 
 
@@ -48,8 +48,8 @@ _pool: &program
 
 deployments:
   tasks:
-    type: SpecificPositions
-    parameters: [ [-2, -1], [-4, 4], [1, 1], [2, 5], [3, 4], [5, -3] ]
+    type: Rectangle
+    parameters: [ 50, -5, -5, 10, 10 ]
     contents:
       - molecule: task
         concentration: true
@@ -71,9 +71,9 @@ deployments:
         concentration: false
       - molecule: source
         concentration: true
-  agent1:
-    type: Point
-    parameters: [-7, -6]
+  agents:
+    type: Rectangle
+    parameters: [10, -7, -6, 0.1, 0.1]
     programs:
       - time-distribution: 3
         type: Event
@@ -85,8 +85,6 @@ deployments:
               target-selection-strategy:
                 type: FollowTarget
                 parameters: target
-#                type: GoTo
-#                parameters: [7, 6]
               speed: *speed
           - type: LookupTasksToExecute
       - *program
@@ -112,11 +110,7 @@ deployments:
               target-selection-strategy:
                 type: FollowTarget
                 parameters: target
-              #                type: GoTo
-              #                parameters: [7, 6]
               speed: *speed
-          # - type: MoveToTargetsWithObstaclesAvoidance # Only for demonstration, delete this and uncomment previous lines
-          #  parameters: [ *speed, *obstaclesRepulsion, "dest1", "dest2", "dest3", "dest4", "dest" ]
           - type: LookupTasksToExecute
       - *program
     contents:
