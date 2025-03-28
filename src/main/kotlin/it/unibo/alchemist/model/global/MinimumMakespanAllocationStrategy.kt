@@ -18,7 +18,6 @@ class MinimumMakespanAllocationStrategy<T, P : Position<P>>(
     ): List<Allocation<T>> {
         // Simple greedy allocation to minimize makespan
         // We assign tasks to robots one by one, always choosing the robot with the least allocated work
-
         // Calculate distances between nodes
         val distanceMatrix = computeDistanceMatrix(robots, tasks, sourceDepot, targetDepot)
 
@@ -43,10 +42,10 @@ class MinimumMakespanAllocationStrategy<T, P : Position<P>>(
             var minMakespan = Double.MAX_VALUE
 
             for (robot in robots) {
-                val currentPath = robotToTasks[robot]!!
+                val currentPath = robotToTasks[robot] ?: emptyList()
                 // Calculate new makespan if we add this task
                 val newMakespan = calculateNewMakespan(
-                    sourceDepot, targetDepot, robot, currentPath, task, distanceMatrix
+                    sourceDepot, targetDepot, currentPath, task, distanceMatrix
                 )
 
                 if (newMakespan < minMakespan) {
@@ -99,7 +98,6 @@ class MinimumMakespanAllocationStrategy<T, P : Position<P>>(
     private fun calculateNewMakespan(
         sourceDepot: Node<T>,
         targetDepot: Node<T>,
-        robot: Node<T>,
         currentPath: List<Node<T>>,
         newTask: Node<T>,
         distanceMatrix: Map<Pair<Node<T>, Node<T>>, Double>

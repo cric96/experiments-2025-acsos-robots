@@ -15,7 +15,7 @@ class LookupTasksToExecute<W : Obstacle2D<Euclidean2DPosition>>(
     override fun execute() {
         environment.getNeighborhood(node).neighbors.forEach {
             val isDone = it.contents[SimpleMolecule("isDone")]
-            if ( isDone != null && isDone == 0.0 ) {
+            if (isDone != null && isDone == 0.0 && environment.getPosition(it).distanceTo(environment.getPosition(node)) < 0.05) {
                 it.setConcentration(SimpleMolecule("isDone"), 1.0)
             }
         }

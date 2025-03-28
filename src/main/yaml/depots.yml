@@ -13,7 +13,7 @@ environment:
 
 network-model:
   type: ObstaclesBreakConnection
-  parameters: [0.1]
+  parameters: [3]
 
 variables:
   speed: &speed
@@ -49,7 +49,7 @@ _pool: &program
 deployments:
   tasks:
     type: Rectangle
-    parameters: [ 50, -5, -5, 10, 10 ]
+    parameters: [ 50, -5, -5, 12, 12 ]
     contents:
       - molecule: task
         concentration: true
