@@ -1,3 +1,38 @@
+## [1.7.1](https://github.com/angelacorte/depot-tasks-environment/compare/1.7.0...1.7.1) (2025-04-01)
+
+### Dependency updates
+
+* **deps:** update alchemist to v42.0.2 ([50a96fc](https://github.com/angelacorte/depot-tasks-environment/commit/50a96fcf05703a778cb51f18c67785aa1c940bc7))
+* **deps:** update alchemist to v42.0.3 ([943e127](https://github.com/angelacorte/depot-tasks-environment/commit/943e127b22a673cb20842ddc05a62974f501c0c0))
+* **deps:** update alchemist to v42.0.4 ([3719389](https://github.com/angelacorte/depot-tasks-environment/commit/37193893c7a5a6c11446342d33607a234107fdb9))
+* **deps:** update alchemist to v42.0.5 ([f3f659e](https://github.com/angelacorte/depot-tasks-environment/commit/f3f659e4d857fae6f9f899b6991eb8b2e3a1f6fd))
+* **deps:** update collektive to v17.1.0 ([98a6615](https://github.com/angelacorte/depot-tasks-environment/commit/98a66151973404008ebd637b85d83091c592144b))
+* **deps:** update collektive to v17.1.1 ([90441b9](https://github.com/angelacorte/depot-tasks-environment/commit/90441b9f609544fb37401739bd4dee780f234a56))
+* **deps:** update collektive to v17.1.2 ([78b1277](https://github.com/angelacorte/depot-tasks-environment/commit/78b127762b180f134f2955fa08edf2953e8a0b55))
+* **deps:** update collektive to v17.1.3 ([0c7f807](https://github.com/angelacorte/depot-tasks-environment/commit/0c7f807f8c53ca7deaa9163b5975acccb0b2b9e6))
+* **deps:** update collektive to v17.2.0 ([a2e3b17](https://github.com/angelacorte/depot-tasks-environment/commit/a2e3b17f0ee35332eea96d1aca589c4c7cf26862))
+* **deps:** update collektive to v17.2.1 ([ab20e1d](https://github.com/angelacorte/depot-tasks-environment/commit/ab20e1d175332b143addb04dbecd5222466732af))
+* **deps:** update dependency org.jetbrains.kotlin.jvm to v2.1.20 ([67627f6](https://github.com/angelacorte/depot-tasks-environment/commit/67627f67777ef08f777d7a518a0d4d1a5a0ef5cb))
+* **deps:** update dependency xarray to v2025.3.0 ([0bdaf09](https://github.com/angelacorte/depot-tasks-environment/commit/0bdaf096224bcaf3e758ac1ab5a8748b5a84f633))
+* **deps:** update plugin kotlin-qa to v0.81.1 ([980c55d](https://github.com/angelacorte/depot-tasks-environment/commit/980c55d6a8c8be809d5186b3b87ee19f484ef6ae))
+* **deps:** update plugin kotlin-qa to v0.82.0 ([1acb86c](https://github.com/angelacorte/depot-tasks-environment/commit/1acb86cfb1939e4f7fcea4c657a1fc426e6b1fc5))
+* **deps:** update plugin kotlin-qa to v0.84.1 ([4c5bf3d](https://github.com/angelacorte/depot-tasks-environment/commit/4c5bf3dfa99ebd10af491c2e6c5ab300598de9be))
+* **deps:** update plugin kotlin-qa to v0.85.0 ([e036e02](https://github.com/angelacorte/depot-tasks-environment/commit/e036e027b40a8a3dbebb55a89cc7f04d10aa7aae))
+* **deps:** update plugin multijvmtesting to v3.3.0 ([ba4049a](https://github.com/angelacorte/depot-tasks-environment/commit/ba4049ae3849bb4fb2e7a72997a8e8f1fc8e047d))
+
+### Bug Fixes
+
+* use my renovate-config fork ([af5403a](https://github.com/angelacorte/depot-tasks-environment/commit/af5403a11627964288b52af800b9c066dd4ec4ca))
+
+### Build and continuous integration
+
+* **deps:** update actions/setup-python action to v5.5.0 ([1103afe](https://github.com/angelacorte/depot-tasks-environment/commit/1103afe78ff60515ebcf925143275138c6179b87))
+* **deps:** update danysk/build-check-deploy-gradle-action action to v3.7.14 ([5fd955d](https://github.com/angelacorte/depot-tasks-environment/commit/5fd955dab832d32da906e78d1bcc440c2abf6164))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.7.0 [skip ci] ([09a4250](https://github.com/angelacorte/depot-tasks-environment/commit/09a4250c060ec49d0f90e86690da8de3d49a481d))
+
 ## [1.7.0](https://github.com/angelacorte/depot-tasks-environment/compare/1.6.0...1.7.0) (2025-03-21)
 
 ### Features
