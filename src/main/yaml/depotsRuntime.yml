@@ -5,11 +5,10 @@ environment:
   parameters: [base.png, 0.0047, -8, -7]
   global-programs:
     - time-distribution:
-        type: Trigger
-        parameters: [ 0 ]
-      type: AllocationBasedOnFormalization
-      parameters: [ ]
-
+          type: Trigger
+          parameters: [ 2000 ]
+      type: RandomFail
+      parameters: [ 1 ]
 
 network-model:
   type: ObstaclesBreakConnection
@@ -44,7 +43,7 @@ _pool: &program
     type: Event
     actions:
       - type: RunCollektiveProgram
-        parameters: [it.unibo.collektive.program.FollowerKt.followTasks]
+        parameters: [it.unibo.collektive.program.FollowerKt.runtimeReconfiguration]
 
 deployments:
   tasks:
@@ -102,7 +101,6 @@ deployments:
     properties:
       - type: it.unibo.alchemist.model.sensors.LocationSensorProperty
       - type: it.unibo.alchemist.model.sensors.DepotsSensorProperty
-
 
 #terminate:
 #  type: StableForSteps
