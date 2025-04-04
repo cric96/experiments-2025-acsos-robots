@@ -1,3 +1,18 @@
+## [1.8.0](https://github.com/angelacorte/depot-tasks-environment/compare/1.7.1...1.8.0) (2025-04-04)
+
+### Features
+
+* first draft for simulation in fully decentralized manner ([fde1a5f](https://github.com/angelacorte/depot-tasks-environment/commit/fde1a5f4eaf50fafa21db06c1a46b5942ff867c8))
+
+### Dependency updates
+
+* **deps:** update collektive to v17.2.2 ([0c21b96](https://github.com/angelacorte/depot-tasks-environment/commit/0c21b961bda7afd41e32d6ac781317fbc1ef54a3))
+* **deps:** update dependency xarray to v2025.3.1 ([44076b9](https://github.com/angelacorte/depot-tasks-environment/commit/44076b9ed672310939377683eaceb9d271dce67a))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.7.1 [skip ci] ([6cea3ab](https://github.com/angelacorte/depot-tasks-environment/commit/6cea3aba1c7f456d57ca028b55b1038bcf06f272))
+
 ## [1.7.1](https://github.com/angelacorte/depot-tasks-environment/compare/1.7.0...1.7.1) (2025-04-01)
 
 ### Dependency updates
