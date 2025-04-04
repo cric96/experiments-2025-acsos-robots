@@ -4,7 +4,7 @@ import it.unibo.alchemist.model.Environment
 import it.unibo.alchemist.model.Node
 import it.unibo.alchemist.model.NodeProperty
 import it.unibo.alchemist.model.Position
-
+import it.unibo.formalization.Node as NodeFormalization
 class LocationSensorProperty<T : Any, P : Position<P>>(
     private val environment: Environment<T, P>,
     override val node: Node<T>,
@@ -23,8 +23,9 @@ class LocationSensorProperty<T : Any, P : Position<P>>(
         }
 
     // TODO better cast for this (also consider to add task sensor
-    override fun estimateCoordinates(node: Node<*>): Iterable<Double> {
-        val position = environment.getPosition(node as Node<T>).coordinates
+    override fun estimateCoordinates(node: NodeFormalization): Iterable<Double> {
+        val nodeAlchemist = environment.getNodeByID(node.id)
+        val position = environment.getPosition(nodeAlchemist).coordinates
         return position.toList()
     }
 }

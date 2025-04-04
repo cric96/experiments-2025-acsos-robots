@@ -1,15 +1,20 @@
 package it.unibo.alchemist.model.sensors
 
 import it.unibo.alchemist.model.Node
+import it.unibo.formalization.Node as NodeFormalization
 
 interface DepotsSensor {
-    val getSourceDepot: Pair<Double, Double>
+    val sourceDepot: NodeFormalization
 
-    val getDestinationDepot: Pair<Double, Double>
+    val destinationDepot: NodeFormalization
 
-    val tasks: List<Pair<Double, Double>>
+    val tasks: List<NodeFormalization>
 
-    fun taskNode(position: Pair<Double, Double>): Node<*> // To fix
+    fun toNodePath(node: NodeFormalization): Node<*> // To fix
 
-    fun isTask(): Boolean
+    fun isAgent(): Boolean
+
+    fun alive(): Boolean
+
+    fun isTaskOver(task: NodeFormalization): Boolean
 }

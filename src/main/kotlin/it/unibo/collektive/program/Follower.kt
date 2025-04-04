@@ -5,53 +5,61 @@ import it.unibo.alchemist.model.molecules.SimpleMolecule
 import it.unibo.alchemist.model.sensors.DepotsSensor
 import it.unibo.alchemist.model.sensors.LocationSensor
 import it.unibo.collektive.aggregate.api.Aggregate
-import it.unibo.collektive.aggregate.api.DelicateCollektiveApi
-import it.unibo.collektive.aggregate.api.InMemory
+import it.unibo.collektive.aggregate.api.Aggregate.Companion.neighboring
 import it.unibo.collektive.alchemist.device.sensors.EnvironmentVariables
 import it.unibo.formalization.GreedyAllocationStrategy
+import it.unibo.formalization.Node as NodeFormalization
 
-fun isTaskDone(node: Node<Any>): Boolean {
-    val isDone = node.contents[SimpleMolecule("isDone")]
-    return isDone != null && isDone != 0.0
+fun Aggregate<Int>.followTasks(env: EnvironmentVariables, locationSensor: LocationSensor, depotsSensor: DepotsSensor) {
+    val tasks = env.get<List<NodeFormalization>>("tasks")
+    evolve(tasks.map { false }.toMutableList()) { dones ->
+        val firstIndexFalse = dones.indexOfFirst { !it }
+        val task = tasks[firstIndexFalse]
+        env["target"] = locationSensor.estimateCoordinates(task)
+        env["selected"] = task.id
+        val isDone = depotsSensor.isTaskOver(task)
+        // update the task done
+        dones[firstIndexFalse] = isDone
+        dones
+    }
+
 }
 
-fun isTarget(node: Node<Any>): Boolean =
-    node.contents.getOrDefault(SimpleMolecule("destination"), false) as Boolean
+fun Aggregate<Int>.runtimeReconfiguration(
+    env: EnvironmentVariables,
+    locationSensor: LocationSensor,
+    depotsSensor: DepotsSensor
+) {
+    if(depotsSensor.isAgent()) {
+        val tasks = env.getOrNull<List<Node<Any>>>("tasks") ?: emptyList()
+        val allNeighborhood = neighboring(tasks).toMap()
+        val mockNeighboring = neighboring(listOf<Node<Any>>())
+        val remember = evolve(mockNeighboring.toMap()) { allNeighborhood.toMap() }
+        evolve(0) {
+            neighboring(it).localValue
+        }
+        val myPosition = locationSensor.coordinates().let { Pair(it.first, it.second) }
+        val robots = neighboring(localId to myPosition).toMap().toSortedMap().values.toList().map {
+            NodeFormalization(it.second, it.first)
+        }
+        // flatten on all the tasks
+        val start = depotsSensor.sourceDepot
+        val destination = depotsSensor.destinationDepot
+        val allTasks = depotsSensor.tasks
+        val allocator = GreedyAllocationStrategy(
+            robots,
+            allTasks,
+            start,
+            destination,
+        )
+        val result = allocator.execute()
+        result.find { it.robot.id == localId }?.let { myTasks ->
+            // remove source
+            val path = myTasks.route.filterNot { it == start }
+            env["raw"] = path
+            env["tasks"] = path
+        }
 
-fun Aggregate<Int>.followTasks(env: EnvironmentVariables, locationSensor: LocationSensor) {
-    val tasks = env.getOrNull<List<Node<Any>>>("tasks")
-    val findFirstAvailableTask = tasks?.firstOrNull { task -> !isTaskDone(task) || isTarget(task) }
-    findFirstAvailableTask?.let {
-        env["target"] = locationSensor.estimateCoordinates(it)
-        env["selected"] = it.id
+        followTasks(env, locationSensor, depotsSensor)
     }
-}
-
-@OptIn(DelicateCollektiveApi::class)
-fun Aggregate<Int>.runtimeReconfiguration(env: EnvironmentVariables, locationSensor: LocationSensor, depotsSensor: DepotsSensor) {
-    val tasks = env.getOrNull<List<Node<Any>>>("tasks") ?: emptyList()
-    val allNeighborhood = neighboring(tasks, InMemory).toMap()
-    val mockNeighboring = neighboring(listOf<Node<Any>>(), InMemory)
-    val remember = evolve(mockNeighboring.toMap()) { allNeighborhood.toMap() }
-    val myPosition = locationSensor.coordinates().let { Pair(it.first, it.second) }
-    val robots = neighboring(myPosition, InMemory).toMap().toSortedMap().values.toList()
-    // flatten on all the tasks
-    val start = depotsSensor.getSourceDepot
-    val destination = depotsSensor.getDestinationDepot
-    val allTasks = depotsSensor.tasks
-    val allocator = GreedyAllocationStrategy(
-        robots,
-        allTasks,
-        start,
-        destination,
-    )
-    val result = allocator.execute()
-    result.find { it.robot == myPosition }?.let { myTasks ->
-        // remove source
-        val path = myTasks.route.filterNot { it == start }
-        env["raw"] = path
-        env["tasks"] = path.map { depotsSensor.taskNode(it) }
-    }
-    followTasks(env, locationSensor)
-
 }

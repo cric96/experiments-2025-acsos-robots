@@ -17,10 +17,7 @@ class RandomFail<T, P: Position<P>>(
         val nodesRemovable = nodes.filter { it.contents.containsKey(SimpleMolecule("agent")) }
         val randomNode = randomGenerator.nextInt(nodesRemovable.size)
         val toKill = nodesRemovable[randomNode]
-        environment.simulation.schedule {
-            environment.removeNode(toKill)
-        }
-
+        toKill.setConcentration(SimpleMolecule("down"), true as T)
     }
 
 }

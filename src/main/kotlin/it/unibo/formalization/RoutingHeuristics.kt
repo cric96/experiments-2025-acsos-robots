@@ -7,7 +7,7 @@ object RoutingHeuristics {
      * Computes the marginal cost of inserting a task into a robot's current route.
      * Uses a simple insertion heuristic that tries all possible insertion positions.
      */
-    fun computeMarginalCost(route: List<Pair<Double, Double>>, task: Pair<Double, Double>): Double {
+    fun computeMarginalCost(route: List<Node>, task: Node): Double {
         if (route.size < 2) {
             throw IllegalArgumentException("Route must contain at least start and end depots")
         }
@@ -22,10 +22,10 @@ object RoutingHeuristics {
      * Uses a simple greedy insertion heuristic.
      */
     fun solveLocalRouting(
-        tasks: Set<Pair<Double, Double>>,
-        startDepot: Pair<Double, Double>,
-        endDepot: Pair<Double, Double>
-    ): List<Pair<Double, Double>> {
+        tasks: Set<Node>,
+        startDepot: Node,
+        endDepot: Node
+    ): List<Node> {
         if (tasks.isEmpty()) {
             return listOf(startDepot, endDepot)
         }
@@ -36,7 +36,7 @@ object RoutingHeuristics {
 
         // Greedy insertion: repeatedly insert the task at its best position
         while (remainingTasks.isNotEmpty()) {
-            var bestTask: Pair<Double, Double>? = null
+            var bestTask: Node? = null
             var bestPosition = -1
             var bestCost = Double.MAX_VALUE
 

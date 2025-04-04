@@ -4,19 +4,19 @@ import it.unibo.formalization.GeometryUtils.calculateRouteCost
 import it.unibo.formalization.RoutingHeuristics.computeMarginalCost
 
 interface TaskAllocation {
-    val robots: List<Pair<Double, Double>>
-    val tasks: List<Pair<Double, Double>>
-    val startDepot: Pair<Double, Double>
-    val endDepot: Pair<Double, Double>
+    val robots: List<Node>
+    val tasks: List<Node>
+    val startDepot: Node
+    val endDepot: Node
     val maxRouteCost: Double
     fun execute(): List<RobotAllocationResult>
 }
 
 class GreedyAllocationStrategy(
-    val robots: List<Pair<Double, Double>>,
-    val tasks: List<Pair<Double, Double>>,
-    val startDepot: Pair<Double, Double>,
-    val endDepot: Pair<Double, Double>,
+    val robots: List<Node>,
+    val tasks: List<Node>,
+    val startDepot: Node,
+    val endDepot: Node,
     val maxRouteCost: Double = Double.MAX_VALUE  // Default to no limit if not specified
 ) {
     /**
@@ -43,7 +43,7 @@ class GreedyAllocationStrategy(
             tasksAssignedThisIteration = false
 
             // Create a mapping of task to bids from all robots
-            val taskBids = mutableMapOf<Pair<Double, Double>, MutableList<Bid>>()
+            val taskBids = mutableMapOf<Node, MutableList<Bid>>()
 
             // Step 1: Each robot computes bids for all unassigned tasks
             for (robotState in robotStates) {
@@ -66,7 +66,7 @@ class GreedyAllocationStrategy(
             }
 
             // Step 2: For each task, find the best bid and assign to the corresponding robot
-            val tasksToRemove = mutableListOf<Pair<Double, Double>>()
+            val tasksToRemove = mutableListOf<Node>()
 
             // Prioritize tasks with the largest difference between best and second-best bid
             val taskPriorities = taskBids.mapValues { (_, bids) ->
@@ -82,7 +82,7 @@ class GreedyAllocationStrategy(
             val sortedTasks = taskBids.keys.sortedByDescending { taskPriorities[it] }
 
             // Now assign one task per robot in this iteration, if possible
-            val assignedRobots = mutableSetOf<Pair<Double, Double>>()
+            val assignedRobots = mutableSetOf<Node>()
 
             for (task in sortedTasks) {
                 val bids = taskBids[task] ?: continue

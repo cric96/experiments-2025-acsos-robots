@@ -1,6 +1,6 @@
 package it.unibo.alchemist.model.sensors
 
-import it.unibo.alchemist.model.Node
+import it.unibo.formalization.Node
 
 interface LocationSensor {
     /**
@@ -16,5 +16,5 @@ interface LocationSensor {
     /**
      * Estimate the coordinate of a remote node.
      */
-    fun estimateCoordinates(node: Node<*>): Iterable<Double>
+    fun estimateCoordinates(node: Node): Iterable<Double>
 }

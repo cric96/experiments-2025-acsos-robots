@@ -4,9 +4,13 @@ import it.unibo.alchemist.model.Environment
 import it.unibo.alchemist.model.Node
 import it.unibo.alchemist.model.Position
 import it.unibo.alchemist.model.TimeDistribution
-import it.unibo.alchemist.model.positions.Euclidean2DPosition
 import it.unibo.formalization.GreedyAllocationStrategy
+import it.unibo.formalization.Node as FormalizationNode
 
+fun <T, P : Position<P>> Node<T>.toFormalizationNode(environment: Environment<T, P>): FormalizationNode {
+    val position: Pair<Double, Double> = environment.getPosition(this).let { it.coordinates[0] to it.coordinates[1] }
+    return FormalizationNode(position, id)
+}
 class AllocationBasedOnFormalization<T, P : Position<P>>(
     environment: Environment<T, P>,
     distribution: TimeDistribution<T>
@@ -17,20 +21,16 @@ class AllocationBasedOnFormalization<T, P : Position<P>>(
         sourceDepot: Node<T>,
         targetDepot: Node<T>
     ): List<Allocation<T>> {
-        val robotsPosition = robots.map { environment.getPosition(it) }.map { it.coordinates[0] to it.coordinates[1] }
-        val tasksPosition = tasks.map { environment.getPosition(it) }.map { it.coordinates[0] to it.coordinates[1] }
-        val sourceDepotPosition = environment.getPosition(sourceDepot).let { it.coordinates[0] to it.coordinates[1] }
-        val targetDepotPosition = environment.getPosition(targetDepot).let { it.coordinates[0] to it.coordinates[1] }
+        val robotsPosition = robots.map { it.toFormalizationNode(environment)}
+        val tasksPosition = tasks.map { it.toFormalizationNode(environment)}
+        val sourceDepotPosition = sourceDepot.toFormalizationNode(environment)
+        val targetDepotPosition = targetDepot.toFormalizationNode(environment)
         val allocator = GreedyAllocationStrategy(robotsPosition, tasksPosition, sourceDepotPosition, targetDepotPosition)
-        // divide the tasks among the robots equally
-        val allNodesButRobots = tasks + listOf(sourceDepot, targetDepot)
-        val positionToNode: Map<Pair<Double, Double>, Node<T>> = allNodesButRobots
-            .associateBy { environment.getPosition(it) }
-            .mapKeys {  it.key.coordinates[0] to it.key.coordinates[1] }
+
         val result = allocator.execute()
         return result.mapIndexed { index, allocation ->
             val robot: Node<T> = robots[index]
-            val tasks: List<Node<T>> = allocation.route.drop(1).map { positionToNode.getOrDefault(it, robot) }
+            val tasks: List<Node<T>> = allocation.route.drop(1).map { environment.getNodeByID(it.id) }
             Allocation(robot, tasks)
         }
     }

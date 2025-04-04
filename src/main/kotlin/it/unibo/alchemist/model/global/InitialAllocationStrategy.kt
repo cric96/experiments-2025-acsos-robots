@@ -8,7 +8,7 @@ import it.unibo.alchemist.model.implementations.reactions.AbstractGlobalReaction
 import it.unibo.alchemist.model.molecules.SimpleMolecule
 import it.unibo.alchemist.model.sensors.DepotsSensorProperty.Companion.SOURCE_DEPOT_MOLECULE
 import it.unibo.alchemist.model.sensors.DepotsSensorProperty.Companion.DESTINATION_DEPOT_MOLECULE
-
+import it.unibo.formalization.Node as NodeFormalization
 private const val TASKS_MOLECULE = "tasks"
 private const val TASK_MOLECULE = "task"
 
@@ -27,7 +27,10 @@ abstract class InitialAllocationStrategy<T, P: Position<P>>(
         allocations.forEach {
             it.robot.setConcentration(
                 SimpleMolecule(TASKS_MOLECULE),
-                (it.tasks) as T
+                (it.tasks).map {
+                    val position: Pair<Double, Double> = environment.getPosition(it).let { it.coordinates[0] to it.coordinates[1] }
+                    NodeFormalization(position, it.id)
+                } as T
             )
         }
     }
