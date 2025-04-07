@@ -42,6 +42,7 @@ fun Aggregate<Int>.fullRuntime(
     locationSensor: LocationSensor,
     depotsSensor: DepotsSensor
 ) {
+    if(!depotsSensor.isAgent()) { return }
     env["hue"] = localId // for debugging
     if(!depotsSensor.alive()) {
         env["target"] = locationSensor.coordinates()
