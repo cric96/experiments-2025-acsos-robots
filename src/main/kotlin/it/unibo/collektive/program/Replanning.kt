@@ -36,68 +36,60 @@ fun Aggregate<Int>.everDone(dones: Map<NodeFormalization, Boolean>): Map<NodeFor
     return updated
 }
 
-val balanceFactor = 10
+val balanceFactor = 100
 fun Aggregate<Int>.fullRuntime(
     env: EnvironmentVariables,
     locationSensor: LocationSensor,
     depotsSensor: DepotsSensor
 ) {
-    if(!depotsSensor.isAgent()) { return }
     env["hue"] = localId // for debugging
     if(!depotsSensor.alive()) {
         env["target"] = locationSensor.coordinates()
     } else {
         val allTasks = depotsSensor.tasks.toSet()
         val myPosition = locationSensor.coordinates()
-
+        val initialPosition = evolve(myPosition) { it}
         evolve(ReplanningState.createFrom(allTasks, depotsSensor)) { state ->
-            // compute the marginal cost for each task (unassigned)
-            val assigned = state.assigned
-            val path = state.path
-            val dones = state.dones
-            val donesGossip = everDone(dones)
-            val adaptMarginalCostByAssignedFactor = 1 + assigned.size * balanceFactor
-            val unassigned = allTasks - assigned
-            val sameTasksInField = neighboring(assigned).toMap().map { (key, tasks) -> tasks.map { key to it }}.flatten()
+            /** Ever done -- check if the task is completed by one of the robot */
+            val allTaskDone = everDone(state.dones)
+            /** BIDDING PROCESS -- compute the bids */
+            val adaptMarginalCostByAssignedFactor = 1 + state.assigned.size * balanceFactor
+            /** - remove the same tasks in the field in order to rebid */
+            val sameTasksInField = neighboring(state.assigned).toMap().map {
+                (key, tasks) -> tasks.map { key to it }}.flatten()
             val sameTasksGroupById = sameTasksInField.groupBy { it.second.id }
             // for each task, take the one with the lowest node id
             val takeWinner = sameTasksGroupById.map { (_, node) -> node.minBy { it.first } }
             val takeTaskToRemove = takeWinner.filter { it.first != localId }
             // remove the tasks from the path
-            val pathWithoutTasks = path.filterNot { it in takeTaskToRemove.map { it.second } }
-
-            val marginal = (allTasks - dones.filter { it.value }.keys).map { task ->
-                task to RoutingHeuristics.computeMarginalCost(pathWithoutTasks, task) * adaptMarginalCostByAssignedFactor
-            }.map { (task, cost) -> Bid(task, NodeFormalization(myPosition, localId), cost) }
-            val allBids = neighboring(marginal).toMap().values.flatten().groupBy { it.task }
-            val taskBids = mutableMapOf<NodeFormalization, MutableList<Bid>>()
-            // associate all the bids to the tasks
-            allBids.forEach { (task, bids) ->
-                taskBids[task] = bids.toMutableList()
-            }
-
-            // Calculate task priorities based on difference between best and second-best bid
-            val assignedLocal = (assigned - takeTaskToRemove.map { it.second }.toSet()).toMutableSet()
-            // Find the highest priority task I can win
-            for ((task, bids) in taskBids) {
-                if (bids.isEmpty()) continue // Skip if no robot can take this task
-                // Sort bids by cost (lowest first) and then by robot ID for tie-breaking
-                val sortedBids = bids.sortedWith(compareBy<Bid> { it.cost }.thenBy { it.robot.id })
-
-                // Find the best bid
-                val bestBid = sortedBids.first()
-                // Check if I can win this task
-                if (bestBid.robot.id == localId) {
-                    assignedLocal.add(task)
-                    break // Exit after winning one task
+            val marginal = (allTasks - state.dones.filter { it.value }.keys).map { task ->
+                // filter the path if it contains the task
+                val pathWithoutTask = state.path.filterNot { it.id == task.id }
+                task to RoutingHeuristics.computeMarginalCost(pathWithoutTask, task) * adaptMarginalCostByAssignedFactor
+            }.map { (task, cost) -> Bid(task, localId, cost) }
+            val taskBids = neighboring(marginal).toMap().values
+                .flatten()
+                .groupBy { it.task }
+                .mapValues { (_, bids) -> bids.toMutableList() }
+            env["bids"] = taskBids.map { (task, bids) ->
+                task.id to bids.map { it.robot }
+            }.toMap()
+            /** TASK ALLOCATION -- take the best bid */
+            val assignedLocal = taskBids
+                .filter { (_, bids) -> bids.isNotEmpty() }
+                .firstNotNullOfOrNull { (task, bids) ->
+                    val bestBid = bids.minWithOrNull(compareBy<Bid> { it.cost }.thenBy { it.robot })
+                    if (bestBid?.robot == localId) task else null
                 }
-            }
-            val filterDones = assignedLocal - dones.filter { it.value }.keys
+                ?.run {
+                    (state.assigned - takeTaskToRemove.map { it.second }.toSet()) + this
+                } ?: state.assigned
+            val filterDones = assignedLocal - state.dones.filter { it.value }.keys
             // Store the updated path in environment variables
             val updatedPath = RoutingHeuristics.solveLocalRouting(filterDones.toSet(), NodeFormalization(myPosition, localId), depotsSensor.destinationDepot)
             env["raw"] = updatedPath.map { it.id }
 
-            val updated = state.copy(dones = donesGossip, assigned = assignedLocal, path = updatedPath)
+            val updated = state.copy(dones = allTaskDone, assigned = assignedLocal, path = updatedPath)
             followPlan(
                 env,
                 depotsSensor,

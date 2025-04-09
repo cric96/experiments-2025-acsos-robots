@@ -16,6 +16,6 @@ data class Node(
 
 data class Bid(
     val task: Node,
-    val robot: Node,
+    val robot: Int,
     val cost: Double // Can be marginal cost or adjusted cost
 )

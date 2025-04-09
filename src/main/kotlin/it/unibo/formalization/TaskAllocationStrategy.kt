@@ -53,7 +53,7 @@ class GreedyAllocationStrategy(
                     // Check if adding this task would exceed the maximum route cost
                     val potentialRouteCost = robotState.routeCost + marginalCost
                     if (potentialRouteCost <= maxRouteCost) {
-                        val bid = Bid(task, robotState.robot, marginalCost)
+                        val bid = Bid(task, robotState.robot.id, marginalCost)
 
                         // Add the bid to the corresponding task's bid list
                         if (task !in taskBids) {
@@ -82,7 +82,7 @@ class GreedyAllocationStrategy(
             val sortedTasks = taskBids.keys.sortedByDescending { taskPriorities[it] }
 
             // Now assign one task per robot in this iteration, if possible
-            val assignedRobots = mutableSetOf<Node>()
+            val assignedRobots = mutableSetOf<Int>()
 
             for (task in sortedTasks) {
                 val bids = taskBids[task] ?: continue
@@ -96,7 +96,7 @@ class GreedyAllocationStrategy(
                     ?: continue  // Skip if all potential robots already got a task this iteration
 
                 // Find the robot state for this robot
-                val robotState = robotStates.find { it.robot == bestBid.robot } ?: continue
+                val robotState = robotStates.find { it.robot.id == bestBid.robot } ?: continue
 
                 // Double-check the maximum cost constraint with the latest route
                 val updatedMarginalCost = computeMarginalCost(robotState.route, task)
