@@ -1,7 +1,5 @@
 package it.unibo.formalization
 
-import it.unibo.alchemist.model.positions.Euclidean2DPosition
-
 internal data class RobotAgentState(
     val robot: Node,
     val assignedTasks: MutableSet<Node> = mutableSetOf(),

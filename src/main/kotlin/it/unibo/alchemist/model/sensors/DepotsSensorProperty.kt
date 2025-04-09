@@ -5,6 +5,7 @@ import it.unibo.alchemist.model.Node
 import it.unibo.alchemist.model.NodeProperty
 import it.unibo.alchemist.model.Position
 import it.unibo.alchemist.model.global.toFormalizationNode
+import it.unibo.alchemist.model.linkingrules.ConnectWithinDistance
 import it.unibo.alchemist.model.molecules.SimpleMolecule
 import it.unibo.formalization.Node as NodeFormalization
 
@@ -13,7 +14,7 @@ class DepotsSensorProperty<T : Any, P : Position<P>>(
     override val node: Node<T>,
 ) : DepotsSensor,
     NodeProperty<T> {
-
+    private val lookup = ConnectWithinDistance<T, P>(0.01)
     override val sourceDepot: NodeFormalization
         get() = environment.nodes.first { it.contents[SimpleMolecule(SOURCE_DEPOT_MOLECULE)] == true }.let {
             it.toFormalizationNode(environment)
@@ -40,7 +41,7 @@ class DepotsSensorProperty<T : Any, P : Position<P>>(
     override fun isTaskOver(task: NodeFormalization): Boolean {
         val task = environment.getNodeByID(task.id)
         // get my neighborhood
-        val myNeighbours = environment.getNeighborhood(node)
+        val myNeighbours = lookup.computeNeighborhood(node,environment)
         // search if the task is in my neighborhood
         val isInMyNeighborhood = myNeighbours.any { it.id == task.id }
         // check if the task is done

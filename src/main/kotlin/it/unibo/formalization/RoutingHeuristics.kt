@@ -11,10 +11,12 @@ object RoutingHeuristics {
         if (route.size < 2) {
             throw IllegalArgumentException("Route must contain at least start and end depots")
         }
-
-        return route.windowed(size = 2, step = 1)
-            .map { (prevNode, nextNode) -> travelCost(prevNode, nextNode) + travelCost(prevNode, task) + travelCost(task, nextNode) }
-            .minOrNull() ?: Double.MAX_VALUE
+        // compute the cost of the route before inserting the task
+        val initialCost = GeometryUtils.calculateRouteCost(route)
+        // best insert the task
+        val newPath = solveLocalRouting(route.toSet() + setOf(task), route.first(), route.last())
+        val newCost = GeometryUtils.calculateRouteCost(newPath)
+        return newCost - initialCost
     }
 
     /**

@@ -11,8 +11,8 @@ environment:
       parameters: [ 3 ]
 
 network-model:
-  type: ObstaclesBreakConnection
-  parameters: [ 5 ]
+  type: MoleculeBreaksConnection
+  parameters: [ 10, task ]
 
 variables:
   speed: &speed
