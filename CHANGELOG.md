@@ -1,3 +1,26 @@
+## [1.8.1](https://github.com/angelacorte/depot-tasks-environment/compare/1.8.0...1.8.1) (2025-04-10)
+
+### Dependency updates
+
+* **deps:** update alchemist to v42.0.6 ([bb9818c](https://github.com/angelacorte/depot-tasks-environment/commit/bb9818c94171b80788fc3d2c0f264f4f3451d8b1))
+* **deps:** update alchemist to v42.0.7 ([778bf08](https://github.com/angelacorte/depot-tasks-environment/commit/778bf087fb1c7cb24edfb2995e7f97b934cee184))
+* **deps:** update collektive to v20 ([9362092](https://github.com/angelacorte/depot-tasks-environment/commit/936209299722be83495f874db0c9ebd4d1490340))
+* **deps:** update plugin org.gradle.toolchains.foojay-resolver-convention to v0.10.0 ([f01c43d](https://github.com/angelacorte/depot-tasks-environment/commit/f01c43d0c6579e29580b9cf74d884550d8e576cd))
+
+### Bug Fixes
+
+* adapt to collektive v20 ([dfe4296](https://github.com/angelacorte/depot-tasks-environment/commit/dfe42965fe0c387ea8c60eb4ab3e5ab58198894c))
+
+### Build and continuous integration
+
+* **deps:** update danysk/build-check-deploy-gradle-action action to v3.7.15 ([cd965c2](https://github.com/angelacorte/depot-tasks-environment/commit/cd965c26d9d2d81169846df17fdbbe8c6b0ba84c))
+* **deps:** update danysk/build-check-deploy-gradle-action action to v3.7.16 ([3e2a573](https://github.com/angelacorte/depot-tasks-environment/commit/3e2a573852a10b85dc2f087a565c76091fc982cb))
+* **deps:** update dependency windows github actions runner to v2025 ([3514bb6](https://github.com/angelacorte/depot-tasks-environment/commit/3514bb6441082344a49b388ff36720e3389ff585))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.8.0 [skip ci] ([99d01cc](https://github.com/angelacorte/depot-tasks-environment/commit/99d01cc17fcae88c05b62716f82b6b7fbe832bc8))
+
 ## [1.8.0](https://github.com/angelacorte/depot-tasks-environment/compare/1.7.1...1.8.0) (2025-04-04)
 
 ### Features
