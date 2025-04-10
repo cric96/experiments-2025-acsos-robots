@@ -12,7 +12,7 @@ environment:
 
 network-model:
   type: MoleculeBreaksConnection
-  parameters: [ 10, task ]
+  parameters: [ 20, task ]
 
 variables:
   speed: &speed
@@ -43,7 +43,7 @@ _pool: &program
     type: Event
     actions:
       - type: RunCollektiveProgram
-        parameters: [it.unibo.collektive.program.ReplanningKt.fullRuntime]
+        parameters: [it.unibo.collektive.program.ReplanningKt.replanning]
 
 deployments:
   tasks:

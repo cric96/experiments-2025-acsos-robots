@@ -45,7 +45,7 @@ class DepotsSensorProperty<T : Any, P : Position<P>>(
         // search if the task is in my neighborhood
         val isInMyNeighborhood = myNeighbours.any { it.id == task.id }
         // check if the task is done
-        val isDone = if (task.contains(SimpleMolecule(DESTINATION_DEPOT_MOLECULE))) {
+        val isDone = if (task.contains(SimpleMolecule(DESTINATION_DEPOT_MOLECULE)) || task.contains(SimpleMolecule(SOURCE_DEPOT_MOLECULE))) {
             false
         } else {
             task.contents[SimpleMolecule("isDone")] as Double == 1.0

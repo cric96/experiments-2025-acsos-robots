@@ -26,7 +26,7 @@ class GreedyAllocationStrategy(
     fun execute(): List<RobotAllocationResult> {
         // Initialize robot states
         val robotStates = robots.map { robot ->
-            val initialRoute = mutableListOf(startDepot, endDepot)
+            val initialRoute = mutableListOf(robot, endDepot)
             val initialCost = GeometryUtils.calculateRouteCost(initialRoute)
             RobotAgentState(
                 robot = robot,
@@ -118,7 +118,7 @@ class GreedyAllocationStrategy(
             for (robotState in robotStates) {
                 val optimizedRoute = RoutingHeuristics.solveLocalRouting(
                     robotState.assignedTasks,
-                    startDepot,
+                    robotState.robot,
                     endDepot
                 )
 
