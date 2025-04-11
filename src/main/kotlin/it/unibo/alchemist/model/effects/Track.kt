@@ -22,7 +22,7 @@ class TrajectoryEffect : it.unibo.alchemist.boundary.swingui.effect.api.Effect {
 
     private var trackEnabled: Boolean = true
 
-    private var snapshotSize: Int = 1000
+    //private var snapshotSize: Int = 1000
 
     private var nodeSize: Int = 4
 
@@ -74,23 +74,19 @@ class TrajectoryEffect : it.unibo.alchemist.boundary.swingui.effect.api.Effect {
         shape: Shape,
     ) {
         val positions = positionsMemory[node.id] ?: emptyList()
-        val alpha = MAX_COLOR / (Math.min(snapshotSize, positions.size) * ADJUST_ALPHA_FACTOR + 1)
-        positions.takeLast(snapshotSize).withIndex().forEach { (index, pair) ->
-            val (position, rotation) = pair
-            val colorFaded =
-                Color(colorBase.red, colorBase.green, colorBase.blue, 10)
-
-            @Suppress("UNCHECKED_CAST")
-            val transform =
-                computeTransform(
-                    wormhole2D.getViewPoint(position as P).x,
-                    wormhole2D.getViewPoint(position).y,
-                    nodeSize.toDouble(),
-                    rotation,
-                )
-            val transformedShape = transform.createTransformedShape(shape)
-            graphics2D.color = colorFaded
-            graphics2D.fill(transformedShape)
+        val trajectory = positions//.takeLast(snapshotSize)
+        if (trajectory.size > 1) {
+            trajectory.zipWithNext().forEachIndexed { index, value ->
+                @Suppress("UNCHECKED_CAST")
+                val alphaValue = ((index.toFloat() / trajectory.size) * 50).toInt().coerceIn(10, 50)
+                val (first, second) = value
+                val startPoint = wormhole2D.getViewPoint(first.first as P)
+                val endPoint = wormhole2D.getViewPoint(second.first as P)
+                val colorFaded = Color(colorBase.red, colorBase.green, colorBase.blue, alphaValue)
+                graphics2D.color = colorFaded
+                graphics2D.stroke = java.awt.BasicStroke(4.0f)
+                graphics2D.drawLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y)
+            }
         }
     }
 
