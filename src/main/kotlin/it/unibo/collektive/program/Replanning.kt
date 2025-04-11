@@ -88,7 +88,7 @@ fun Aggregate<Int>.replanning(
         env["clock"] = globalClock
 
         evolve(ReplanningState.createFrom(allTasks, depotsSensor)) { state ->
-            // val globalConsistency = isGlobalPathConsistent(state.allocations, distanceSensor)
+            val globalConsistency = isGlobalPathConsistent(state.allocations, distanceSensor)
             /** Ever done -- check if the task is completed by one of the robot */
             val allTaskDone = everDone(state.dones.filter { it.value }.keys) // avoid to recompute task already done
             /** All robots that I may see with multipath communication */
@@ -97,7 +97,7 @@ fun Aggregate<Int>.replanning(
             val areRobotsStable = stableFor(allRobots.map { it.id }.toSet(), 10)
             /** Check if the robots are stable */
             val areAllStable = areAllStable(areRobotsStable, distanceSensor)
-            val stableCondition = areAllStable //&& globalConsistency
+            val stableCondition = areAllStable && globalConsistency
             when {
                 // stability condition is not satisfied, recompute the path
                 !stableCondition -> {

@@ -1,4 +1,20 @@
 incarnation: collektive
+variables:
+  speed: &speed
+    formula: 0.5 # 1 m/s
+  obstaclesRepulsion: &obstaclesRepulsion
+    formula: 0.5
+  isDone: &isDone
+    formula: 0.0
+  seed: &seed
+    {  min: 0, max: 31, step: 1, default: 0}
+
+launcher:
+  parameters:
+    batch:
+      - seed
+    showProgress: true
+    autoStart: true
 # TIME UNITS = seconds
 environment:
   type: Continuous2DObstacles
@@ -25,17 +41,9 @@ network-model:
   type: MoleculeBreaksConnection
   parameters: [ 100, task ]
 
-variables:
-  speed: &speed
-    formula: 0.5 # 1 m/s
-  obstaclesRepulsion: &obstaclesRepulsion
-    formula: 0.5
-  isDone: &isDone
-    formula: 0.0
-
 seeds:
-  scenario: 0
-  simulation: 1
+  scenario: *seed
+  simulation: *seed
 
 export:
   - type: CSVExporter
@@ -118,8 +126,6 @@ deployments:
       - type: it.unibo.alchemist.model.sensors.LocationSensorProperty
       - type: it.unibo.alchemist.model.sensors.DepotsSensorProperty
 
-#terminate:
-#  type: StableForSteps
-#  parameters:
-#    equalIntervals: 5
-#    checkInterval: 100
+terminate:
+  - type: AfterTime
+    parameters: 2600

@@ -129,7 +129,8 @@ File(rootProject.rootDir.path + "/src/main/yaml").listFiles()
             File("data").mkdirs()
             args(
                 "--verbosity",
-                "error"
+                "error",
+
             )
         }
         runAllBatch.dependsOn(batch)
