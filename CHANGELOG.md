@@ -1,3 +1,21 @@
+## [1.9.0](https://github.com/angelacorte/depot-tasks-environment/compare/1.8.1...1.9.0) (2025-04-11)
+
+### Features
+
+* first working version with multipath and time ([663abab](https://github.com/angelacorte/depot-tasks-environment/commit/663ababb00d5998a9368943beec529567a8a3a0a))
+
+### Dependency updates
+
+* **deps:** update collektive to v21 ([648b214](https://github.com/angelacorte/depot-tasks-environment/commit/648b214847521b6ee4afbbf6aff33a5692b8b43a))
+
+### Bug Fixes
+
+* add globally consistency ([a48ca72](https://github.com/angelacorte/depot-tasks-environment/commit/a48ca7236d24ad2a6403ad8d8e845e711b188b76))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.8.1 [skip ci] ([519e3e9](https://github.com/angelacorte/depot-tasks-environment/commit/519e3e936dc864db89bad2bc1cdb5ee7153cdcdb))
+
 ## [1.8.1](https://github.com/angelacorte/depot-tasks-environment/compare/1.8.0...1.8.1) (2025-04-10)
 
 ### Dependency updates
