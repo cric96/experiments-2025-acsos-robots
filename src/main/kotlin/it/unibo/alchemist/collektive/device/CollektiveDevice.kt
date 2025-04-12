@@ -49,7 +49,7 @@ class CollektiveDevice<P>(
      * The current time.
      */
     val currentTime: Time
-        get() = environment?.simulation?.time ?: Time.ZERO
+        get() = environment.simulation?.time ?: Time.ZERO
 
     /**
      * The ID of the node (alias of [localId]).

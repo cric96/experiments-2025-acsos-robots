@@ -28,43 +28,22 @@ object RoutingHeuristics {
         startDepot: Node,
         endDepot: Node
     ): List<Node> {
-        if (tasks.isEmpty()) {
-            return listOf(startDepot, endDepot)
-        }
+        if (tasks.isEmpty()) return listOf(startDepot, endDepot)
 
-        // Start with a route containing only the depots
         val route = mutableListOf(startDepot, endDepot)
         val remainingTasks = tasks.toMutableSet()
 
-        // Greedy insertion: repeatedly insert the task at its best position
         while (remainingTasks.isNotEmpty()) {
-            var bestTask: Node? = null
-            var bestPosition = -1
-            var bestCost = Double.MAX_VALUE
-
-            // Find the best task and position to insert next
-            for (task in remainingTasks) {
-                for (pos in 1 until route.size) {
-                    val prevNode = route[pos - 1]
-                    val nextNode = route[pos]
-
-                    val insertionCost = travelCost(prevNode, task) +
-                            travelCost(task, nextNode) -
-                            travelCost(prevNode, nextNode)
-
-                    if (insertionCost < bestCost) {
-                        bestCost = insertionCost
-                        bestTask = task
-                        bestPosition = pos
-                    }
+            val (bestTask, bestPosition) = remainingTasks.flatMap { task ->
+                (1 until route.size).map { pos ->
+                    val prev = route[pos - 1]
+                    val next = route[pos]
+                    val cost = travelCost(prev, task) + travelCost(task, next) - travelCost(prev, next)
+                    Triple(task, pos, cost)
                 }
-            }
-
-            // Insert the best task at its best position
-            bestTask?.let {
-                route.add(bestPosition, it)
-                remainingTasks.remove(it)
-            }
+            }.minBy { it.third }.let { (task, pos, _) -> task to pos }
+            route.add(bestPosition, bestTask)
+            remainingTasks.remove(bestTask)
         }
 
         return route
