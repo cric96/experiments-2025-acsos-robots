@@ -19,8 +19,12 @@ abstract class InitialAllocationStrategy<T, P: Position<P>>(
     timeDistribution: TimeDistribution<T>
 ): AbstractGlobalReaction<T, P>(environment, timeDistribution) {
     override fun executeBeforeUpdateDistribution() {
-        val robots = nodes.filter { it.contents[SimpleMolecule(TASK_MOLECULE)] == null }
-        val tasks: List<Node<T>> = nodes.filter { it.contents[SimpleMolecule(TASK_MOLECULE)] == true }
+        val robots = nodes
+            .filter { it.contents[SimpleMolecule(TASK_MOLECULE)] == null }
+            .filter { it.contents[SimpleMolecule("down")] == false }
+        val tasks: List<Node<T>> = nodes
+            .filter { it.contents[SimpleMolecule(TASK_MOLECULE)] == true }
+            .filter { (it.contents[SimpleMolecule("isDone")] as Double) == 0.0}
         val source: Node<T> = nodes.first { it.contents[SimpleMolecule(SOURCE_DEPOT_MOLECULE)] == true }
         val target: Node<T> = nodes.first { it.contents[SimpleMolecule(DESTINATION_DEPOT_MOLECULE)] == true }
         val allocations = allocate(robots, tasks, source, target)

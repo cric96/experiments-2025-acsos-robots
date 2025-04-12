@@ -7,15 +7,15 @@ import it.unibo.collektive.alchemist.device.sensors.EnvironmentVariables
 import it.unibo.formalization.Node as NodeFormalization
 
 fun Aggregate<Int>.followTasks(env: EnvironmentVariables, locationSensor: LocationSensor, depotsSensor: DepotsSensor) {
-    val tasks = env.get<List<NodeFormalization>>("tasks")
-    evolve(tasks.map { false }.toMutableList()) { dones ->
-        val firstIndexFalse = dones.indexOfFirst { !it }
-        val task = tasks[firstIndexFalse]
+    if(depotsSensor.alive()) {
+        val tasks = env.get<List<NodeFormalization>>("tasks")
+        val task = tasks[0]
         env["target"] = locationSensor.estimateCoordinates(task)
         env["selected"] = task.id
-        val isDone = depotsSensor.isTaskOver(task)
-        // update the task done
-        dones[firstIndexFalse] = isDone
-        dones
+        if(depotsSensor.isTaskOver(task)) {
+            env["tasks"] = tasks.drop(1)
+        }
+    } else {
+        env["target"] = locationSensor.coordinates()
     }
 }
