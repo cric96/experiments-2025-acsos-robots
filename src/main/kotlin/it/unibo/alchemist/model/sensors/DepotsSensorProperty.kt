@@ -7,6 +7,7 @@ import it.unibo.alchemist.model.Position
 import it.unibo.alchemist.model.global.toFormalizationNode
 import it.unibo.alchemist.model.linkingrules.ConnectWithinDistance
 import it.unibo.alchemist.model.molecules.SimpleMolecule
+import it.unibo.alchemist.model.times.DoubleTime
 import it.unibo.formalization.Node as NodeFormalization
 
 class DepotsSensorProperty<T : Any, P : Position<P>>(
@@ -52,6 +53,7 @@ class DepotsSensorProperty<T : Any, P : Position<P>>(
         }
         return isInMyNeighborhood && isDone
     }
+
     companion object {
         const val SOURCE_DEPOT_MOLECULE = "source"
         const val DESTINATION_DEPOT_MOLECULE = "destination"

@@ -7,7 +7,7 @@ variables:
   isDone: &isDone
     formula: 0.0
   seed: &seed
-    {  min: 0, max: 31, step: 1, default: 0}
+    {  min: 0, max: 31, step: 1, default: 5}
 
 launcher:
   parameters:
@@ -30,16 +30,16 @@ environment:
         parameters: [ 400 ] # fire at 400 seconds
       type: RandomFail
       parameters: [ 1 ]
-    - time-distribution:
-        type: Trigger
-        parameters: [ 600 ] # fire at 400 seconds
-      type: RandomFail
-      parameters: [ 1 ]
+    #- time-distribution:
+    #    type: Trigger
+    #    parameters: [ 600 ] # fire at 400 seconds
+    #  type: RandomFail
+    #  parameters: [ 1 ]
 
 # bluetooth range => 100,
 network-model:
   type: MoleculeBreaksConnection
-  parameters: [ 100, task ]
+  parameters: [ 50, task ]
 
 seeds:
   scenario: *seed
@@ -98,7 +98,7 @@ deployments:
   agents:
     type: Rectangle
     parameters: [20, -95, -95, 5, 5]
-    nodes: 120 # 1 minute, ~ after 60 meters
+    nodes: 10 # 1 minute, ~ after 60 meters
     programs:
       - time-distribution: 1 # each 100 ms
         type: Event

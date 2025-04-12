@@ -25,7 +25,7 @@ class AllocationBasedOnFormalization<T, P : Position<P>>(
         val tasksPosition = tasks.map { it.toFormalizationNode(environment)}
         val sourceDepotPosition = sourceDepot.toFormalizationNode(environment)
         val targetDepotPosition = targetDepot.toFormalizationNode(environment)
-        val allocator = GreedyAllocationStrategy(robotsPosition, tasksPosition, sourceDepotPosition, targetDepotPosition)
+        val allocator = GreedyAllocationStrategy(robotsPosition, tasksPosition, targetDepotPosition)
 
         val result = allocator.execute()
         return result.mapIndexed { index, allocation ->

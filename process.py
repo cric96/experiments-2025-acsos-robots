@@ -184,13 +184,13 @@ if __name__ == '__main__':
     # How to name the summary of the processed data
     pickleOutput = 'data_summary'
     # Experiment prefixes: one per experiment (root of the file name)
-    experiments = ['simulation']
+    experiments = ['exported-data']
     floatPrecision = '{: 0.3f}'
     # Number of time samples 
     timeSamples = 100
     # time management
     minTime = 0
-    maxTime = 50
+    maxTime = 2600
     timeColumnName = 'time'
     logarithmicTime = False
     # One or more variables are considered random and "flattened"
@@ -262,7 +262,7 @@ if __name__ == '__main__':
             lastTimeProcessed = pickle.load(open('timeprocessed', 'rb'))
         except:
             lastTimeProcessed = -1
-        shouldRecompute = not os.path.exists(".skip_data_process") and newestFileTime != lastTimeProcessed
+        shouldRecompute = True #not os.path.exists(".skip_data_process") and newestFileTime != lastTimeProcessed
         if not shouldRecompute:
             try:
                 means = pickle.load(open(pickleOutput + '_mean', 'rb'))

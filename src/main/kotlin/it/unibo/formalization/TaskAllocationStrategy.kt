@@ -5,7 +5,6 @@ import it.unibo.formalization.RoutingHeuristics.computeMarginalCost
 class GreedyAllocationStrategy(
     private val robots: List<Node>,
     private val tasks: Collection<Node>,
-    private val startDepot: Node,
     private val endDepot: Node,
     private val maxRouteCost: Double = Double.MAX_VALUE
 ) {
