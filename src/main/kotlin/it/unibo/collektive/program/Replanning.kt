@@ -142,12 +142,6 @@ fun Aggregate<Int>.replanning(
             locationSensor,
             depotsSensor
         )
-        boundedElectionReplanning(
-            env,
-            distanceSensor,
-            locationSensor,
-            depotsSensor
-        )
     }
 }
 
