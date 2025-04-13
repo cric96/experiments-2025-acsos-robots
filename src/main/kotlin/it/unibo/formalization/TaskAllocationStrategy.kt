@@ -2,6 +2,8 @@ package it.unibo.formalization
 
 import it.unibo.formalization.GeometryUtils.calculateRouteCost
 import it.unibo.formalization.RoutingHeuristics.computeMarginalCost
+import kotlin.system.measureTimeMillis
+
 class GreedyAllocationStrategy(
     private val robots: List<Node>,
     private val tasks: Collection<Node>,
@@ -12,29 +14,29 @@ class GreedyAllocationStrategy(
      * Executes the distributed multi-agent task allocation algorithm.
      * Returns the final allocation results for each robot.
      */
-    fun execute(): List<RobotAllocationResult> {
+    fun execute(): Pair<Long, List<RobotAllocationResult>> {
         val robotStates = initializeRobotStates()
         val unassignedTasks = tasks.toMutableList()
+        val time = measureTimeMillis {
+            while (unassignedTasks.isNotEmpty()) {
+                val taskBids = collectBidsForTasks(robotStates, unassignedTasks)
 
-        while (unassignedTasks.isNotEmpty()) {
-            val taskBids = collectBidsForTasks(robotStates, unassignedTasks)
+                // Exit if no robot can bid on any remaining task
+                if (taskBids.values.all { it.isEmpty() }) break
 
-            // Exit if no robot can bid on any remaining task
-            if (taskBids.values.all { it.isEmpty() }) break
+                val assignmentResults = assignTasksToRobots(taskBids, robotStates)
 
-            val assignmentResults = assignTasksToRobots(taskBids, robotStates)
+                // Exit if no tasks were assigned this iteration
+                if (!assignmentResults.anyTaskAssigned) break
 
-            // Exit if no tasks were assigned this iteration
-            if (!assignmentResults.anyTaskAssigned) break
+                // Remove assigned tasks
+                unassignedTasks.removeAll(assignmentResults.assignedTasks)
 
-            // Remove assigned tasks
-            unassignedTasks.removeAll(assignmentResults.assignedTasks)
-
-            // Re-optimize routes for each robot
-            optimizeRobotRoutes(robotStates)
+                // Re-optimize routes for each robot
+                optimizeRobotRoutes(robotStates)
+            }
         }
-
-        return convertToFinalResults(robotStates)
+        return time to convertToFinalResults(robotStates)
     }
 
     private fun initializeRobotStates(): List<RobotAgentState> {
@@ -43,7 +45,7 @@ class GreedyAllocationStrategy(
             RobotAgentState(
                 robot = robot,
                 route = initialRoute,
-                routeCost = GeometryUtils.calculateRouteCost(initialRoute)
+                routeCost = calculateRouteCost(initialRoute)
             )
         }
     }

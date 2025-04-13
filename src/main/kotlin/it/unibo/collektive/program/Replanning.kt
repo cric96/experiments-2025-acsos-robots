@@ -154,7 +154,6 @@ fun Aggregate<Int>.replanning(
     }
 }
 
-val cache = mutableMapOf<List<NodeFormalization>, List<RobotAllocationResult>>()
 val maxBound = 1000.0
 val timeWindow = 5
 fun Aggregate<Int>.gossipReplanning(
@@ -163,6 +162,7 @@ fun Aggregate<Int>.gossipReplanning(
     locationSensor: LocationSensor,
     depotsSensor: DepotsSensor) {
     val allTasks =  evolve(allTasksWithoutSource(depotsSensor)) { it }
+    val cache = evolve(mutableMapOf<List<NodeFormalization>, List<RobotAllocationResult>>()) { it }
     val myPosition = evolve(locationSensor.coordinates()) { it }
     // all ids in the system, ever seen
     val allIds = share(setOf(localId)) { it.fold(setOf(localId)){ acc, value -> acc + value } }
@@ -195,7 +195,7 @@ fun Aggregate<Int>.gossipReplanning(
                         allRobots.sortedBy { it.id },
                         reducedTasks.sortedBy { it.id },
                         depotsSensor.destinationDepot
-                    ).execute()
+                    ).execute().second
                 }
                 val myPlan = globalPlan.find { it.robot.id == localId }
                 standStill(env, locationSensor) // avoid flickering
@@ -245,7 +245,7 @@ fun Aggregate<Int>.boundedElectionReplanning(
                 allRobotsFromLeader.sortedBy { it.id },
                 reducedTasks.sortedBy { it.id },
                 depotsSensor.destinationDepot
-            ).execute()
+            ).execute().second
         } else {
             state.allocations
         }

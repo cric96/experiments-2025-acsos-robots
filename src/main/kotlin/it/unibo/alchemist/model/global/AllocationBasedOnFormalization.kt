@@ -27,7 +27,7 @@ class AllocationBasedOnFormalization<T, P : Position<P>>(
         val targetDepotPosition = targetDepot.toFormalizationNode(environment)
         val allocator = GreedyAllocationStrategy(robotsPosition, tasksPosition, targetDepotPosition)
 
-        val result = allocator.execute()
+        val (_, result) = allocator.execute()
         return result.mapIndexed { index, allocation ->
             val robot: Node<T> = robots[index]
             val tasks: List<Node<T>> = allocation.route.drop(1).map { environment.getNodeByID(it.id) }
