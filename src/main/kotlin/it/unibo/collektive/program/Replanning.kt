@@ -8,6 +8,7 @@ import it.unibo.collektive.aggregate.api.share
 import it.unibo.collektive.alchemist.device.sensors.EnvironmentVariables
 import it.unibo.collektive.field.Field.Companion.fold
 import it.unibo.collektive.stdlib.accumulation.convergeCast
+import it.unibo.collektive.stdlib.accumulation.convergeSum
 import it.unibo.collektive.stdlib.consensus.boundedElection
 import it.unibo.collektive.stdlib.spreading.distanceTo
 import it.unibo.collektive.stdlib.spreading.gradientCast
@@ -132,11 +133,19 @@ fun Aggregate<Int>.replanning(
     locationSensor: LocationSensor,
     depotsSensor: DepotsSensor
 ) {
+
+    // check if convergence cast works
     env["hue"] = localId // for debugging
     if(!depotsSensor.alive()) {
         env["target"] = locationSensor.coordinates()
     } else {
-        gossipReplanning(
+        //gossipReplanning(
+        //    env,
+        //    distanceSensor,
+        //    locationSensor,
+        //    depotsSensor
+        //)
+        boundedElectionReplanning(
             env,
             distanceSensor,
             locationSensor,
@@ -181,7 +190,6 @@ fun Aggregate<Int>.gossipReplanning(
             !stableCondition -> {
                 /** allocation part: recompute the path giving the new information */
                 val reducedTasks = allTasks.filter { it !in allTaskDone }
-                env["alreadyComputed"] = cache.contains(allRobots.sortedBy { it.id })
                 val globalPlan = cache.getOrPut(allRobots.sortedBy { it.id }) {
                     GreedyAllocationStrategy(
                         allRobots.sortedBy { it.id },
@@ -218,8 +226,10 @@ fun Aggregate<Int>.boundedElectionReplanning(
     locationSensor: LocationSensor,
     depotsSensor: DepotsSensor
 ) {
+    //val positionCache = evolve(locationSensor.coordinates()) { it }
     val allTasks = allTasksWithoutSource(depotsSensor)
     val leaderId = boundedElection(maxBound, with(distanceSensor) { distances() })
+    env["leader"] = leaderId
     val isLeader = leaderId == localId
     val nodePosition = NodeFormalization(locationSensor.coordinates(), localId)
     // collect nodes
@@ -228,35 +238,39 @@ fun Aggregate<Int>.boundedElectionReplanning(
     }
     val areRobotsStable = stableForBy(allRobotsFromLeader, timeWindow) { it.map { it.id }.toSet() }
     evolve(ReplanningState.createFrom(allTasks, depotsSensor)) { state ->
+        val taskEverDone = gossipTasksDone(state.dones.filter { it.value}.keys)
+        val reducedTasks = allTasks.filter { it !in taskEverDone }
         val newPlan = if(!areRobotsStable && isLeader) {
             GreedyAllocationStrategy(
                 allRobotsFromLeader.sortedBy { it.id },
-                allTasks.sortedBy { it.id },
+                reducedTasks.sortedBy { it.id },
                 depotsSensor.destinationDepot
             ).execute()
         } else {
             state.allocations
         }
         // share
-        env["leader"] = leaderId
-        env["isLeader"] = isLeader
-        env["allRobots"] = allRobotsFromLeader.size
         val leaderPlan = gradientCast(isLeader, newPlan, with(distanceSensor) { distances()})
-        env["plan"] = leaderPlan
+        val leaderStable = gradientCast(isLeader, areRobotsStable, with(distanceSensor) { distances() })
+        env["stable"] = leaderStable
         val myPlan = leaderPlan.find { it.robot.id == localId }
-        followPlan(
-            env, depotsSensor, locationSensor, state.copy(
-                path = myPlan?.route ?: listOf(nodePosition, nodePosition),
+        if(leaderStable) {
+            followPlan(
+                env, depotsSensor, locationSensor, state.copy(
+                    path = myPlan?.route ?: listOf(nodePosition, nodePosition),
+                    allocations = leaderPlan
+                )
+            )
+        } else {
+            standStill(env, locationSensor)
+            state.copy(
                 allocations = leaderPlan
             )
-        )
+        }
+
     }
 }
 
-
-fun standStill(env: EnvironmentVariables, locationSensor: LocationSensor) {
-    env["target"] = locationSensor.coordinates()
-}
 fun Aggregate<Int>.followPlan(
     env: EnvironmentVariables,
     depotsSensor: DepotsSensor,
@@ -275,4 +289,9 @@ fun Aggregate<Int>.followPlan(
     updated[selected] = isDone
     // update the state
     return state.copy(dones = updated)
+}
+
+
+fun standStill(env: EnvironmentVariables, locationSensor: LocationSensor) {
+    env["target"] = locationSensor.coordinates()
 }
