@@ -4,6 +4,7 @@ import it.unibo.alchemist.model.Environment
 import it.unibo.alchemist.model.Node
 import it.unibo.alchemist.model.Position
 import it.unibo.alchemist.model.TimeDistribution
+import it.unibo.alchemist.model.molecules.SimpleMolecule
 import it.unibo.formalization.GreedyAllocationStrategy
 import it.unibo.formalization.Node as FormalizationNode
 
@@ -23,9 +24,15 @@ class AllocationBasedOnFormalization<T, P : Position<P>>(
     ): List<Allocation<T>> {
         val robotsPosition = robots.map { it.toFormalizationNode(environment)}
         val tasksPosition = tasks.map { it.toFormalizationNode(environment)}
+        val tasksDone = environment.nodes.filter { it.contents[SimpleMolecule("isDone")] == 1.0 }.map { it.id }.toSet()
+
         val sourceDepotPosition = sourceDepot.toFormalizationNode(environment)
         val targetDepotPosition = targetDepot.toFormalizationNode(environment)
-        val allocator = GreedyAllocationStrategy(robotsPosition, tasksPosition, targetDepotPosition)
+        val allocator = GreedyAllocationStrategy(
+            robotsPosition,
+            tasksPosition.filter { it.id !in tasksDone },
+            targetDepotPosition,
+        )
 
         val (_, result) = allocator.execute()
         return result.mapIndexed { index, allocation ->

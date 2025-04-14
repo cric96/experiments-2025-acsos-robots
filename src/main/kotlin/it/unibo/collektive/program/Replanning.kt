@@ -231,14 +231,17 @@ fun Aggregate<Int>.boundedElectionReplanning(
     val leaderId = boundedElection(maxBound, with(distanceSensor) { distances() })
     env["leader"] = leaderId
     val isLeader = leaderId == localId
+    env["isLeader"] = if(isLeader) { 1.0 } else { 0.0 }
     val nodePosition = NodeFormalization(locationSensor.coordinates(), localId)
     // collect nodes
     val allRobotsFromLeader = convergeCast(listOf(nodePosition), isLeader) { left, right ->
         left + right
     }
+    env["robots"] = allRobotsFromLeader.map { it.id }
     val areRobotsStable = stableForBy(allRobotsFromLeader, timeWindow) { it.map { it.id }.toSet() }
+    env["areStable"] = areRobotsStable
     evolve(ReplanningState.createFrom(allTasks, depotsSensor)) { state ->
-        val taskEverDone = gossipTasksDone(state.dones.filter { it.value}.keys)
+        val taskEverDone = gossipTasksDone(state.dones.filter { it.value }.keys)
         val reducedTasks = allTasks.filter { it !in taskEverDone }
         val newPlan = if(!areRobotsStable && isLeader) {
             GreedyAllocationStrategy(
@@ -251,7 +254,7 @@ fun Aggregate<Int>.boundedElectionReplanning(
         }
         // share
         val leaderPlan = gradientCast(isLeader, newPlan, with(distanceSensor) { distances()})
-        val leaderStable = gradientCast(isLeader, areRobotsStable, with(distanceSensor) { distances() })
+        val leaderStable = gradientCast(isLeader, areRobotsStable && isLeader, with(distanceSensor) { distances() })
         env["stable"] = leaderStable
         val myPlan = leaderPlan.find { it.robot.id == localId }
         if(leaderStable) {

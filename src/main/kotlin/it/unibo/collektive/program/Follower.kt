@@ -7,6 +7,7 @@ import it.unibo.collektive.alchemist.device.sensors.EnvironmentVariables
 import it.unibo.formalization.Node as NodeFormalization
 
 fun Aggregate<Int>.followTasks(env: EnvironmentVariables, locationSensor: LocationSensor, depotsSensor: DepotsSensor) {
+    env["hue"] = localId
     if(depotsSensor.alive()) {
         val tasks = env.get<List<NodeFormalization>>("tasks")
         val task = tasks[0]
