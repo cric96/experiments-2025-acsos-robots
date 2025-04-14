@@ -11,7 +11,10 @@ variables:
   communication: &communication
     type: ArbitraryVariable
     # bluetooth (50, 100, 150) -> 1000 full range
-    parameters: [ 50, [ 50, 100, 150, 1000 ] ]
+    parameters: [ 50, [ 20, 50, 100, 500 ] ]
+  leaderBased: &leaderBased
+    type: ArbitraryVariable
+    parameters: [ 0, [ 0, 1 ] ]
 
 launcher:
   parameters:
@@ -101,7 +104,7 @@ deployments:
   agents:
     type: Rectangle
     parameters: [20, -95, -95, 5, 5]
-    #nodes: 30 # 30 seconds to react to failure
+    nodes: 30 # 30 seconds to react to failure
     programs:
       - time-distribution: 1 # each second
         type: Event
