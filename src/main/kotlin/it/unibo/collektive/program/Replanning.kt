@@ -21,31 +21,7 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 import it.unibo.formalization.Node as NodeFormalization
 
-/** Utils **/
-fun allTasksWithoutSource(depotsSensor: DepotsSensor): List<NodeFormalization> {
-    return (depotsSensor.tasks.toSet() - setOf(depotsSensor.sourceDepot)).toList().sortedBy { it.id }
-}
-
-fun Pair<Double, Double>.distance(other: Pair<Double, Double>): Double {
-    return sqrt((this.first - other.first).pow(2.0) + (this.second - other.second).pow(2.0))
-}
-
-fun <D> Aggregate<Int>.multiBroadcastBounded(
-    distanceSensor: CollektiveDevice<*>,
-    sources: Set<Int>,
-    value: D,
-    maxBound: Double,
-): Map<Int, D> {
-    return multiGradientCast(
-        sources = sources,
-        local = value to 0.0,
-        metric = with(distanceSensor) { distances() },
-        accumulateData = { fromSource, distance, data ->
-            data.first to (fromSource + distance)
-        }
-    ).filter { it.value.second < maxBound }.mapValues { it.value.first }
-}
-
+/** Replanning state */
 data class ReplanningState(
     val dones: Map<NodeFormalization, Boolean>,
     val path: List<NodeFormalization>,
@@ -63,86 +39,10 @@ data class ReplanningState(
     }
 }
 
-/** Field Calculus Utilis **/
-/**
- * Check if the task is done by one of the robot, ever in the history
- */
-fun Aggregate<Int>.gossipTasksDone(dones: Set<NodeFormalization>): Set<NodeFormalization> {
-    return nonStabilizingGossip(dones) { left, right -> left + right }
+/** Utils **/
+fun allTasksWithoutSource(depotsSensor: DepotsSensor): List<NodeFormalization> {
+    return (depotsSensor.tasks.toSet() - setOf(depotsSensor.sourceDepot)).toList().sortedBy { it.id }
 }
-
-fun <E> Aggregate<Int>.history(value: E, size: Int): List<E> = evolve(listOf(value)) { listOf(value).plus(it).take(size) }
-
-fun <E> Aggregate<Int>.stableFor(value: E, size: Int): Boolean {
-    val history = history(value, size)
-    return history.size > 2 && history.all { it == value }
-}
-fun Aggregate<Int>.gossipNodeCoordinates(
-    source: NodeFormalization,
-    distanceSensor: CollektiveDevice<*>,
-    allIds: Set<Int>,
-    maxBound: Double
-): List<NodeFormalization> {
-    val globalView = multiBroadcastBounded(
-        distanceSensor = distanceSensor,
-        sources = allIds,
-        value = source,
-        maxBound = maxBound
-    ).values
-    val removeMyself = globalView.filter { it.id != localId }
-    return removeMyself + listOf(source)
-}
-
-fun Aggregate<Int>.areAllStable(
-    stable: Boolean,
-    distanceSensor: CollektiveDevice<*>,
-    allIds: Set<Int>,
-    maxBound: Double
-): Boolean {
-    val allRobots = multiBroadcastBounded(
-        distanceSensor = distanceSensor,
-        sources = allIds,
-        value = stable,
-        maxBound = maxBound
-    ).values
-    return allRobots.all { it }
-}
-
-/** Sanity checks **/
-fun Aggregate<Int>.isGlobalPathConsistent(
-    paths: Map<Int, List<Int>>,
-    distanceSensor: CollektiveDevice<*>,
-    allIds: Set<Int>,
-    maxBound: Double
-): Boolean {
-    val allRobotsMap = multiBroadcastBounded(
-        distanceSensor = distanceSensor,
-        sources = allIds,
-        value = paths,
-        maxBound = maxBound
-    )
-
-    val myPath = paths[localId]
-    val allRobots = allRobotsMap.values
-    // check that, everywhere, the path is the same for this robot
-    val everyoneSeeMe = allRobots.filter { it.containsKey(localId) }
-    // check that, everywhere, the path for me is the same
-    val isPathsConsistent = everyoneSeeMe.map { it[localId] }
-    // find the one that are different
-    if (!isPathsConsistent.all { it == myPath }) {
-        // search the one that is different
-        val different = isPathsConsistent.filter { it != myPath }
-        // get the robots that differs
-        val differentRobots = allRobotsMap.filter { it.value[localId] != myPath }
-
-        println("my path: $myPath $localId")
-        println("Different paths: $different")
-        println("Different robots: ${differentRobots.keys}")
-
-    }
-    return everyoneSeeMe.size == allRobots.size && isPathsConsistent.all { it == myPath }
-}
-
 
 fun Aggregate<Int>.replanning(
     env: EnvironmentVariables,
@@ -150,70 +50,52 @@ fun Aggregate<Int>.replanning(
     locationSensor: LocationSensor,
     depotsSensor: DepotsSensor
 ) {
-    // check if convergence cast works
-
     if(!depotsSensor.alive()) {
         env["target"] = locationSensor.coordinates()
+        env["replanning"] = 0
     } else {
         when(env.get("leaderBased") as Boolean) {
             true -> boundedElectionReplanning(
-                env,
-                distanceSensor,
-                locationSensor,
-                depotsSensor
+                env, distanceSensor, locationSensor, depotsSensor
             )
             else -> gossipReplanning(
-                env,
-                distanceSensor,
-                locationSensor,
-                depotsSensor
+                env, distanceSensor, locationSensor, depotsSensor
             )
         }
     }
     // utility function / extraction
     env["hue"] = localId // for debugging
-    val (distance, _) = evolve(0.0 to locationSensor.coordinates()) { (totalDistance, myPosition) ->
-        val currentPosition = locationSensor.coordinates()
-        val distance = currentPosition.distance(myPosition)
-        val newDistance = totalDistance + distance
-        newDistance to currentPosition
-    }
-    env["distance"] = distance
+    distanceTracking(env, locationSensor)
     env["neighbors"] = neighboring(1).fold(0) { acc, value -> acc + value }
 }
 
 val maxBound = 1000.0
 val timeWindow = 5
+
 fun Aggregate<Int>.gossipReplanning(
     env: EnvironmentVariables,
     distanceSensor: CollektiveDevice<*>,
     locationSensor: LocationSensor,
-    depotsSensor: DepotsSensor) {
+    depotsSensor: DepotsSensor
+) {
     val allTasks =  evolve(allTasksWithoutSource(depotsSensor)) { it }
-    val cache = evolve(mutableMapOf<List<NodeFormalization>, List<RobotAllocationResult>>()) { it }
-    val myPosition = evolve(locationSensor.coordinates()) { it }
     // all ids in the system, ever seen
     val allIds = share(setOf(localId)) { it.fold(setOf(localId)){ acc, value -> acc + value } }
 
     evolve(ReplanningState.createFrom(allTasks, depotsSensor)) { state ->
-        val nodeRepresentation = NodeFormalization(locationSensor.coordinates(), localId)
-        /** Consensus part: check if the node should recompute the path */
-        val pathMap = state.allocations.associate { it.robot.id to it.route.map { it.id } }
-        val globalConsistency = isGlobalPathConsistent(pathMap, distanceSensor, allIds, maxBound)
-        val allConsistent = areAllStable(globalConsistency, distanceSensor, allIds, maxBound)
-        /** Ever done -- check if the task is completed by one of the robot */
+        val nodeFormalization = NodeFormalization(locationSensor.coordinates(), localId)
+        /**
+         * All task ever done (via nonStabilizingGossip)
+         */
         val allTaskDone = gossipTasksDone(state.dones.filter { it.value }.keys) // avoid to recompute task already done
         /** All robots that I may see with multipath communication */
-        val allRobots = gossipNodeCoordinates(nodeRepresentation, distanceSensor, allIds, maxBound)
-        env["allRobots"] = allRobots.map { it.id }.sorted()
-        env["allTasksDone"] = allTaskDone.map { it.id }.sorted()
-        // get id that are repeated
-        /** Check if the robots are stable */
-        val areRobotStable = stableFor(allRobots.map { it.id }.toSet(), timeWindow)
-        // val allRobotsAreaStable = areAllStable(isRobotStable, distanceSensor, allIds)
-        /** Check if the robots are stable */
-        //val areAllStable = areAllStable(isRobotStable, distanceSensor, allIds)
-        val stableCondition = areRobotStable && allConsistent
+        val allRobots = gossipNodeCoordinates(nodeFormalization, distanceSensor, allIds, maxBound)
+        val stableCondition = gossipStabilityCondition(
+            distanceSensor,
+            state,
+            allIds,
+            allRobots
+        )
         when {
             // stability condition is not satisfied, recompute the path
             !stableCondition -> {
@@ -224,7 +106,8 @@ fun Aggregate<Int>.gossipReplanning(
                         reducedTasks.sortedBy { it.id },
                         depotsSensor.destinationDepot
                     ).execute().second
-
+                env["replanning"] = 1
+                env["totalReplanning"] = (env.getOrNull<Int>("totalReplanning") ?: 0) + 1
                 val myPlan = globalPlan.find { it.robot.id == localId }
                 standStill(env, locationSensor) // avoid flickering
                 state.copy(
@@ -232,20 +115,32 @@ fun Aggregate<Int>.gossipReplanning(
                     allocations = globalPlan
                 )
             }
-            else -> followPlan(
-                env,
-                depotsSensor,
-                locationSensor,
-                state
-            )
+            else -> {
+                env["replanning"] = 0
+                followPlan(
+                    env,
+                    depotsSensor,
+                    locationSensor,
+                    state
+                )
+            }
         }
     }
 }
 
-
-fun <E, Y> Aggregate<Int>.stableForBy(value: E, size: Int, by: (E) -> Y): Boolean {
-    val history = history(value, size)
-    return history.size > 2 && history.all { by(it) == by(value) }
+fun Aggregate<Int>.gossipStabilityCondition(
+    distanceSensor: CollektiveDevice<*>,
+    state: ReplanningState,
+    allIds: Set<Int>,
+    allRobots: List<NodeFormalization>
+): Boolean {
+    /** Consensus part: check if the node should recompute the path */
+    val pathMap = state.allocations.associate { it.robot.id to it.route.map { it.id } }
+    val globalConsistency = isGlobalPathConsistent(pathMap, distanceSensor, allIds, maxBound)
+    val allConsistent = areAllStable(globalConsistency, distanceSensor, allIds, maxBound)
+    /** Check if the robots are stable */
+    val areRobotStable = stableFor(allRobots.map { it.id }.toSet(), timeWindow)
+    return areRobotStable && allConsistent
 }
 
 fun Aggregate<Int>.boundedElectionReplanning(
@@ -254,7 +149,6 @@ fun Aggregate<Int>.boundedElectionReplanning(
     locationSensor: LocationSensor,
     depotsSensor: DepotsSensor
 ) {
-    //val positionCache = evolve(locationSensor.coordinates()) { it }
     val allTasks = allTasksWithoutSource(depotsSensor)
     val leaderId = boundedElection(maxBound, with(distanceSensor) { distances() })
     val isLeader = leaderId == localId
@@ -267,14 +161,18 @@ fun Aggregate<Int>.boundedElectionReplanning(
     val areRobotsStable = stableForBy(allRobotsFromLeader, timeWindow) { it.map { it.id }.toSet() }
     evolve(ReplanningState.createFrom(allTasks, depotsSensor)) { state ->
         val taskEverDone = gossipTasksDone(state.dones.filter { it.value }.keys)
+        env["taskSize"] = state.path.size
         val reducedTasks = allTasks.filter { it !in taskEverDone }
         val newPlan = if(!areRobotsStable && isLeader) {
+            env["replanning"] = 1
+            env["totalReplanning"] = (env.getOrNull<Int>("totalReplanning") ?: 0) + 1
             GreedyAllocationStrategy(
                 allRobotsFromLeader.sortedBy { it.id },
                 reducedTasks.sortedBy { it.id },
                 depotsSensor.destinationDepot
             ).execute().second
         } else {
+            env["replanning"] = 0
             state.allocations
         }
         // share
@@ -315,7 +213,6 @@ fun Aggregate<Int>.followPlan(
     if(isDone) {
         env["dones"] = (env.getOrNull<Int>("dones") ?: 0) + 1
     }
-    env["taskSize"] = path.size
     val updated = state.dones.toMutableMap()
     updated[selected] = isDone
     // update the state

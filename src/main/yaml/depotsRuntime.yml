@@ -63,18 +63,6 @@ seeds:
   scenario: *seed
   simulation: *seed
 
-export:
-  - type: CSVExporter
-    parameters:
-      fileNameRoot: exported-data
-      interval: 1.0
-      exportPath: data
-    data:
-      - time
-      - molecule: isDone
-        aggregators: [sum]
-        value-filter: "onlyFinite"
-
 _pool: &program
   - time-distribution: 0.5 # one computation every 2 seconds
     type: Event
@@ -146,6 +134,33 @@ deployments:
       - type: it.unibo.alchemist.model.sensors.LocationSensorProperty
       - type: it.unibo.alchemist.model.sensors.DepotsSensorProperty
 
-#terminate:
-#  - type: AfterTime
-#    parameters: 2600
+export:
+  - type: CSVExporter
+    parameters:
+      fileNameRoot: exported-data
+      interval: 1.0
+      exportPath: data
+    data:
+      - time
+      - molecule: isDone
+        aggregators: [sum]
+        value-filter: "onlyFinite"
+      - molecule: replanning
+        aggregators: [sum]
+        value-filter: "onlyFinite"
+      - molecule: totalReplanning
+        aggregators: [sum, mean]
+        value-filter: "onlyFinite"
+      - molecule: distance
+        aggregators: [sum, mean]
+        value-filter: "onlyFinite"
+      - molecule: neighbors
+        aggregators: [mean]
+        value-filter: "onlyFinite"
+      - molecule: taskSize
+        aggregators: [sum]
+        value-filter: "onlyFinite"
+
+terminate:
+  - type: AfterTime
+    parameters: 2600

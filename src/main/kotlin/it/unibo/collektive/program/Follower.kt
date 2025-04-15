@@ -13,13 +13,12 @@ fun Aggregate<Int>.followTasks(env: EnvironmentVariables, locationSensor: Locati
         val task = tasks[0]
         env["target"] = locationSensor.estimateCoordinates(task)
         env["selected"] = task.id
-        if(localId == 88) {
-            println(tasks.map {it.id})
-        }
         if(depotsSensor.isTaskOver(task)) {
             env["tasks"] = tasks.drop(1)
+            env["dones"] = (env.getOrNull<Int>("dones") ?: 0) + 1
         }
     } else {
         env["target"] = locationSensor.coordinates()
     }
+    distanceTracking(env, locationSensor)
 }
