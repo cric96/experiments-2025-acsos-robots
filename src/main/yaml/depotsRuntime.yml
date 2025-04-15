@@ -7,18 +7,30 @@ variables:
   isDone: &isDone
     formula: 0.0
   seed: &seed
-    { min: 0, max: 7, step: 1, default: 5 }
+    { min: 0, max: 2, step: 1, default: 0 }
   communication: &communication
     type: ArbitraryVariable
-    # bluetooth (50, 100, 150) -> 1000 full range
+    # bluetooth (50, 100, 150) -> 500 full range
     parameters: [ 50, [ 20, 50, 100, 500 ] ]
   leaderBased: &leaderBased
     type: ArbitraryVariable
-    parameters: [ 0, [ 0, 1 ] ]
+    parameters: [ false, [ true, false ] ]
+
+  totalNodes: &totalNodes
+    type: ArbitraryVariable
+    parameters: [ 40, [ 10, 20, 40 ] ]
+
+  totalTaskFactor: &totalTaskFactor
+    type: ArbitraryVariable
+    parameters: [ 1, [ 0.5, 1, 2 ] ]
+
+  totalTasks: &totalTasks
+    formula: totalNodes * totalTaskFactor
+    language: kotlin
 
 launcher:
   parameters:
-    batch: [seed, communication]
+    batch: [seed, communication, leaderBased, totalNodes, totalTaskFactor]
     showProgress: true
     autoStart: true
 # TIME UNITS = seconds
@@ -74,7 +86,7 @@ deployments:
   tasks:
     # 200 x 200
     type: Rectangle
-    parameters: [ 80, -90, -90, 190, 190 ]
+    parameters: [ *totalTasks, -90, -90, 190, 190 ]
     contents:
       - molecule: task
         concentration: true
@@ -103,7 +115,7 @@ deployments:
         concentration: true
   agents:
     type: Rectangle
-    parameters: [20, -95, -95, 5, 5]
+    parameters: [*totalNodes, -95, -95, 5, 5]
     nodes: 30 # 30 seconds to react to failure
     programs:
       - time-distribution: 1 # each second
@@ -127,11 +139,13 @@ deployments:
         concentration: -1
       - molecule: down
         concentration: false
+      - molecule: leaderBased
+        concentration: *leaderBased
 
     properties:
       - type: it.unibo.alchemist.model.sensors.LocationSensorProperty
       - type: it.unibo.alchemist.model.sensors.DepotsSensorProperty
 
-terminate:
-  - type: AfterTime
-    parameters: 2600
+#terminate:
+#  - type: AfterTime
+#    parameters: 2600

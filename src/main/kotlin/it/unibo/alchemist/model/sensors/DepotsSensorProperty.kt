@@ -4,10 +4,9 @@ import it.unibo.alchemist.model.Environment
 import it.unibo.alchemist.model.Node
 import it.unibo.alchemist.model.NodeProperty
 import it.unibo.alchemist.model.Position
-import it.unibo.alchemist.model.global.toFormalizationNode
+import it.unibo.alchemist.model.global.toNodeFormalization
 import it.unibo.alchemist.model.linkingrules.ConnectWithinDistance
 import it.unibo.alchemist.model.molecules.SimpleMolecule
-import it.unibo.alchemist.model.times.DoubleTime
 import it.unibo.formalization.Node as NodeFormalization
 
 class DepotsSensorProperty<T : Any, P : Position<P>>(
@@ -18,17 +17,17 @@ class DepotsSensorProperty<T : Any, P : Position<P>>(
     private val lookup = ConnectWithinDistance<T, P>(0.01)
     override val sourceDepot: NodeFormalization
         get() = environment.nodes.first { it.contents[SimpleMolecule(SOURCE_DEPOT_MOLECULE)] == true }.let {
-            it.toFormalizationNode(environment)
+            it.toNodeFormalization(environment)
         }
 
     override val destinationDepot: NodeFormalization
         get() = environment.nodes.first { it.contents[SimpleMolecule(DESTINATION_DEPOT_MOLECULE)] == true }.let {
-            it.toFormalizationNode(environment)
+            it.toNodeFormalization(environment)
         }
 
     override val tasks: List<NodeFormalization>
         get() = environment.nodes.filter { it.contents[SimpleMolecule(TASK_MOLECULE)] == true }
-            .map { it.toFormalizationNode(environment) }
+            .map { it.toNodeFormalization(environment) }
 
     override fun toNodePath(node: NodeFormalization): Node<*> = environment.getNodeByID(node.id)!!
 

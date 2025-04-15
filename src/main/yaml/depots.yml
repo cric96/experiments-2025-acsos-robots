@@ -5,7 +5,7 @@ environment:
   global-programs:
     - time-distribution:
         type: DiracComb
-        parameters: [ 0, 0.001 ]
+        parameters: [ 0, 1 ]
       type: AllocationBasedOnFormalization
       parameters: [ ]
     - time-distribution:
