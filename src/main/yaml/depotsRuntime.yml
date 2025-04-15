@@ -7,7 +7,7 @@ variables:
   isDone: &isDone
     formula: 0.0
   seed: &seed
-    { min: 0, max: 2, step: 1, default: 0 }
+    { min: 0, max: 15, step: 1, default: 0 }
   communication: &communication
     type: ArbitraryVariable
     # bluetooth (50, 100, 150) -> 500 full range
@@ -15,15 +15,12 @@ variables:
   leaderBased: &leaderBased
     type: ArbitraryVariable
     parameters: [ false, [ true, false ] ]
-
   totalNodes: &totalNodes
     type: ArbitraryVariable
-    parameters: [ 40, [ 10, 20, 40 ] ]
-
+    parameters: [ 40, [ 5, 10, 40 ] ]
   totalTaskFactor: &totalTaskFactor
     type: ArbitraryVariable
-    parameters: [ 1, [ 0.5, 1, 2 ] ]
-
+    parameters: [ 2, [ 0.5, 1, 2, 4 ] ]
   totalTasks: &totalTasks
     formula: totalNodes * totalTaskFactor
     language: kotlin
@@ -64,7 +61,7 @@ seeds:
   simulation: *seed
 
 _pool: &program
-  - time-distribution: 0.5 # one computation every 2 seconds
+  - time-distribution: 0.50 # one computation every 2 seconds
     type: Event
     actions:
       - type: RunCollektiveProgram
@@ -157,10 +154,16 @@ export:
       - molecule: neighbors
         aggregators: [mean]
         value-filter: "onlyFinite"
+      - molecule: neighbors
+        aggregators: [ mean ]
+        value-filter: "onlyFinite"
       - molecule: taskSize
-        aggregators: [sum]
+        aggregators: [ sum ]
+        value-filter: "onlyFinite"
+      - molecule: dones
+        aggregators: [ sum, mean ]
         value-filter: "onlyFinite"
 
 terminate:
-  - type: AfterTime
-    parameters: 2600
+  - type: StableForSteps
+    parameters: [10000, 5]

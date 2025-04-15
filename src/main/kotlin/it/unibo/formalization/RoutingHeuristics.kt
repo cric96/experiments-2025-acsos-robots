@@ -1,6 +1,7 @@
 package it.unibo.formalization
 
 import it.unibo.formalization.GeometryUtils.travelCost
+import kotlin.math.min
 
 object RoutingHeuristics {
     /**
@@ -9,14 +10,20 @@ object RoutingHeuristics {
      */
     fun computeMarginalCost(route: List<Node>, task: Node): Double {
         if (route.size < 2) {
-            throw IllegalArgumentException("Route must contain at least start and end depots")
+            throw IllegalArgumentException("Route must contain at least start and end nodes (size >= 2) to calculate insertion cost.")
         }
-        // compute the cost of the route before inserting the task
-        val initialCost = GeometryUtils.calculateRouteCost(route)
-        // best insert the task
-        val newPath = solveLocalRouting(route.toSet() + setOf(task), route.first(), route.last())
-        val newCost = GeometryUtils.calculateRouteCost(newPath)
-        return newCost - initialCost
+
+        var minDeltaCost = Double.POSITIVE_INFINITY
+
+        for (i in 1 until route.size) {
+            val prevNode = route[i - 1]
+            val nextNode = route[i]
+            val deltaCost = travelCost(prevNode, task) + travelCost(task, nextNode) - travelCost(prevNode, nextNode)
+            minDeltaCost = min(minDeltaCost, deltaCost)
+        }
+
+        // minDeltaCost now holds the cost increase for the best insertion spot
+        return minDeltaCost
     }
 
     /**
@@ -24,28 +31,31 @@ object RoutingHeuristics {
      * Uses a simple greedy insertion heuristic.
      */
     fun solveLocalRouting(
-        tasks: Set<Node>,
+        tasks: Collection<Node>,
         startDepot: Node,
         endDepot: Node
     ): List<Node> {
         if (tasks.isEmpty()) return listOf(startDepot, endDepot)
 
         val route = mutableListOf(startDepot, endDepot)
-        val remainingTasks = tasks.toMutableSet()
+        val remainingTasks = tasks.toMutableList()
 
         while (remainingTasks.isNotEmpty()) {
-            val (bestTask, bestPosition) = remainingTasks.flatMap { task ->
-                (1 until route.size).map { pos ->
-                    val prev = route[pos - 1]
-                    val next = route[pos]
-                    val cost = travelCost(prev, task) + travelCost(task, next) - travelCost(prev, next)
-                    Triple(task, pos, cost)
+            val (bestTask, bestPosition) = remainingTasks
+                .asSequence()
+                .flatMap { task ->
+                    (1 until route.size).map { pos ->
+                        val prev = route[pos - 1]
+                        val next = route[pos]
+                        val cost = travelCost(prev, task) + travelCost(task, next) - travelCost(prev, next)
+                        Triple(task, pos, cost)
+                    }
                 }
-            }.minBy { it.third }.let { (task, pos, _) -> task to pos }
+                .minBy { it.third }
+                .let { (task, pos, _) -> task to pos }
             route.add(bestPosition, bestTask)
             remainingTasks.remove(bestTask)
         }
-
         return route
     }
 }

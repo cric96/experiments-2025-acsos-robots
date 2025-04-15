@@ -39,7 +39,6 @@ class AllocationBasedOnFormalization<T, P : Position<P>>(
             targetDepotPosition,
         )
         if (cache.size != robotsPosition.size) {
-            println("wewe")
             cache = robotsPosition
             val (_, result) = allocator.execute()
             allocationCache = result
