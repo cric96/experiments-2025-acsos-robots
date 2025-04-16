@@ -11,7 +11,7 @@ class LookupTasksToExecute<P : Position2D<P>>(
     private val environment: Environment<Any, P>,
     private val node: Node<Any>,
 ): AbstractAction<Any>(node) {
-    private val amountToSolve = 120.0
+    private val amountToSolve = 60.0
     private var startTime: Time? = null
     override fun cloneAction(p0: Node<Any>, p1: Reaction<Any>): Action<Any> =
         LookupTasksToExecute(environment, node)

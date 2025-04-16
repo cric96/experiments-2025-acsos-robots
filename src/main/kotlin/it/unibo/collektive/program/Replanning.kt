@@ -10,6 +10,7 @@ import it.unibo.collektive.alchemist.device.sensors.EnvironmentVariables
 import it.unibo.collektive.field.Field.Companion.fold
 import it.unibo.collektive.stdlib.accumulation.convergeCast
 import it.unibo.collektive.stdlib.consensus.boundedElection
+import it.unibo.collektive.stdlib.iterables.FieldedCollectionsExtensions.minBy
 import it.unibo.collektive.stdlib.spreading.gradientCast
 import it.unibo.formalization.GreedyAllocationStrategy
 import it.unibo.formalization.RobotAllocationResult
@@ -44,6 +45,7 @@ fun Aggregate<Int>.replanning(
     locationSensor: LocationSensor,
     depotsSensor: DepotsSensor
 ) {
+
     if(!depotsSensor.alive()) {
         env["target"] = locationSensor.coordinates()
         env["replanning"] = 0
@@ -61,10 +63,11 @@ fun Aggregate<Int>.replanning(
     env["hue"] = localId // for debugging
     distanceTracking(env, locationSensor)
     env["neighbors"] = neighboring(1).fold(0) { acc, value -> acc + value }
+    breakingCycle(env, locationSensor, depotsSensor)
 }
 
 val maxBound = 1000.0
-val timeWindow = 60 // 2 minute
+val timeWindow = 5
 
 fun Aggregate<Int>.gossipReplanning(
     env: EnvironmentVariables,
@@ -137,7 +140,7 @@ fun Aggregate<Int>.gossipStabilityCondition(
     return areRobotStable && allConsistent
 }
 
-val timeWindowsBuondedElection = 60 // 2 minute, (1 / 0.5) * 60
+val timeWindowsBuondedElection = 5
 fun Aggregate<Int>.boundedElectionReplanning(
     env: EnvironmentVariables,
     distanceSensor: CollektiveDevice<*>,
@@ -185,15 +188,11 @@ fun Aggregate<Int>.boundedElectionReplanning(
                 )
             )
         } else {
-            followPlan(
-                env, depotsSensor, locationSensor, state.copy(
-                    allocations = leaderPlan
-                )
-            )
             standStill(env, locationSensor) // avoid flickering
             state.copy(
                 allocations = leaderPlan
             )
+
         }
     }
 }

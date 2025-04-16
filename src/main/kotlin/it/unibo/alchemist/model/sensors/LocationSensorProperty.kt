@@ -13,7 +13,6 @@ class LocationSensorProperty<T : Any, P : Position<P>>(
 ) : LocationSensor,
     NodeProperty<T>
 {
-    private val chaosAmount = 0.0001
     override fun cloneOnNewNode(node: Node<T>): NodeProperty<T> = LocationSensorProperty(environment, node, randomGenerator)
 
     override fun coordinates(): Pair<Double, Double> {
@@ -29,14 +28,14 @@ class LocationSensorProperty<T : Any, P : Position<P>>(
     // TODO better cast for this (also consider to add task sensor
     override fun estimateCoordinates(node: NodeFormalization): Iterable<Double> {
         val nodeAlchemist = environment.getNodeByID(node.id)
-        val gaussianNoise = randomGenerator.nextGaussian()
+        // val gaussianNoise = randomGenerator.nextGaussian()
         // add the gaussian noise to the coordinates
 
         val position = environment.getPosition(nodeAlchemist).coordinates
         // add a gaussian noise for each coordinate:
-        for (i in position.indices) {
-            position[i] += (randomGenerator.nextGaussian() * chaosAmount)
-        }
+        //for (i in position.indices) {
+        //    position[i] += (randomGenerator.nextGaussian() * chaosAmount)
+        //}
         return position.toList()
     }
 }

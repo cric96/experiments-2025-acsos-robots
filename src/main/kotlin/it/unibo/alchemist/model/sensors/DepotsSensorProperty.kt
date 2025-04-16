@@ -7,13 +7,17 @@ import it.unibo.alchemist.model.Position
 import it.unibo.alchemist.model.global.toNodeFormalization
 import it.unibo.alchemist.model.linkingrules.ConnectWithinDistance
 import it.unibo.alchemist.model.molecules.SimpleMolecule
+import org.apache.commons.math3.random.RandomGenerator
 import it.unibo.formalization.Node as NodeFormalization
 
 class DepotsSensorProperty<T : Any, P : Position<P>>(
     private val environment: Environment<T, P>,
     override val node: Node<T>,
+    val random: RandomGenerator
 ) : DepotsSensor,
-    NodeProperty<T> {
+    NodeProperty<T>
+{
+    private val maxBoundInTime = 30
     private val lookup = ConnectWithinDistance<T, P>(0.01)
     override val sourceDepot: NodeFormalization
         get() = environment.nodes.first { it.contents[SimpleMolecule(SOURCE_DEPOT_MOLECULE)] == true }.let {
@@ -28,8 +32,6 @@ class DepotsSensorProperty<T : Any, P : Position<P>>(
     override val tasks: List<NodeFormalization>
         get() = environment.nodes.filter { it.contents[SimpleMolecule(TASK_MOLECULE)] == true }
             .map { it.toNodeFormalization(environment) }
-
-    override fun toNodePath(node: NodeFormalization): Node<*> = environment.getNodeByID(node.id)!!
 
     override fun isAgent(): Boolean =
         node.contents[SimpleMolecule("agent")] as Boolean
@@ -69,5 +71,5 @@ class DepotsSensorProperty<T : Any, P : Position<P>>(
         const val TASK_MOLECULE = "task"
     }
 
-    override fun cloneOnNewNode(node: Node<T>): NodeProperty<T> = DepotsSensorProperty(environment, node)
+    override fun cloneOnNewNode(node: Node<T>): NodeProperty<T> = DepotsSensorProperty(environment, node, random)
 }

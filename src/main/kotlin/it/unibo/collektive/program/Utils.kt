@@ -1,6 +1,7 @@
 package it.unibo.collektive.program
 
 import it.unibo.alchemist.collektive.device.CollektiveDevice
+import it.unibo.alchemist.model.sensors.DepotsSensor
 import it.unibo.alchemist.model.sensors.LocationSensor
 import it.unibo.collektive.aggregate.api.Aggregate
 import it.unibo.collektive.alchemist.device.sensors.EnvironmentVariables
@@ -105,3 +106,20 @@ fun Aggregate<Int>.areAllStable(
  */
 fun Aggregate<Int>.gossipTasksDone(dones: Set<Node>): Set<Node> =
     nonStabilizingGossip(dones) { left, right -> left + right }
+
+val shouldStopWindow = 180
+val cycleNumber = 10
+fun Aggregate<Int>.breakingCycle(env: EnvironmentVariables, locationSensor: LocationSensor, depotsSensor: DepotsSensor): Boolean {
+    val positionTrack = history(locationSensor.coordinates(), shouldStopWindow)
+    val sorted = positionTrack.sortedWith(compareBy({ it.first }, { it.second }))
+    val min = sorted.first()
+    val max = sorted.last()
+    // count how many max and min are inside
+    val minCount = sorted.count { it == min }
+    val maxCount = sorted.count { it == max }
+    if(minCount > cycleNumber && maxCount > cycleNumber && min != max) {
+        env["target"] = depotsSensor.destinationDepot.position
+        return true
+    }
+    return false
+}

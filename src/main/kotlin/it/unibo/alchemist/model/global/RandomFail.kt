@@ -14,7 +14,10 @@ class RandomFail<T, P: Position<P>>(
     var howMany: Int = 1,
 ): AbstractGlobalReaction<T, P>(environment, timeDistribution) {
     override fun executeBeforeUpdateDistribution() {
-        val nodesRemovable = nodes.filter { it.contents.containsKey(SimpleMolecule("agent")) }
+        val nodesRemovable = nodes
+            .filter { it.contents.containsKey(SimpleMolecule("agent")) }
+            .filterNot { it.contents[SimpleMolecule("down")] == true }
+
         val randomNode = randomGenerator.nextInt(nodesRemovable.size)
         val toKill = nodesRemovable[randomNode]
         toKill.setConcentration(SimpleMolecule("down"), true as T)

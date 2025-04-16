@@ -6,7 +6,7 @@ environment:
     - time-distribution:
         type: DiracComb
         parameters: [ 0, 1 ]
-      type: AllocationBasedOnFormalization
+      type: ReallocatedAtTheEnd
       parameters: [ ]
     - time-distribution:
         type: Trigger
@@ -37,7 +37,7 @@ variables:
   isDone: &isDone
     formula: 0.0
   seed: &seed
-    { min: 0, max: 15, step: 1, default: 5 }
+    { min: 0, max: 8, step: 1, default: 5 }
   totalNodes: &totalNodes
     type: ArbitraryVariable
     parameters: [ 40, [ 5, 10, 40 ] ]
