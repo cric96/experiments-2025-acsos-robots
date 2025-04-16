@@ -53,6 +53,16 @@ class DepotsSensorProperty<T : Any, P : Position<P>>(
         return isInMyNeighborhood && isDone
     }
 
+
+    override fun isReachLastTask(task: NodeFormalization): Boolean {
+        // get my neighborhood
+        val myNeighbours = lookup.computeNeighborhood(node,environment)
+        // search if the task is in my neighborhood
+        val isInMyNeighborhood = myNeighbours.any { it.id == task.id }
+        // check if the task is done
+        return isInMyNeighborhood && task.id == destinationDepot.id
+    }
+
     companion object {
         const val SOURCE_DEPOT_MOLECULE = "source"
         const val DESTINATION_DEPOT_MOLECULE = "destination"

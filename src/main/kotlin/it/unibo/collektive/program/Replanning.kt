@@ -9,16 +9,10 @@ import it.unibo.collektive.aggregate.api.share
 import it.unibo.collektive.alchemist.device.sensors.EnvironmentVariables
 import it.unibo.collektive.field.Field.Companion.fold
 import it.unibo.collektive.stdlib.accumulation.convergeCast
-import it.unibo.collektive.stdlib.accumulation.convergeSum
 import it.unibo.collektive.stdlib.consensus.boundedElection
-import it.unibo.collektive.stdlib.spreading.distanceTo
 import it.unibo.collektive.stdlib.spreading.gradientCast
-import it.unibo.collektive.stdlib.spreading.multiGradientCast
-import it.unibo.collektive.stdlib.spreading.nonStabilizingGossip
 import it.unibo.formalization.GreedyAllocationStrategy
 import it.unibo.formalization.RobotAllocationResult
-import kotlin.math.pow
-import kotlin.math.sqrt
 import it.unibo.formalization.Node as NodeFormalization
 
 /** Replanning state */
@@ -70,7 +64,7 @@ fun Aggregate<Int>.replanning(
 }
 
 val maxBound = 1000.0
-val timeWindow = 5
+val timeWindow = 60 // 2 minute
 
 fun Aggregate<Int>.gossipReplanning(
     env: EnvironmentVariables,
@@ -143,6 +137,7 @@ fun Aggregate<Int>.gossipStabilityCondition(
     return areRobotStable && allConsistent
 }
 
+val timeWindowsBuondedElection = 60 // 2 minute, (1 / 0.5) * 60
 fun Aggregate<Int>.boundedElectionReplanning(
     env: EnvironmentVariables,
     distanceSensor: CollektiveDevice<*>,
@@ -158,7 +153,7 @@ fun Aggregate<Int>.boundedElectionReplanning(
     val allRobotsFromLeader = convergeCast(listOf(nodePosition), isLeader) { left, right ->
         left + right
     }
-    val areRobotsStable = stableForBy(allRobotsFromLeader, timeWindow) { it.map { it.id }.toSet() }
+    val areRobotsStable = stableForBy(allRobotsFromLeader, timeWindowsBuondedElection) { it.map { it.id }.toSet() }
     evolve(ReplanningState.createFrom(allTasks, depotsSensor)) { state ->
         val taskEverDone = gossipTasksDone(state.dones.filter { it.value }.keys)
         env["taskSize"] = state.path.size
@@ -175,20 +170,27 @@ fun Aggregate<Int>.boundedElectionReplanning(
             env["replanning"] = 0
             state.allocations
         }
+        val isLocalPlanStable = stableForBy(newPlan, timeWindowsBuondedElection) { it.map { it.robot.id }.toSet() }
         // share
         val leaderPlan = gradientCast(isLeader, newPlan, with(distanceSensor) { distances()})
-        val leaderStable = gradientCast(isLeader, areRobotsStable && isLeader, with(distanceSensor) { distances() })
+        val leaderStable = gradientCast(isLeader, areRobotsStable && isLeader && isLocalPlanStable, with(distanceSensor) { distances() })
         env["stable"] = leaderStable
+        env["path"] = state.path.map { it.id }
         val myPlan = leaderPlan.find { it.robot.id == localId }
         if(leaderStable) {
             followPlan(
                 env, depotsSensor, locationSensor, state.copy(
-                    path = myPlan?.route ?: listOf(nodePosition, nodePosition),
+                    path = myPlan?.route ?: listOf(nodePosition, depotsSensor.destinationDepot),
                     allocations = leaderPlan
                 )
             )
         } else {
-            standStill(env, locationSensor)
+            followPlan(
+                env, depotsSensor, locationSensor, state.copy(
+                    allocations = leaderPlan
+                )
+            )
+            standStill(env, locationSensor) // avoid flickering
             state.copy(
                 allocations = leaderPlan
             )
@@ -206,6 +208,10 @@ fun Aggregate<Int>.followPlan(
     // find first available
     val firstAvailable = path.firstOrNull { !(state.dones[it] ?: false) }
     val selected = firstAvailable ?: state.path.last()
+    if(depotsSensor.isReachLastTask(selected)) {
+        env["target"] = locationSensor.coordinates()
+        return state
+    }
     env["target"] = locationSensor.estimateCoordinates(selected)
     env["selected"] = selected.id
     // check if the task is done

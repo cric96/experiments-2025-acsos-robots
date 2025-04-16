@@ -17,4 +17,6 @@ interface DepotsSensor {
     fun alive(): Boolean
 
     fun isTaskOver(task: NodeFormalization): Boolean
+
+    fun isReachLastTask(task: NodeFormalization): Boolean
 }
