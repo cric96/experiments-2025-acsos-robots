@@ -1,3 +1,36 @@
+## [1.10.0](https://github.com/angelacorte/depot-tasks-environment/compare/1.9.0...1.10.0) (2025-04-16)
+
+### Features
+
+* add data ([2b96a64](https://github.com/angelacorte/depot-tasks-environment/commit/2b96a6451313e0ffa8d2f26bd3acfea70a5c0945))
+
+### Dependency updates
+
+* **deps:** update alchemist to v42.0.8 ([632bcd8](https://github.com/angelacorte/depot-tasks-environment/commit/632bcd81bae6d3d7e054ed948fe38b02bb23ec9b))
+* **deps:** update collektive to v22.0.1 ([463e934](https://github.com/angelacorte/depot-tasks-environment/commit/463e934699dbd25333fb6fff65ffd4c58be72e74))
+* **deps:** update collektive to v22.1.0 ([1367d94](https://github.com/angelacorte/depot-tasks-environment/commit/1367d9457dea3f383327efb637492c10246673e7))
+* **deps:** update collektive to v22.2.0 ([b194509](https://github.com/angelacorte/depot-tasks-environment/commit/b194509751e92f77c03ba6ee6026404264ac3e6d))
+* **deps:** update plugin gitsemver to v5 ([fd64173](https://github.com/angelacorte/depot-tasks-environment/commit/fd6417330818e0f4c936c170ede287ed2b4f963e))
+* **deps:** update python docker tag to v3.13 ([0a9f826](https://github.com/angelacorte/depot-tasks-environment/commit/0a9f826a6021f9a99d705bf4390547babdc3e931))
+* **deps:** update python docker tag to v3.13.3 ([a8e7913](https://github.com/angelacorte/depot-tasks-environment/commit/a8e7913c67c746f121389fd9f3c484fe6e7e82a7))
+
+### Bug Fixes
+
+* produce better experiements ([822943c](https://github.com/angelacorte/depot-tasks-environment/commit/822943ca484844b34dbf943e91f6cdef22003c0f))
+
+### Build and continuous integration
+
+* **deps:** update actions/setup-node action to v4.4.0 ([5722045](https://github.com/angelacorte/depot-tasks-environment/commit/5722045898d80385a541e1a6f84cf0a6bfdf2942))
+* **deps:** update danysk/build-check-deploy-gradle-action action to v3.7.17 ([883f0ea](https://github.com/angelacorte/depot-tasks-environment/commit/883f0ea19236a139c748ad6ae891a005a0b4a688))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.9.0 [skip ci] ([19e5789](https://github.com/angelacorte/depot-tasks-environment/commit/19e57895a97441b6e888efc52dea8b679430075a))
+
+### Refactoring
+
+* clean the code ([5485e7b](https://github.com/angelacorte/depot-tasks-environment/commit/5485e7bb3b309e92a274faf647befb637b22139e))
+
 ## [1.9.0](https://github.com/angelacorte/depot-tasks-environment/compare/1.8.1...1.9.0) (2025-04-11)
 
 ### Features
