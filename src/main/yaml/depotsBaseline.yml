@@ -1,4 +1,18 @@
 incarnation: collektive
+
+environment:
+  type: Continuous2DObstacles
+  global-programs:
+    - time-distribution:
+        type: DiracComb
+        parameters: [ 0, 1 ]
+      type: ReallocatedAtTheEnd
+      parameters: [ ]
+
+network-model:
+  type: ObstaclesBreakConnection
+  parameters: [0.01]
+
 variables:
   speed: &speed
     formula: 0.5 # 1 m/s
@@ -7,66 +21,33 @@ variables:
   isDone: &isDone
     formula: 0.0
   seed: &seed
-    { min: 0, max: 64, step: 1, default: 9 }
-  communication: &communication
-    type: ArbitraryVariable
-    # bluetooth (50, 100, 150) -> 500 full range
-    parameters: [ 20, [ 20, 50, 100, 500 ] ]
-  leaderBased: &leaderBased
-    type: ArbitraryVariable
-    parameters: [ false, [ true, false ] ]
+    { min: 0, max: 8, step: 1, default: 5 }
   totalNodes: &totalNodes
     type: ArbitraryVariable
-    #parameters: [ 40, [ 5, 10, 20, 40 ] ]
-    parameters: [ 40, [ 5, 10, 20, 40 ] ]
+    parameters: [ 40, [ 5, 10, 40 ] ]
   totalTaskFactor: &totalTaskFactor
     type: ArbitraryVariable
-    parameters: [ 4, [ 0.5, 1, 2, 4 ] ]
+    parameters: [ 2, [ 0.5, 1, 2, 4 ] ]
   totalTasks: &totalTasks
     formula: totalNodes * totalTaskFactor
     language: kotlin
 
 launcher:
   parameters:
-    batch: [seed, communication, leaderBased, totalNodes, totalTaskFactor]
+    batch: [seed, totalNodes, totalTaskFactor]
     showProgress: true
     autoStart: true
-# TIME UNITS = seconds
-environment:
-  type: Continuous2DObstacles
-  #parameters: [base.png, 0.0047, -8, -7]
-  global-programs:
-    - time-distribution:
-          type: Trigger
-          parameters: [ 200 ] # fire at 400 seconds
-      type: RandomFail
-      parameters: [ 1 ]
-    - time-distribution:
-        type: Trigger
-        parameters: [ 400 ] # fire at 400 seconds
-      type: RandomFail
-      parameters: [ 1 ]
-    - time-distribution:
-        type: Trigger
-        parameters: [ 600 ] # fire at 600 seconds
-      type: RandomFail
-      parameters: [ 1 ]
-
-# bluetooth range => 100,
-network-model:
-  type: MoleculeBreaksConnection
-  parameters: [ *communication, task ]
 
 seeds:
   scenario: *seed
   simulation: *seed
 
 _pool: &program
-  - time-distribution: 0.50 # one computation every 2 seconds
+  - time-distribution: 1
     type: Event
     actions:
       - type: RunCollektiveProgram
-        parameters: [it.unibo.collektive.program.ReplanningKt.replanning]
+        parameters: [it.unibo.collektive.program.FollowerKt.followTasks]
 
 deployments:
   tasks:
@@ -101,8 +82,8 @@ deployments:
         concentration: true
   agents:
     type: Rectangle
-    parameters: [*totalNodes, -95, -95, 5, 5]
-    nodes: 30 # 2 seconds to react to failure
+    parameters: [ *totalNodes, -95, -95, 5, 5 ]
+    nodes: 30 # 30 seconds to react to failure
     programs:
       - time-distribution: 1 # each second
         type: Event
@@ -118,51 +99,35 @@ deployments:
       - *program
     contents:
       - molecule: destination
-        concentration: [100, 100]
+        concentration: [ 100, 100 ]
       - molecule: agent
         concentration: true
       - molecule: selected
         concentration: -1
       - molecule: down
         concentration: false
-      - molecule: leaderBased
-        concentration: *leaderBased
 
     properties:
       - type: it.unibo.alchemist.model.sensors.LocationSensorProperty
       - type: it.unibo.alchemist.model.sensors.DepotsSensorProperty
 
+
 export:
   - type: CSVExporter
     parameters:
-      fileNameRoot: exported-data
+      fileNameRoot: exported-data-baseline
       interval: 1.0
-      exportPath: data
+      exportPath: data-baseline
     data:
       - time
       - molecule: isDone
         aggregators: [sum]
         value-filter: "onlyFinite"
-      - molecule: replanning
-        aggregators: [sum]
-        value-filter: "onlyFinite"
-      - molecule: totalReplanning
-        aggregators: [sum, mean]
-        value-filter: "onlyFinite"
       - molecule: distance
         aggregators: [sum, mean]
         value-filter: "onlyFinite"
-      - molecule: neighbors
-        aggregators: [mean]
-        value-filter: "onlyFinite"
-      - molecule: neighbors
+      - molecule: done # task completed by nodes
         aggregators: [ mean ]
-        value-filter: "onlyFinite"
-      - molecule: taskSize
-        aggregators: [ sum ]
-        value-filter: "onlyFinite"
-      - molecule: dones
-        aggregators: [ sum, mean ]
         value-filter: "onlyFinite"
 
 terminate:

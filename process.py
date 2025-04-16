@@ -178,13 +178,13 @@ def beautifyValue(v):
 if __name__ == '__main__':
     # CONFIGURE SCRIPT
     # Where to find Alchemist data files
-    directory = 'data'
+    directory = 'data-baseline'
     # Where to save charts
     output_directory = 'charts'
     # How to name the summary of the processed data
     pickleOutput = 'data_summary'
     # Experiment prefixes: one per experiment (root of the file name)
-    experiments = ['exported-data']
+    experiments = ['exported-data-baseline']
     floatPrecision = '{: 0.3f}'
     # Number of time samples 
     timeSamples = 100

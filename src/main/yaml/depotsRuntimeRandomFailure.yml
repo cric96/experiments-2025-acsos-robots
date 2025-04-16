@@ -7,7 +7,7 @@ variables:
   isDone: &isDone
     formula: 0.0
   seed: &seed
-    { min: 0, max: 64, step: 1, default: 9 }
+    { min: 0, max: 8, step: 1, default: 9 }
   communication: &communication
     type: ArbitraryVariable
     # bluetooth (50, 100, 150) -> 500 full range
@@ -17,40 +17,26 @@ variables:
     parameters: [ false, [ true, false ] ]
   totalNodes: &totalNodes
     type: ArbitraryVariable
-    #parameters: [ 40, [ 5, 10, 20, 40 ] ]
     parameters: [ 40, [ 5, 10, 20, 40 ] ]
   totalTaskFactor: &totalTaskFactor
     type: ArbitraryVariable
     parameters: [ 4, [ 0.5, 1, 2, 4 ] ]
+  failureTimeAverage: &failureTimeAverage
+    type: ArbitraryVariable
+    parameters: [ 1000.0, [ 1000.0, 2000.0, 5000.0, 10000.0, 50000.0 ] ]
+
   totalTasks: &totalTasks
     formula: totalNodes * totalTaskFactor
     language: kotlin
 
 launcher:
   parameters:
-    batch: [seed, communication, leaderBased, totalNodes, totalTaskFactor]
+    batch: [seed, communication, leaderBased, totalNodes, totalTaskFactor, failureTimeAverage]
     showProgress: true
     autoStart: true
 # TIME UNITS = seconds
 environment:
   type: Continuous2DObstacles
-  #parameters: [base.png, 0.0047, -8, -7]
-  global-programs:
-    - time-distribution:
-          type: Trigger
-          parameters: [ 200 ] # fire at 400 seconds
-      type: RandomFail
-      parameters: [ 1 ]
-    - time-distribution:
-        type: Trigger
-        parameters: [ 400 ] # fire at 400 seconds
-      type: RandomFail
-      parameters: [ 1 ]
-    - time-distribution:
-        type: Trigger
-        parameters: [ 600 ] # fire at 600 seconds
-      type: RandomFail
-      parameters: [ 1 ]
 
 # bluetooth range => 100,
 network-model:
@@ -127,7 +113,8 @@ deployments:
         concentration: false
       - molecule: leaderBased
         concentration: *leaderBased
-
+      - molecule: deathRate
+        concentration: *failureTimeAverage
     properties:
       - type: it.unibo.alchemist.model.sensors.LocationSensorProperty
       - type: it.unibo.alchemist.model.sensors.DepotsSensorProperty

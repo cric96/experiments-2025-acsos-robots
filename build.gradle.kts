@@ -114,7 +114,7 @@ File(rootProject.rootDir.path + "/src/main/yaml").listFiles()
             group = alchemistGroupGraphic
             args(
                 "--override",
-                "monitors: { type: SwingGUI, parameters: { graphics: effects/${it.nameWithoutExtension}.json } }",
+                "monitors: { type: SwingGUI, parameters: { graphics: effects/simulation.json } }",
                 "--override",
                 "launcher: { parameters: { batch: [], autoStart: true } }",
                 "--verbosity",
