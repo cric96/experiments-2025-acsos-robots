@@ -190,7 +190,7 @@ if __name__ == '__main__':
     timeSamples = 100
     # time management
     minTime = 0
-    maxTime = 2600
+    maxTime = 5600
     timeColumnName = 'time'
     logarithmicTime = False
     # One or more variables are considered random and "flattened"

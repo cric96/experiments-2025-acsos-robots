@@ -6,7 +6,7 @@ environment:
     - time-distribution:
         type: DiracComb
         parameters: [ 0, 1 ]
-      type: ReallocatedAtTheEnd
+      type: InitialAllocationStrategy
       parameters: [ ]
     - time-distribution:
         type: Trigger
@@ -131,9 +131,9 @@ deployments:
 export:
   - type: CSVExporter
     parameters:
-      fileNameRoot: exported-data-baseline
+      fileNameRoot: exported-data-oracle
       interval: 1.0
-      exportPath: data-baseline
+      exportPath: data-oracle
     data:
       - time
       - molecule: isDone

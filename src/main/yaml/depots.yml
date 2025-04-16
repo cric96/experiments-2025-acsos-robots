@@ -131,7 +131,7 @@ deployments:
 export:
   - type: CSVExporter
     parameters:
-      fileNameRoot: exported-data-centralized
+      fileNameRoot: exported-data-baseline
       interval: 1.0
       exportPath: data-baseline
     data:
@@ -147,5 +147,5 @@ export:
         value-filter: "onlyFinite"
 
 terminate:
-  - type: AfterTime
-    parameters: 2600
+  - type: DoneIsStableForTime
+    parameters: [ 600.0, 10.0 ] # 10 minutes
