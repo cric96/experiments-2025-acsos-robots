@@ -6,7 +6,7 @@ environment:
     - time-distribution:
         type: DiracComb
         parameters: [ 0, 1 ]
-      type: InitialAllocationStrategy
+      type: AllocationBasedOnFormalization
       parameters: [ ]
     - time-distribution:
         type: Trigger
