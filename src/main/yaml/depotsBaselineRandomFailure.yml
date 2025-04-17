@@ -134,6 +134,8 @@ export:
       - molecule: done # task completed by nodes
         aggregators: [ mean ]
         value-filter: "onlyFinite"
+      - type: DonesExtractor
+        parameters: [ ]
 
 terminate:
   - type: DoneIsStableForTime

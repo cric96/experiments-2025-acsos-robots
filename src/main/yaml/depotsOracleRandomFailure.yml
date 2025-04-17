@@ -2,15 +2,15 @@ incarnation: collektive
 
 environment:
   type: Continuous2DObstacles
-
-network-model:
-  type: ObstaclesBreakConnection
-  parameters: [0.01]
   global-programs:
     - time-distribution:
         type: DiracComb
         parameters: [ 0, 1 ]
-      type: InitialAllocationStrategy
+      type: AllocationBasedOnFormalization
+network-model:
+  type: ObstaclesBreakConnection
+  parameters: [0.01]
+
 
 variables:
   speed: &speed
@@ -133,6 +133,8 @@ export:
       - molecule: done # task completed by nodes
         aggregators: [ mean ]
         value-filter: "onlyFinite"
+      - type: DonesExtractor
+        parameters: [ ]
 
 terminate:
   - type: DoneIsStableForTime

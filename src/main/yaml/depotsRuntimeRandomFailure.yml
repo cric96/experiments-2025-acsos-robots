@@ -7,7 +7,7 @@ variables:
   isDone: &isDone
     formula: 0.0
   seed: &seed
-    { min: 0, max: 8, step: 1, default: 9 }
+    { min: 0, max: 8, step: 1, default: 0 }
   communication: &communication
     type: ArbitraryVariable
     # bluetooth (50, 100, 150) -> 500 full range
@@ -151,6 +151,8 @@ export:
       - molecule: dones
         aggregators: [ sum, mean ]
         value-filter: "onlyFinite"
+      - type: DonesExtractor
+        parameters: [ ]
 
 terminate:
   - type: DoneIsStableForTime

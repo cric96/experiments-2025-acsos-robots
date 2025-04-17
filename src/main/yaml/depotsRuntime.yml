@@ -164,6 +164,8 @@ export:
       - molecule: dones
         aggregators: [ sum, mean ]
         value-filter: "onlyFinite"
+      - type: DonesExtractor
+        parameters: [ ]
 
 terminate:
   - type: DoneIsStableForTime
