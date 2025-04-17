@@ -1,3 +1,18 @@
+## [1.10.1](https://github.com/angelacorte/depot-tasks-environment/compare/1.10.0...1.10.1) (2025-04-17)
+
+### Dependency updates
+
+* **deps:** update collektive to v22.3.0 ([9589e26](https://github.com/angelacorte/depot-tasks-environment/commit/9589e26a1010ac6b7daa60cbb3407a2b88815c31))
+* **deps:** update plugin multijvmtesting to v3.4.0 ([9a6c26f](https://github.com/angelacorte/depot-tasks-environment/commit/9a6c26f933efcadc206d59252eb84bc06445353a))
+
+### Bug Fixes
+
+* put the right global reaction ([f177b49](https://github.com/angelacorte/depot-tasks-environment/commit/f177b49e6b29aa6a0c1aa3141b44306eac9296c8))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.10.0 [skip ci] ([571ef2d](https://github.com/angelacorte/depot-tasks-environment/commit/571ef2d0f0af7b92f748cd1135c27326ea2e1d8d))
+
 ## [1.10.0](https://github.com/angelacorte/depot-tasks-environment/compare/1.9.0...1.10.0) (2025-04-16)
 
 ### Features
