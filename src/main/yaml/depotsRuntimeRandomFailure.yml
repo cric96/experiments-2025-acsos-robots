@@ -20,7 +20,6 @@ variables:
   leaderBased: &leaderBased
     formula: System.getenv("LEADER_BASED").toBoolean()
     language: kotlin
-    parameters: [ false, [ true, false ] ]
   totalNodes: &totalNodes
     type: ArbitraryVariable
     parameters: [ 40, [ 5, 10, 20, 40 ] ]
