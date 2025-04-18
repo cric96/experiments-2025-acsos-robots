@@ -1,3 +1,13 @@
+## [1.11.2](https://github.com/angelacorte/experiments-2025-acsos-robots/compare/1.11.1...1.11.2) (2025-04-18)
+
+### Bug Fixes
+
+* temporary comment kotlin qa plugin ([5b53ec0](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/5b53ec0047e0d83ed4e055a3948e90698f0c2689))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.11.1 [skip ci] ([05ce557](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/05ce557dd509927d9af54663eadb879647d1d21b))
+
 ## [1.11.1](https://github.com/angelacorte/experiments-2025-acsos-robots/compare/1.11.0...1.11.1) (2025-04-18)
 
 ### Dependency updates
