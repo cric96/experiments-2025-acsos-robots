@@ -4,18 +4,15 @@ import it.unibo.alchemist.model.Environment
 import it.unibo.alchemist.model.Node
 import it.unibo.alchemist.model.Position
 import it.unibo.alchemist.model.TimeDistribution
-import it.unibo.alchemist.model.molecules.SimpleMolecule
-import it.unibo.formalization.GreedyAllocationStrategy
-import it.unibo.formalization.RobotAllocationResult
-import it.unibo.formalization.Node as NodeFormalization
 
+/**
+ * A strategy for reallocating tasks to robots at the end of their routes.
+ * This strategy is used when all robots are at the target depot or when no allocation is given.
+ */
 class ReallocatedAtTheEnd<T, P : Position<P>>(
     environment: Environment<T, P>,
     distribution: TimeDistribution<T>,
-) : InitialAllocationStrategy<T, P>(environment, distribution) {
-    var cache: List<NodeFormalization> = emptyList()
-    var allocationCache: List<RobotAllocationResult> = emptyList()
-
+) : CacheBasedAllocationStrategy<T, P>(environment, distribution) {
     override fun allocate(
         robots: List<Node<T>>,
         tasks: List<Node<T>>,
@@ -23,47 +20,19 @@ class ReallocatedAtTheEnd<T, P : Position<P>>(
         targetDepot: Node<T>,
     ): List<Allocation<T>> {
         val robotsPosition =
-            robots
-                .filter { it.contents[SimpleMolecule("down")] == false }
-                .map { it.toNodeFormalization(environment) }
-        val tasksPosition = tasks.map { it.toNodeFormalization(environment) }
-        val tasksDone =
-            environment.nodes
-                .filter { it.contents[SimpleMolecule("isDone")] == 1.0 }
-                .map { it.id }
-                .toSet()
-
-        val targetDepotPosition = targetDepot.toNodeFormalization(environment)
-        val allocator =
-            GreedyAllocationStrategy(
-                robotsPosition,
-                tasksPosition.filter { it.id !in tasksDone },
-                targetDepotPosition,
-            )
+            robots.map { it.toNodeFormalization(environment) }
         // get if every node are near to the target depot or no allocation is given
         val areAllAtTheEnd =
             robotsPosition.all {
-                robotsPosition.all {
-                    environment.getDistanceBetweenNodes(environment.getNodeByID(it.id), targetDepot) <
-                        0.01
-                }
+                environment.getDistanceBetweenNodes(environment.getNodeByID(it.id), targetDepot) < RADIUS
             }
+        return updateCacheOrEmpty(
+            robots,
+            computeAllocator(tasks, robots, targetDepot),
+        ) { areAllAtTheEnd || allocationCache.isEmpty() }
+    }
 
-        if (areAllAtTheEnd || allocationCache.isEmpty()) {
-            cache = robotsPosition
-            val (_, result) = allocator.execute()
-            allocationCache = result
-            return allocationCache.mapIndexed { index, allocation ->
-                val robot: Node<T> = robots[index]
-                val tasks: List<Node<T>> =
-                    allocation.route
-                        .toList()
-                        .drop(1)
-                        .map { environment.getNodeByID(it.id) }
-                Allocation(robot, tasks)
-            }
-        } else {
-            return listOf()
-        }
+    private companion object {
+        private const val RADIUS = 0.01
     }
 }

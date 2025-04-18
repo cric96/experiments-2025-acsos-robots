@@ -7,13 +7,18 @@ import it.unibo.alchemist.model.Position
 import org.apache.commons.math3.random.RandomGenerator
 import it.unibo.formalization.Node as NodeFormalization
 
+/**
+ * A domain specific sensor used
+ * to gather information about the node's position.
+ */
 class LocationSensorProperty<T : Any, P : Position<P>>(
     private val environment: Environment<T, P>,
     override val node: Node<T>,
-    val randomGenerator: RandomGenerator,
+    private val randomGenerator: RandomGenerator,
 ) : LocationSensor,
     NodeProperty<T> {
-    override fun cloneOnNewNode(node: Node<T>): NodeProperty<T> = LocationSensorProperty(environment, node, randomGenerator)
+    override fun cloneOnNewNode(node: Node<T>): NodeProperty<T> =
+        LocationSensorProperty(environment, node, randomGenerator)
 
     override fun coordinates(): Pair<Double, Double> {
         val position = environment.getPosition(node).coordinates

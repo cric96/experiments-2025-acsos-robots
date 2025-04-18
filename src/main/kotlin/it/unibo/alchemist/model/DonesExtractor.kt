@@ -3,8 +3,11 @@ package it.unibo.alchemist.model
 import it.unibo.alchemist.boundary.Extractor
 import it.unibo.alchemist.model.molecules.SimpleMolecule
 
+/**
+ * An [Extractor] that extracts the percentage of done tasks in the environment.
+ */
 class DonesExtractor : Extractor<Double> {
-    var taskList: List<Node<*>>? = null
+    private var taskList: List<Node<*>>? = null
     override val columnNames: List<String>
         get() = listOf("isDonePercentage")
 

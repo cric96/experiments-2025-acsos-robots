@@ -1,5 +1,8 @@
 package it.unibo.formalization
 
+/**
+ * Utility functions for geometric calculations.
+ */
 object GeometryUtils {
     /** Calculates Euclidean distance between two nodes. */
     fun travelCost(

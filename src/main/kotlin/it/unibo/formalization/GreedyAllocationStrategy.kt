@@ -4,6 +4,15 @@ import it.unibo.formalization.GeometryUtils.calculateRouteCost
 import it.unibo.formalization.RoutingHeuristics.computeMarginalCost
 import kotlin.system.measureTimeMillis
 
+/**
+ * GreedyAllocationStrategy implements a distributed multi-agent task allocation algorithm.
+ * It assigns tasks to robots based on the bids they make for each task.
+ * The algorithm iteratively collects bids, assigns tasks to robots, and optimizes their routes.
+ * @param robots List of robots available for task allocation.
+ * @param tasks Collection of tasks to be allocated.
+ * @param endDepot The depot where robots return after completing their tasks.
+ * @param maxRouteCost Maximum cost allowed for a robot's route.
+ */
 class GreedyAllocationStrategy(
     private val robots: List<Node>,
     private val tasks: Collection<Node>,
@@ -28,13 +37,13 @@ class GreedyAllocationStrategy(
                     val assignmentResults = assignTasksToRobots(taskBids, robotStates)
 
                     // Exit if no tasks were assigned this iteration
-                    if (!assignmentResults.anyTaskAssigned) break
+                    if (assignmentResults.anyTaskAssigned) {
+                        // Remove assigned tasks
+                        unassignedTasks.removeAll(assignmentResults.assignedTasks)
 
-                    // Remove assigned tasks
-                    unassignedTasks.removeAll(assignmentResults.assignedTasks)
-
-                    // Re-optimize routes for each robot
-                    optimizeRobotRoutes(robotStates)
+                        // Re-optimize routes for each robot
+                        optimizeRobotRoutes(robotStates)
+                    }
                 }
             }
         return time to convertToFinalResults(robotStates)
@@ -84,25 +93,37 @@ class GreedyAllocationStrategy(
         val assignedRobots = mutableSetOf<Int>()
         val tasksToRemove = mutableListOf<Node>()
         var assignedAny = false
-
-        for (task in sortedTasks) {
-            val bids = taskBids[task] ?: continue
-
-            // Find best robot that hasn't been assigned a task this iteration
-            val bestBid = bids.firstOrNull { it.robot !in assignedRobots } ?: continue
-            val robotState = robotStates.find { it.robot.id == bestBid.robot } ?: continue
-
-            // Verify constraint with current route
-            val updatedCost = computeMarginalCost(robotState.route, task)
-            if (robotState.routeCost + updatedCost > maxRouteCost) continue
-
-            // Assign task
-            robotState.assignedTasks.add(task)
-            tasksToRemove.add(task)
-            assignedRobots.add(bestBid.robot)
-            assignedAny = true
+        val taskWithBids = sortedTasks.mapNotNull { task ->
+            taskBids[task]?.takeIf { it.isNotEmpty() }?.let { nonEmptyBids ->
+                task to nonEmptyBids
+            }
         }
 
+        for ((task, bids) in taskWithBids) { // Destructuring declaration for Pair(task, bids)
+
+            // Find best robot that hasn't been assigned a task this iteration
+            // Use let to handle the case where no suitable bid is found (replaces a continue)
+            bids.firstOrNull { it.robot !in assignedRobots }?.let { bestBid ->
+
+                // Find the corresponding robot state
+                // Use let to handle the case where the robot state isn't found (replaces a continue)
+                robotStates.find { it.robot.id == bestBid.robot }?.let { robotState ->
+
+                    // Verify constraint with current route
+                    val updatedCost = computeMarginalCost(robotState.route, task)
+
+                    // Check the constraint (replaces the final continue)
+                    // Only proceed with assignment if the constraint is met
+                    if (robotState.routeCost + updatedCost <= maxRouteCost) {
+                        // Assign task
+                        robotState.assignedTasks.add(task)
+                        tasksToRemove.add(task)
+                        assignedRobots.add(bestBid.robot)
+                        assignedAny = true
+                    }
+                }
+            }
+        }
         return AssignmentResult(tasksToRemove, assignedAny)
     }
 

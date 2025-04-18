@@ -11,11 +11,16 @@ import it.unibo.alchemist.model.linkingrules.ConnectWithinDistance
 import it.unibo.alchemist.model.molecules.SimpleMolecule
 import it.unibo.alchemist.model.times.DoubleTime
 
+/**
+ * An [Action] that looks up tasks to execute in the environment.
+ * It checks if the node is close to a task and if so, it starts a timer.
+ * If the timer exceeds a certain amount of time, it sets the task as done.
+ */
 class LookupTasksToExecute<P : Position2D<P>>(
     private val environment: Environment<Any, P>,
     private val node: Node<Any>,
 ) : AbstractAction<Any>(node) {
-    private val amountToSolve = 60.0
+    private val amountToSolve: Double = AMOUNT_TO_SOLVE
     private var startTime: Time? = null
 
     override fun cloneAction(
@@ -23,7 +28,7 @@ class LookupTasksToExecute<P : Position2D<P>>(
         p1: Reaction<Any>,
     ): Action<Any> = LookupTasksToExecute(environment, node)
 
-    private val lookup = ConnectWithinDistance<Any, P>(0.01)
+    private val lookup = ConnectWithinDistance<Any, P>(RADIUS)
 
     override fun execute() {
         val nearestAgent =
@@ -33,11 +38,12 @@ class LookupTasksToExecute<P : Position2D<P>>(
                 .filter { it.contents[SimpleMolecule("selected")] == node.id }
                 .minByOrNull { environment.getPosition(it).distanceTo(environment.getPosition(node)) }
         val distance =
-            nearestAgent?.let { environment.getPosition(it).distanceTo(environment.getPosition(node)) } ?: Double.POSITIVE_INFINITY
+            nearestAgent?.let { environment.getPosition(it).distanceTo(environment.getPosition(node)) }
+                ?: Double.POSITIVE_INFINITY
 
-        if (startTime == null && distance < 0.005) {
+        if (startTime == null && distance < RADIUS) {
             startTime = environment.simulation.time
-        } else if (startTime != null && distance > 0.005) {
+        } else if (startTime != null && distance > RADIUS) {
             startTime = null
         }
 
@@ -49,4 +55,9 @@ class LookupTasksToExecute<P : Position2D<P>>(
     }
 
     override fun getContext(): Context = Context.NEIGHBORHOOD
+
+    private companion object {
+        private const val AMOUNT_TO_SOLVE = 60.0
+        private const val RADIUS = 0.005
+    }
 }

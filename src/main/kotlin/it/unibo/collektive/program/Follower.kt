@@ -6,6 +6,10 @@ import it.unibo.collektive.aggregate.api.Aggregate
 import it.unibo.collektive.alchemist.device.sensors.EnvironmentVariables
 import it.unibo.formalization.Node as NodeFormalization
 
+/**
+ * A simple follower agent based
+ * on the tasks that an oracle gives to the robot.
+ */
 fun Aggregate<Int>.followTasks(
     env: EnvironmentVariables,
     locationSensor: LocationSensor,

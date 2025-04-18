@@ -8,10 +8,12 @@ import it.unibo.alchemist.model.molecules.SimpleMolecule
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.Point
-import java.awt.Shape
 import java.awt.geom.AffineTransform
 import java.awt.geom.Ellipse2D
 
+/**
+ * An effect that draws a trajectory of the nodes in the environment.
+ */
 @Suppress("DEPRECATION")
 class TrajectoryEffect : it.unibo.alchemist.boundary.swingui.effect.api.Effect {
     @Transient
@@ -58,7 +60,7 @@ class TrajectoryEffect : it.unibo.alchemist.boundary.swingui.effect.api.Effect {
         val transform = computeTransform(x, y, nodeSize.toDouble(), 1.0)
         val color = computeColorOrBlack(node, environment)
         val transformedShape = transform.createTransformedShape(DRONE_SHAPE)
-        if (trackEnabled) drawTrajectory(graphics2D, node, color, wormhole, DRONE_SHAPE)
+        if (trackEnabled) drawTrajectory(graphics2D, node, color, wormhole)
         graphics2D.color = color
         graphics2D.fill(transformedShape)
         updateTrajectory(node, environment)
@@ -69,14 +71,14 @@ class TrajectoryEffect : it.unibo.alchemist.boundary.swingui.effect.api.Effect {
         node: Node<*>,
         colorBase: Color,
         wormhole2D: Wormhole2D<P>,
-        shape: Shape,
     ) {
         val positions = positionsMemory[node.id] ?: emptyList()
         val trajectory = positions // .takeLast(snapshotSize)
         if (trajectory.size > 1) {
             trajectory.zipWithNext().forEachIndexed { index, value ->
                 @Suppress("UNCHECKED_CAST")
-                val alphaValue = ((index.toFloat() / trajectory.size) * 50).toInt().coerceIn(10, 50)
+                val alphaValue = ((index.toFloat() / trajectory.size) * ADJUST_COLOR_FACTOR).toInt()
+                    .coerceIn(MINIMUM_COLOR_ALPHA, ADJUST_COLOR_FACTOR)
                 val (first, second) = value
                 val startPoint = wormhole2D.getViewPoint(first.first as P)
                 val endPoint = wormhole2D.getViewPoint(second.first as P)
@@ -128,13 +130,12 @@ class TrajectoryEffect : it.unibo.alchemist.boundary.swingui.effect.api.Effect {
             environment.simulation.time
                 .toDouble()
                 .toInt()
-        val threshouldRedraw = 0.05
         if (roundedTime >= lastDraw) {
             lastDrawMemory[node.id] = lastDraw
             // take the last position
             val lastPosition = positions.lastOrNull()?.first as P?
             val currentPosition = environment.getPosition(node)
-            val shouldNotUpdate = lastPosition?.distanceTo(currentPosition)?.let { it < threshouldRedraw } ?: false
+            val shouldNotUpdate = lastPosition?.distanceTo(currentPosition)?.let { it < THRESHOLD_REDRAW } ?: false
             // if it is to near, do not put the new position
             if (shouldNotUpdate) return
             positions.add(environment.getPosition(node) to rotation(node))
@@ -154,9 +155,10 @@ class TrajectoryEffect : it.unibo.alchemist.boundary.swingui.effect.api.Effect {
             ?: 0.0
 
     private companion object {
-        private const val MAX_NODE_SIZE: Int = 20
+        private const val THRESHOLD_REDRAW = 0.05
+        private const val ADJUST_COLOR_FACTOR: Int = 50
 
-        private const val MAX_TIMESPAN: Int = 100
+        private const val MINIMUM_COLOR_ALPHA: Int = 10
 
         private const val MAX_SNAPSHOT_LENGTH: Int = 1000
 

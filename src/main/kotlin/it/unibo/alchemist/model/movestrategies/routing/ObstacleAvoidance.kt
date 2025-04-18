@@ -26,20 +26,22 @@ data class ObstacleAvoidance<W, T, P>(
         currentPos: P,
         finalPos: P,
     ): Route<P> {
-        val slices = 20
         val straightPath = environment.next(currentPos, finalPos)
         if (straightPath != finalPos) {
             val maxDistance = currentPos.distanceTo(finalPos)
             val segment = finalPos - currentPos
             val obstacleAvoidanceDestination =
-                (0 until slices)
+                (0 until SLICES)
                     .asSequence()
                     .map { index ->
                         var finalIndex = index
                         val randomDirection = randomGenerator.nextInt(2)
                         if (randomDirection == 0) finalIndex = -index
-                        val angle = atan2(segment.x, segment.y) + finalIndex * 2 * PI / slices
-                        val newDestination = currentPos + doubleArrayOf(maxDistance * cos(angle), maxDistance * sin(angle))
+                        val angle = atan2(segment.x, segment.y) + finalIndex * 2 * PI / SLICES
+                        val newDestination = currentPos + doubleArrayOf(
+                            maxDistance * cos(angle),
+                            maxDistance * sin(angle)
+                        )
                         angle to environment.next(currentPos, newDestination)
                     }.maxWith(
                         compareBy<Pair<Double, P>> { (_, it) -> currentPos.distanceTo(it) }
@@ -49,5 +51,9 @@ data class ObstacleAvoidance<W, T, P>(
         } else {
             return PolygonalChain(currentPos, finalPos)
         }
+    }
+
+    private companion object {
+        private const val SLICES = 20
     }
 }

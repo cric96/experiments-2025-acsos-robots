@@ -4,63 +4,33 @@ import it.unibo.alchemist.model.Environment
 import it.unibo.alchemist.model.Node
 import it.unibo.alchemist.model.Position
 import it.unibo.alchemist.model.TimeDistribution
-import it.unibo.alchemist.model.molecules.SimpleMolecule
-import it.unibo.formalization.GreedyAllocationStrategy
-import it.unibo.formalization.RobotAllocationResult
 import it.unibo.formalization.Node as NodeFormalization
 
+/**
+ * A conversion function that converts a [Node] to a [NodeFormalization].
+ */
 fun <T, P : Position<P>> Node<T>.toNodeFormalization(environment: Environment<T, P>): NodeFormalization {
     val position: Pair<Double, Double> = environment.getPosition(this).let { it.coordinates[0] to it.coordinates[1] }
     return NodeFormalization(position, id)
 }
 
+/**
+ * A strategy for allocating tasks to robots based on their formalization (id, position).
+ */
 class AllocationBasedOnFormalization<T, P : Position<P>>(
     environment: Environment<T, P>,
     distribution: TimeDistribution<T>,
-) : InitialAllocationStrategy<T, P>(environment, distribution) {
-    var cache: List<NodeFormalization> = emptyList()
-    var allocationCache: List<RobotAllocationResult> = emptyList()
-
+) : CacheBasedAllocationStrategy<T, P>(environment, distribution) {
+    // This will use a cache based on the robots' positions
     override fun allocate(
         robots: List<Node<T>>,
         tasks: List<Node<T>>,
         sourceDepot: Node<T>,
         targetDepot: Node<T>,
     ): List<Allocation<T>> {
-        val robotsPosition =
-            robots
-                .filter { it.contents[SimpleMolecule("down")] == false }
-                .map { it.toNodeFormalization(environment) }
-        val tasksPosition = tasks.map { it.toNodeFormalization(environment) }
-        val tasksDone =
-            environment.nodes
-                .filter { it.contents[SimpleMolecule("isDone")] == 1.0 }
-                .map { it.id }
-                .toSet()
-
-        val sourceDepotPosition = sourceDepot.toNodeFormalization(environment)
-        val targetDepotPosition = targetDepot.toNodeFormalization(environment)
-        val allocator =
-            GreedyAllocationStrategy(
-                robotsPosition,
-                tasksPosition.filter { it.id !in tasksDone },
-                targetDepotPosition,
-            )
-        if (cache.size != robotsPosition.size) {
-            cache = robotsPosition
-            val (_, result) = allocator.execute()
-            allocationCache = result
-            return allocationCache.mapIndexed { index, allocation ->
-                val robot: Node<T> = robots[index]
-                val tasks: List<Node<T>> =
-                    allocation.route
-                        .toList()
-                        .drop(1)
-                        .map { environment.getNodeByID(it.id) }
-                Allocation(robot, tasks)
-            }
-        } else {
-            return listOf()
-        }
+        return updateCacheOrEmpty(
+            robots,
+            computeAllocator(robots, tasks, targetDepot),
+        ) { cache.size != robots.size }
     }
 }

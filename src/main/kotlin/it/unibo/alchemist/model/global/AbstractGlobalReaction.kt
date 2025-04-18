@@ -1,4 +1,4 @@
-package it.unibo.alchemist.model.implementations.reactions
+package it.unibo.alchemist.model.global
 
 import it.unibo.alchemist.model.Action
 import it.unibo.alchemist.model.Actionable
@@ -14,6 +14,9 @@ import org.danilopianini.util.ListSet
 import org.danilopianini.util.ListSets
 import kotlin.collections.List
 
+/**
+ * Abstract class for [GlobalReaction]s.
+ */
 abstract class AbstractGlobalReaction<T, P : Position<P>>(
     protected val environment: Environment<T, P>,
     protected val distribution: TimeDistribution<T>,
@@ -52,18 +55,18 @@ abstract class AbstractGlobalReaction<T, P : Position<P>>(
     override fun initializationComplete(
         atTime: Time,
         environment: Environment<T, *>,
-    ) {}
+    ) = Unit
 
     override fun update(
         currentTime: Time,
         hasBeenExecuted: Boolean,
         environment: Environment<T, *>,
-    ) {}
+    ) = Unit
 
     override fun compareTo(other: Actionable<T>): Int = tau.compareTo(other.tau)
 
     // Utility methods
-    val nodes: List<Node<T>>
+    protected val nodes: List<Node<T>>
         get() =
             environment.nodes
                 .iterator()

@@ -24,10 +24,10 @@ import kotlin.math.sin
  * but with a custom RoutingStrategy for ObstacleAvoidance.
  */
 class GoToTemporary<T, P>(
-    val environment: Environment<T, P>,
-    val node: Node<T>,
-    val destination: P,
-    val slices: Int = 20,
+    private val environment: Environment<T, P>,
+    private val node: Node<T>,
+    private val destination: P,
+    private val slices: Int = 20,
 ) : TargetSelectionStrategy<T, P> where P : Position<P>, P : Vector<P> {
     constructor(
         environment: Environment<T, P>,
@@ -49,8 +49,14 @@ class GoToTemporary<T, P>(
                         (0 until slices)
                             .asSequence()
                             .map { index ->
-                                val angle = atan2(segment.getCoordinate(1), segment.getCoordinate(0)) + index * 2 * PI / slices
-                                val newDestination = currentPosition + doubleArrayOf(maxDistance * cos(angle), maxDistance * sin(angle))
+                                val angle = atan2(
+                                    segment.getCoordinate(1),
+                                    segment.getCoordinate(0)
+                                ) + index * 2 * PI / slices
+                                val newDestination = currentPosition + doubleArrayOf(
+                                    maxDistance * cos(angle),
+                                    maxDistance * sin(angle)
+                                )
                                 angle to environment.next(currentPosition, newDestination)
                             }.maxWith(
                                 compareBy<Pair<Double, P>> { (_, it) -> currentPosition.distanceTo(it) }

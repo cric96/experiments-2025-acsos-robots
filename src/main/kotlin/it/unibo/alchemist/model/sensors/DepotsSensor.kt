@@ -2,6 +2,10 @@ package it.unibo.alchemist.model.sensors
 
 import it.unibo.formalization.Node as NodeFormalization
 
+/**
+ * A domain specific sensor used
+ * to gather information about the tasks state.
+ */
 interface DepotsSensor {
     /**
      * The depot where the agent is located.

@@ -5,10 +5,14 @@ import it.unibo.alchemist.model.linkingrules.ConnectWithinDistance
 import it.unibo.alchemist.model.molecules.SimpleMolecule
 import it.unibo.alchemist.model.neighborhoods.Neighborhoods
 
+/**
+ * A [LinkingRule] that connects nodes within a certain distance, but breaks the connection
+ * if the node contains a certain molecule.
+ */
 class MoleculeBreaksConnection<T, P : Position<P>>(
-    val environment: Environment<T, P>,
-    val radius: Double,
-    val molecule: String,
+    private val environment: Environment<T, P>,
+    radius: Double,
+    private val molecule: String,
 ) : AbstractLocallyConsistentLinkingRule<T, P>() {
     private val distance: ConnectWithinDistance<T, P> = ConnectWithinDistance(radius)
 

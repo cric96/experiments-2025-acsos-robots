@@ -12,34 +12,28 @@ import it.unibo.collektive.stdlib.accumulation.convergeCast
 import it.unibo.collektive.stdlib.consensus.boundedElection
 import it.unibo.collektive.stdlib.spreading.gradientCast
 import it.unibo.formalization.GreedyAllocationStrategy
-import it.unibo.formalization.RobotAllocationResult
 import it.unibo.formalization.Node as NodeFormalization
 
-/** Replanning state */
-data class ReplanningState(
-    val dones: Map<NodeFormalization, Boolean>,
-    val path: List<NodeFormalization>,
-    val allocations: List<RobotAllocationResult> = emptyList(),
-) {
-    companion object {
-        fun createFrom(
-            tasks: List<NodeFormalization>,
-            depotsSensor: DepotsSensor,
-        ): ReplanningState {
-            val path = listOf(depotsSensor.sourceDepot, depotsSensor.destinationDepot)
-            return ReplanningState(
-                dones = tasks.associate { it to false }.toMap(),
-                path = path,
-                allocations = emptyList(),
-            )
-        }
-    }
-}
-
-/** Utils **/
+/* Utils **/
+/**
+ * A simple function which returns the tasks without the source depot.
+ */
 fun allTasksWithoutSource(depotsSensor: DepotsSensor): List<NodeFormalization> =
     (depotsSensor.tasks.toSet() - setOf(depotsSensor.sourceDepot)).toList().sortedBy { it.id }
 
+/* Programs */
+/**
+ * The replanning function is used to recompute the path of the robot
+ * when the environment changes.
+ * It supports two different strategies:
+ * - Gossip-based replanning
+ * - Leader-based replanning
+ *
+ * @param env the environment variables
+ * @param distanceSensor the distance sensor
+ * @param locationSensor the location sensor
+ * @param depotsSensor the depots sensor
+ */
 fun Aggregate<Int>.replanning(
     env: EnvironmentVariables,
     distanceSensor: CollektiveDevice<*>,
@@ -74,9 +68,12 @@ fun Aggregate<Int>.replanning(
     breakingCycle(env, locationSensor, depotsSensor)
 }
 
-val maxBound = 1000.0
-val timeWindow = 5
+private const val MAX_BOUND = 1000.0
+private const val TIME_WINDOW = 5
 
+/**
+ * A function that implements the gossip-based replanning strategy.
+ */
 fun Aggregate<Int>.gossipReplanning(
     env: EnvironmentVariables,
     distanceSensor: CollektiveDevice<*>,
@@ -90,13 +87,11 @@ fun Aggregate<Int>.gossipReplanning(
     evolve(ReplanningState.createFrom(allTasks, depotsSensor)) { state ->
         val nodeFormalization = NodeFormalization(locationSensor.coordinates(), localId)
 
-        /**
-         * All task ever done (via nonStabilizingGossip)
-         */
+        /* All task ever done (via nonStabilizingGossip) */
         val allTaskDone = gossipTasksDone(state.dones.filter { it.value }.keys) // avoid to recompute task already done
 
-        /** All robots that I may see with multipath communication */
-        val allRobots = gossipNodeCoordinates(nodeFormalization, distanceSensor, allIds, maxBound)
+        /* All robots that I may see with multipath communication */
+        val allRobots = gossipNodeCoordinates(nodeFormalization, distanceSensor, allIds, MAX_BOUND)
         val stableCondition =
             gossipStabilityCondition(
                 distanceSensor,
@@ -105,9 +100,9 @@ fun Aggregate<Int>.gossipReplanning(
                 allRobots,
             )
         when {
-            // stability condition is not satisfied, recompute the path
+            /* stability condition is not satisfied, recompute the path */
             !stableCondition -> {
-                /** allocation part: recompute the path giving the new information */
+                /* allocation part: recompute the path giving the new information */
                 val reducedTasks = allTasks.filter { it !in allTaskDone }
                 val globalPlan =
                     GreedyAllocationStrategy(
@@ -137,24 +132,28 @@ fun Aggregate<Int>.gossipReplanning(
     }
 }
 
+/**
+ * A function that checks if the robots are stable in the system.
+ */
 fun Aggregate<Int>.gossipStabilityCondition(
     distanceSensor: CollektiveDevice<*>,
     state: ReplanningState,
     allIds: Set<Int>,
     allRobots: List<NodeFormalization>,
 ): Boolean {
-    /** Consensus part: check if the node should recompute the path */
-    val pathMap = state.allocations.associate { it.robot.id to it.route.map { it.id } }
-    val globalConsistency = isGlobalPathConsistent(pathMap, distanceSensor, allIds, maxBound)
-    val allConsistent = areAllStable(globalConsistency, distanceSensor, allIds, maxBound)
-
-    /** Check if the robots are stable */
-    val areRobotStable = stableFor(allRobots.map { it.id }.toSet(), timeWindow)
+    /* Consensus part: check if the node should recompute the path */
+    val pathMap = state.allocations.associate { it.robot.id to it.route.map { robot -> robot.id } }
+    val globalConsistency = isGlobalPathConsistent(pathMap, distanceSensor, allIds, MAX_BOUND)
+    val allConsistent = areAllStable(globalConsistency, distanceSensor, allIds, MAX_BOUND)
+    /* Check if the robots are stable */
+    val areRobotStable = stableFor(allRobots.map { it.id }.toSet(), TIME_WINDOW)
     return areRobotStable && allConsistent
 }
 
-val timeWindowsBuondedElection = 5
-
+/**
+ * A function that implements the bounded election replanning strategy.
+ * It uses a leader-based approach to recompute the path of the robot.
+ */
 fun Aggregate<Int>.boundedElectionReplanning(
     env: EnvironmentVariables,
     distanceSensor: CollektiveDevice<*>,
@@ -162,7 +161,7 @@ fun Aggregate<Int>.boundedElectionReplanning(
     depotsSensor: DepotsSensor,
 ) {
     val allTasks = allTasksWithoutSource(depotsSensor)
-    val leaderId = boundedElection(maxBound, with(distanceSensor) { distances() })
+    val leaderId = boundedElection(MAX_BOUND, with(distanceSensor) { distances() })
     val isLeader = leaderId == localId
     env["isLeader"] =
         if (isLeader) {
@@ -176,7 +175,7 @@ fun Aggregate<Int>.boundedElectionReplanning(
         convergeCast(listOf(nodePosition), isLeader) { left, right ->
             left + right
         }
-    val areRobotsStable = stableForBy(allRobotsFromLeader, timeWindowsBuondedElection) { it.map { it.id }.toSet() }
+    val areRobotsStable = stableForBy(allRobotsFromLeader, TIME_WINDOW) { it.map { node -> node.id }.toSet() }
     evolve(ReplanningState.createFrom(allTasks, depotsSensor)) { state ->
         val taskEverDone = gossipTasksDone(state.dones.filter { it.value }.keys)
         env["taskSize"] = state.path.size
@@ -194,10 +193,11 @@ fun Aggregate<Int>.boundedElectionReplanning(
                 env["replanning"] = 0
                 state.allocations
             }
-        val isLocalPlanStable = stableForBy(newPlan, timeWindowsBuondedElection) { it.map { it.robot.id }.toSet() }
+        val isLocalPlanStable = stableForBy(newPlan, TIME_WINDOW) { it.map { it.robot.id }.toSet() }
         // share
-        val leaderPlan = gradientCast(isLeader, newPlan, with(distanceSensor) { distances() })
-        val leaderStable = gradientCast(isLeader, areRobotsStable && isLeader && isLocalPlanStable, with(distanceSensor) { distances() })
+        val distanceField = with(distanceSensor) { distances() }
+        val leaderPlan = gradientCast(isLeader, newPlan, distanceField)
+        val leaderStable = gradientCast(isLeader, areRobotsStable && isLeader && isLocalPlanStable, distanceField)
         env["stable"] = leaderStable
         env["path"] = state.path.map { it.id }
         val myPlan = leaderPlan.find { it.robot.id == localId }
@@ -220,6 +220,10 @@ fun Aggregate<Int>.boundedElectionReplanning(
     }
 }
 
+/**
+ * Follow plan is used to follow the plan given by the replanning function.
+ * It also updates the state of the robot when the task is done.
+ */
 fun Aggregate<Int>.followPlan(
     env: EnvironmentVariables,
     depotsSensor: DepotsSensor,
@@ -247,6 +251,10 @@ fun Aggregate<Int>.followPlan(
     return state.copy(dones = updated)
 }
 
+/**
+ * A simple function that sets the target to the current position of the robot.
+ * Namely, it is used to stop the robot when it is not moving.
+ */
 fun standStill(
     env: EnvironmentVariables,
     locationSensor: LocationSensor,

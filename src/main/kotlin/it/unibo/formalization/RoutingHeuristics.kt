@@ -3,6 +3,9 @@ package it.unibo.formalization
 import it.unibo.formalization.GeometryUtils.travelCost
 import kotlin.math.min
 
+/**
+ * RoutingHeuristics provides utility functions for computing routing costs and solving local routing problems.
+ */
 object RoutingHeuristics {
     /**
      * Computes the marginal cost of inserting a task into a robot's current route.
@@ -12,9 +15,7 @@ object RoutingHeuristics {
         route: List<Node>,
         task: Node,
     ): Double {
-        if (route.size < 2) {
-            throw IllegalArgumentException("Route must contain at least start and end nodes (size >= 2) to calculate insertion cost.")
-        }
+        require(route.size >= 2) { "Route must contain at least start and end nodes (size >= 2)" }
 
         var minDeltaCost = Double.POSITIVE_INFINITY
 
