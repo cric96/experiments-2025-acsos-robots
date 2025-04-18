@@ -18,8 +18,8 @@ variables:
     # bluetooth (50, 100, 150) -> 500 full range
     parameters: [ 20, [ 20, 50, 100, 500 ] ]
   leaderBased: &leaderBased
-    type: ArbitraryVariable
-    parameters: [ false, [ true, false ] ]
+    formula: System.getenv("LEADER_BASED").toBoolean()
+    language: kotlin
   totalNodes: &totalNodes
     type: ArbitraryVariable
     #parameters: [ 40, [ 5, 10, 20, 40 ] ]
@@ -33,7 +33,7 @@ variables:
 
 launcher:
   parameters:
-    batch: [seed, communication, leaderBased, totalNodes, totalTaskFactor]
+    batch: [seed, communication, totalNodes, totalTaskFactor] #leaderBased
     showProgress: true
     autoStart: true
 # TIME UNITS = seconds
