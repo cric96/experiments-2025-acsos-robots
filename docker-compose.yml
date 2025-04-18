@@ -1,52 +1,96 @@
-version: '3'
 services:
-  prepare:
-    image: alpine:3.21.3
+  baseline:
+    image: angelacortecchia/experiments-2025-acsos-robots:${VERSION:-latest}
+    build:
+      context: .
+      dockerfile: docker/sim/Dockerfile
     volumes:
-      - .:/experiment:rw
-    entrypoint: /bin/sh -c
-    command:
-      - |
-        mkdir -p /experiment/data
-        chmod 777 /experiment/data
-        mkdir -p /experiment/charts
-        chmod 777 /experiment/charts
-  simulation:
+      - angela.cortecchia-volume:/experiment/data
     environment:
-      CI: "false"
-    depends_on:
-      prepare:
-        condition: service_completed_successfully
-    image: angelacortecchia/${PROJECT_NAME:-unknown}-simulation:${VERSION:-latest}
+      - MAX_SEED=31
+      - GRADLE_TASK=runDepotsBaselineBatch
+
+  baseline-random-failure:
+    image: angelacortecchia/experiments-2025-acsos-robots:${VERSION:-latest}
     build:
-      dockerfile: ./docker/sim/Dockerfile
       context: .
+      dockerfile: docker/sim/Dockerfile
     volumes:
-     - ./data:/experiment/data
-  charts:
-    depends_on:
-      prepare:
-        condition: service_completed_successfully
-      simulation:
-        condition: service_completed_successfully
-    image: angelacortecchia/${PROJECT_NAME:-unknown}-charts:${VERSION:-latest}
+      - angela.cortecchia-volume:/experiment/data
+    environment:
+      - MAX_SEED=31
+      - GRADLE_TASK=runDepotsBaselineRandomFailureBatch
+
+  oracle:
+    image: angelacortecchia/experiments-2025-acsos-robots:${VERSION:-latest}
     build:
-      dockerfile: ./docker/charts/Dockerfile
       context: .
+      dockerfile: docker/sim/Dockerfile
     volumes:
-      - ./data:/experiment/data
-      - ./charts:/experiment/charts
-  finish:
-    depends_on:
-      charts:
-        condition: service_completed_successfully
-    image: alpine:3.21.3
+      - angela.cortecchia-volume:/experiment/data
+    environment:
+      - MAX_SEED=31
+      - GRADLE_TASK=runDepotsOracleBatch
+
+  oracle-random-failure:
+    image: angelacortecchia/experiments-2025-acsos-robots:${VERSION:-latest}
+    build:
+      context: .
+      dockerfile: docker/sim/Dockerfile
     volumes:
-      - .:/experiment:rw
-    entrypoint: /bin/sh -c
-    command:
-      - |
-        find /experiment/data -type d -exec chmod 777 {} \;
-        find /experiment/charts -type d -exec chmod 777 {} \;
-        find /experiment/data -type f -exec chmod 666 {} \;
-        find /experiment/charts -type f -exec chmod 666 {} \;
+      - angela.cortecchia-volume:/experiment/data
+    environment:
+      - MAX_SEED=31
+      - GRADLE_TASK=runDepotsOracleRandomFailureBatch
+
+  runtime-flag-false:
+    image: angelacortecchia/experiments-2025-acsos-robots:${VERSION:-latest}
+    build:
+      context: .
+      dockerfile: docker/sim/Dockerfile
+    volumes:
+      - angela.cortecchia-volume:/experiment/data
+    environment:
+      - MAX_SEED=31
+      - LEADER_BASED=false
+      - GRADLE_TASK=runDepotsRuntimeBatch
+
+  runtime-flag-true:
+    image: angelacortecchia/experiments-2025-acsos-robots:${VERSION:-latest}
+    build:
+      context: .
+      dockerfile: docker/sim/Dockerfile
+    volumes:
+      - angela.cortecchia-volume:/experiment/data
+    environment:
+      - MAX_SEED=31
+      - LEADER_BASED=true
+      - GRADLE_TASK=runDepotsRuntimeBatch
+
+  runtime-random-failure-flag-false:
+    image: angelacortecchia/experiments-2025-acsos-robots:${VERSION:-latest}
+    build:
+      context: .
+      dockerfile: docker/sim/Dockerfile
+    volumes:
+      - angela.cortecchia-volume:/experiment/data
+    environment:
+      - MAX_SEED=31
+      - LEADER_BASED=false
+      - GRADLE_TASK=runDepotsRuntimeRandomFailureBatch
+
+  runtime-random-failure-flag-true:
+    image: angelacortecchia/experiments-2025-acsos-robots:${VERSION:-latest}
+    build:
+      context: .
+      dockerfile: docker/sim/Dockerfile
+    volumes:
+      - angela.cortecchia-volume:/experiment/data
+    environment:
+      - MAX_SEED=31
+      - LEADER_BASED=true
+      - GRADLE_TASK=runDepotsRuntimeRandomFailureBatch
+
+volumes:
+  angela.cortecchia-volume:
+    external: true
