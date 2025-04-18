@@ -1,3 +1,18 @@
+## [1.11.1](https://github.com/angelacorte/experiments-2025-acsos-robots/compare/1.11.0...1.11.1) (2025-04-18)
+
+### Dependency updates
+
+* **deps:** update eclipse-temurin docker tag to v23 ([4906913](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/49069134454a8afd090f16f30daf5d5fa1e6a12c))
+* **deps:** update eclipse-temurin docker tag to v24 ([0f9f70b](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/0f9f70bf9b9e77f17c9538ffb4f0ccae7a011477))
+
+### Bug Fixes
+
+* **build:** remove java launcher ([73fb6a2](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/73fb6a205693bf43c5ded8097ebcce4a109aff72))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.11.0 [skip ci] ([87e0641](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/87e06415d5874ea236e81002e997f34d36ca71b0))
+
 ## [1.11.0](https://github.com/angelacorte/experiments-2025-acsos-robots/compare/1.10.1...1.11.0) (2025-04-18)
 
 ### Features
