@@ -11,4 +11,4 @@ develocity {
     }
 }
 
-rootProject.name = "depot-tasks-environment"
+rootProject.name = "experiments-2025-acsos-robots"
