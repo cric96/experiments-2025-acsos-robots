@@ -6,17 +6,17 @@ import it.unibo.alchemist.model.Condition
 import it.unibo.alchemist.model.Dependency
 import it.unibo.alchemist.model.Environment
 import it.unibo.alchemist.model.GlobalReaction
+import it.unibo.alchemist.model.Node
 import it.unibo.alchemist.model.Position
 import it.unibo.alchemist.model.Time
 import it.unibo.alchemist.model.TimeDistribution
-import it.unibo.alchemist.model.Node
 import org.danilopianini.util.ListSet
 import org.danilopianini.util.ListSets
 import kotlin.collections.List
 
 abstract class AbstractGlobalReaction<T, P : Position<P>>(
     protected val environment: Environment<T, P>,
-    protected val distribution: TimeDistribution<T>
+    protected val distribution: TimeDistribution<T>,
 ) : GlobalReaction<T> {
     override var actions: List<Action<T>> = mutableListOf()
         set(value) {
@@ -24,7 +24,7 @@ abstract class AbstractGlobalReaction<T, P : Position<P>>(
         }
 
     override var conditions: List<Condition<T>> = mutableListOf()
-        set (value) {
+        set(value) {
             field = listOf(*value.toTypedArray())
         }
 
@@ -49,13 +49,24 @@ abstract class AbstractGlobalReaction<T, P : Position<P>>(
 
     override fun canExecute(): Boolean = true
 
-    override fun initializationComplete(atTime: Time, environment: Environment<T, *>) {}
+    override fun initializationComplete(
+        atTime: Time,
+        environment: Environment<T, *>,
+    ) {}
 
-    override fun update(currentTime: Time, hasBeenExecuted: Boolean, environment: Environment<T, *>) {}
+    override fun update(
+        currentTime: Time,
+        hasBeenExecuted: Boolean,
+        environment: Environment<T, *>,
+    ) {}
 
     override fun compareTo(other: Actionable<T>): Int = tau.compareTo(other.tau)
 
     // Utility methods
     val nodes: List<Node<T>>
-        get() = environment.nodes.iterator().asSequence().toList()
+        get() =
+            environment.nodes
+                .iterator()
+                .asSequence()
+                .toList()
 }

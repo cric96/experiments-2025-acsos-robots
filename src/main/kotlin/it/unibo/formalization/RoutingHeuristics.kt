@@ -8,7 +8,10 @@ object RoutingHeuristics {
      * Computes the marginal cost of inserting a task into a robot's current route.
      * Uses a simple insertion heuristic that tries all possible insertion positions.
      */
-    fun computeMarginalCost(route: List<Node>, task: Node): Double {
+    fun computeMarginalCost(
+        route: List<Node>,
+        task: Node,
+    ): Double {
         if (route.size < 2) {
             throw IllegalArgumentException("Route must contain at least start and end nodes (size >= 2) to calculate insertion cost.")
         }
@@ -33,7 +36,7 @@ object RoutingHeuristics {
     fun solveLocalRouting(
         tasks: Collection<Node>,
         startDepot: Node,
-        endDepot: Node
+        endDepot: Node,
     ): List<Node> {
         if (tasks.isEmpty()) return listOf(startDepot, endDepot)
 
@@ -41,18 +44,18 @@ object RoutingHeuristics {
         val remainingTasks = tasks.toMutableList()
 
         while (remainingTasks.isNotEmpty()) {
-            val (bestTask, bestPosition) = remainingTasks
-                .asSequence()
-                .flatMap { task ->
-                    (1 until route.size).map { pos ->
-                        val prev = route[pos - 1]
-                        val next = route[pos]
-                        val cost = travelCost(prev, task) + travelCost(task, next) - travelCost(prev, next)
-                        Triple(task, pos, cost)
-                    }
-                }
-                .minBy { it.third }
-                .let { (task, pos, _) -> task to pos }
+            val (bestTask, bestPosition) =
+                remainingTasks
+                    .asSequence()
+                    .flatMap { task ->
+                        (1 until route.size).map { pos ->
+                            val prev = route[pos - 1]
+                            val next = route[pos]
+                            val cost = travelCost(prev, task) + travelCost(task, next) - travelCost(prev, next)
+                            Triple(task, pos, cost)
+                        }
+                    }.minBy { it.third }
+                    .let { (task, pos, _) -> task to pos }
             route.add(bestPosition, bestTask)
             remainingTasks.remove(bestTask)
         }

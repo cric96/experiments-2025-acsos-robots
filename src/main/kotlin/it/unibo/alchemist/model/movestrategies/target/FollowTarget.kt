@@ -14,7 +14,6 @@ import it.unibo.alchemist.model.Node
 import it.unibo.alchemist.model.Position
 import it.unibo.alchemist.model.Reaction
 import it.unibo.alchemist.model.movestrategies.TargetSelectionStrategy
-
 import kotlin.CharSequence
 import kotlin.Number
 
@@ -37,7 +36,10 @@ open class FollowTarget<T, P : Position<P>>(
      * @param y second coordinate extracted from the target concentration
      * @return a [Position] built using such parameters
      */
-    protected open fun createPosition(x: Double, y: Double): P = environment.makePosition(x, y)
+    protected open fun createPosition(
+        x: Double,
+        y: Double,
+    ): P = environment.makePosition(x, y)
 
     /**
      * the current position.
@@ -60,7 +62,7 @@ open class FollowTarget<T, P : Position<P>>(
     private fun Any.extractCoordinates(): P? {
         val values: Sequence<Number> =
             when (this) {
-                //is CharSequence -> Regex(Patterns.FLOAT).findAll(this).map { it.value.toNumber() }
+                // is CharSequence -> Regex(Patterns.FLOAT).findAll(this).map { it.value.toNumber() }
                 is Iterable<*> -> asSequence().map { it.toNumber() }
                 else -> emptySequence()
             }
@@ -78,22 +80,26 @@ open class FollowTarget<T, P : Position<P>>(
         }
     }
 
-    private fun conversionError(value: Any?): Nothing = error(
-        "${this::class.simpleName} tried to convert " +
+    private fun conversionError(value: Any?): Nothing =
+        error(
+            "${this::class.simpleName} tried to convert " +
                 "$this (${value?.let { it::class.simpleName}}) to a Number, but failed",
-    )
+        )
 
     /**
      * Tries to convert an object to Double, handling exceptions safely.
      */
-    private fun Any?.toNumber(): Number = when (this) {
-        is Number -> this
-        is CharSequence -> toString().toDoubleOrNull()
-        else -> null
-    } ?: conversionError(this)
+    private fun Any?.toNumber(): Number =
+        when (this) {
+            is Number -> this
+            is CharSequence -> toString().toDoubleOrNull()
+            else -> null
+        } ?: conversionError(this)
 
-    override fun cloneIfNeeded(destination: Node<T>, reaction: Reaction<T>): FollowTarget<T, P> =
-        FollowTarget(environment, destination, this.targetMolecule)
+    override fun cloneIfNeeded(
+        destination: Node<T>,
+        reaction: Reaction<T>,
+    ): FollowTarget<T, P> = FollowTarget(environment, destination, this.targetMolecule)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -112,5 +118,4 @@ open class FollowTarget<T, P : Position<P>>(
         result = 31 * result + targetMolecule.hashCode()
         return result
     }
-
 }

@@ -14,14 +14,13 @@ import it.unibo.formalization.Node as NodeFormalization
 class DepotsSensorProperty<T : Any, P : Position<P>>(
     private val environment: Environment<T, P>,
     override val node: Node<T>,
-    val random: RandomGenerator
+    val random: RandomGenerator,
 ) : DepotsSensor,
-    NodeProperty<T>
-{
+    NodeProperty<T> {
     fun uniformToExponential(lambda: Double): Double {
         require(lambda > 0) { "Lambda (rate parameter) must be greater than 0" }
         val uniformRandom = random.nextDouble()
-        return - (1 / lambda) * ln(uniformRandom)
+        return -(1 / lambda) * ln(uniformRandom)
     }
 
     val deathTime by lazy {
@@ -36,24 +35,27 @@ class DepotsSensorProperty<T : Any, P : Position<P>>(
     }
     private val lookup = ConnectWithinDistance<T, P>(0.01)
     override val sourceDepot: NodeFormalization
-        get() = environment.nodes.first { it.contents[SimpleMolecule(SOURCE_DEPOT_MOLECULE)] == true }.let {
-            it.toNodeFormalization(environment)
-        }
+        get() =
+            environment.nodes.first { it.contents[SimpleMolecule(SOURCE_DEPOT_MOLECULE)] == true }.let {
+                it.toNodeFormalization(environment)
+            }
 
     override val destinationDepot: NodeFormalization
-        get() = environment.nodes.first { it.contents[SimpleMolecule(DESTINATION_DEPOT_MOLECULE)] == true }.let {
-            it.toNodeFormalization(environment)
-        }
+        get() =
+            environment.nodes.first { it.contents[SimpleMolecule(DESTINATION_DEPOT_MOLECULE)] == true }.let {
+                it.toNodeFormalization(environment)
+            }
 
     override val tasks: List<NodeFormalization>
-        get() = environment.nodes.filter { it.contents[SimpleMolecule(TASK_MOLECULE)] == true }
-            .map { it.toNodeFormalization(environment) }
+        get() =
+            environment.nodes
+                .filter { it.contents[SimpleMolecule(TASK_MOLECULE)] == true }
+                .map { it.toNodeFormalization(environment) }
 
-    override fun isAgent(): Boolean =
-        node.contents[SimpleMolecule("agent")] as Boolean
+    override fun isAgent(): Boolean = node.contents[SimpleMolecule("agent")] as Boolean
 
     override fun alive(): Boolean {
-        if(!iAmAlone() && deathTime != Double.POSITIVE_INFINITY && deathTime < environment.simulation.time.toDouble()) {
+        if (!iAmAlone() && deathTime != Double.POSITIVE_INFINITY && deathTime < environment.simulation.time.toDouble()) {
             node.setConcentration(SimpleMolecule("down"), true as T)
         }
         return !(node.contents[SimpleMolecule("down")] as Boolean)
@@ -62,31 +64,34 @@ class DepotsSensorProperty<T : Any, P : Position<P>>(
     override fun isTaskOver(task: NodeFormalization): Boolean {
         val task = environment.getNodeByID(task.id)
         // get my neighborhood
-        val myNeighbours = lookup.computeNeighborhood(node,environment)
+        val myNeighbours = lookup.computeNeighborhood(node, environment)
         // search if the task is in my neighborhood
         val isInMyNeighborhood = myNeighbours.any { it.id == task.id }
         // check if the task is done
-        val isDone = if (task.contains(SimpleMolecule(DESTINATION_DEPOT_MOLECULE)) || task.contains(SimpleMolecule(SOURCE_DEPOT_MOLECULE))) {
-            false
-        } else {
-            task.contents[SimpleMolecule("isDone")] as Double == 1.0
-        }
+        val isDone =
+            if (task.contains(SimpleMolecule(DESTINATION_DEPOT_MOLECULE)) ||
+                task.contains(SimpleMolecule(SOURCE_DEPOT_MOLECULE))
+            ) {
+                false
+            } else {
+                task.contents[SimpleMolecule("isDone")] as Double == 1.0
+            }
         return isInMyNeighborhood && isDone
     }
 
     private fun iAmAlone(): Boolean {
-
-        val result = environment.nodes
-            .filter { it.contents[SimpleMolecule("down")] == false }
-            .filter { it.contents[SimpleMolecule("agent")] == true }
-            .filter { it.id != node.id }
-            .isEmpty()
+        val result =
+            environment.nodes
+                .filter { it.contents[SimpleMolecule("down")] == false }
+                .filter { it.contents[SimpleMolecule("agent")] == true }
+                .filter { it.id != node.id }
+                .isEmpty()
         return result
     }
 
     override fun isReachLastTask(task: NodeFormalization): Boolean {
         // get my neighborhood
-        val myNeighbours = lookup.computeNeighborhood(node,environment)
+        val myNeighbours = lookup.computeNeighborhood(node, environment)
         // search if the task is in my neighborhood
         val isInMyNeighborhood = myNeighbours.any { it.id == task.id }
         // check if the task is done

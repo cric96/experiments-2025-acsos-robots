@@ -1,6 +1,5 @@
 package it.unibo.alchemist.model.sensors
 
-import it.unibo.alchemist.model.Node
 import it.unibo.formalization.Node as NodeFormalization
 
 interface DepotsSensor {

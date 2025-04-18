@@ -12,50 +12,56 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 /** Export utils **/
-fun Pair<Double, Double>.distance(other: Pair<Double, Double>): Double {
-    return sqrt((this.first - other.first).pow(2.0) + (this.second - other.second).pow(2.0))
-}
+fun Pair<Double, Double>.distance(other: Pair<Double, Double>): Double =
+    sqrt((this.first - other.first).pow(2.0) + (this.second - other.second).pow(2.0))
 
-fun Aggregate<Int>.distanceTracking(env: EnvironmentVariables, locationSensor: LocationSensor) {
-    val (distance, _) = evolve(0.0 to locationSensor.coordinates()) { (totalDistance, myPosition) ->
-        val currentPosition = locationSensor.coordinates()
-        val distance = currentPosition.distance(myPosition)
-        val newDistance = totalDistance + distance
-        newDistance to currentPosition
-    }
+fun Aggregate<Int>.distanceTracking(
+    env: EnvironmentVariables,
+    locationSensor: LocationSensor,
+) {
+    val (distance, _) =
+        evolve(0.0 to locationSensor.coordinates()) { (totalDistance, myPosition) ->
+            val currentPosition = locationSensor.coordinates()
+            val distance = currentPosition.distance(myPosition)
+            val newDistance = totalDistance + distance
+            newDistance to currentPosition
+        }
     env["distance"] = distance
 }
 
-/** Aggregate functions **/
-// Utility: gossip information with stabilization, namely when one node dies, that information is not propagated
+/* Aggregate functions
+   Utility: gossip information with stabilization,
+   namely when one node dies,
+   that information is not propagated
+ */
 fun <D> Aggregate<Int>.multiBroadcastBounded(
     distanceSensor: CollektiveDevice<*>,
     sources: Set<Int>,
     value: D,
     maxBound: Double,
-): Map<Int, D> {
-    return multiGradientCast(
+): Map<Int, D> =
+    multiGradientCast(
         sources = sources,
         local = value to 0.0,
         metric = with(distanceSensor) { distances() },
         accumulateData = { fromSource, distance, data ->
             data.first to (fromSource + distance)
-        }
+        },
     ).filter { it.value.second < maxBound }.mapValues { it.value.first }
-}
 
 fun Aggregate<Int>.gossipNodeCoordinates(
     source: Node,
     distanceSensor: CollektiveDevice<*>,
     allIds: Set<Int>,
-    maxBound: Double
+    maxBound: Double,
 ): List<Node> {
-    val globalView = multiBroadcastBounded(
-        distanceSensor = distanceSensor,
-        sources = allIds,
-        value = source,
-        maxBound = maxBound
-    ).values
+    val globalView =
+        multiBroadcastBounded(
+            distanceSensor = distanceSensor,
+            sources = allIds,
+            value = source,
+            maxBound = maxBound,
+        ).values
     val removeMyself = globalView.filter { it.id != localId }
     return removeMyself + listOf(source)
 }
@@ -65,24 +71,34 @@ fun Aggregate<Int>.isGlobalPathConsistent(
     paths: Map<Int, List<Int>>,
     distanceSensor: CollektiveDevice<*>,
     allIds: Set<Int>,
-    maxBound: Double
-): Boolean = multiBroadcastBounded(
+    maxBound: Double,
+): Boolean =
+    multiBroadcastBounded(
         distanceSensor = distanceSensor,
         sources = allIds,
         value = paths.hashCode(),
-        maxBound = maxBound
+        maxBound = maxBound,
     ).values.all { it == paths.hashCode() }
 
 /** Stable check (time aspect) **/
-fun <E> Aggregate<Int>.history(value: E, size: Int): List<E> = evolve(listOf(value)) { listOf(value).plus(it).take(size) }
+fun <E> Aggregate<Int>.history(
+    value: E,
+    size: Int,
+): List<E> = evolve(listOf(value)) { listOf(value).plus(it).take(size) }
 
-fun <E> Aggregate<Int>.stableFor(value: E, size: Int): Boolean {
+fun <E> Aggregate<Int>.stableFor(
+    value: E,
+    size: Int,
+): Boolean {
     val history = history(value, size)
     return history.size > 2 && history.all { it == value }
 }
 
-
-fun <E, Y> Aggregate<Int>.stableForBy(value: E, size: Int, by: (E) -> Y): Boolean {
+fun <E, Y> Aggregate<Int>.stableForBy(
+    value: E,
+    size: Int,
+    by: (E) -> Y,
+): Boolean {
     val history = history(value, size)
     return history.size > 2 && history.all { by(it) == by(value) }
 }
@@ -92,24 +108,28 @@ fun Aggregate<Int>.areAllStable(
     stable: Boolean,
     distanceSensor: CollektiveDevice<*>,
     allIds: Set<Int>,
-    maxBound: Double
-): Boolean = multiBroadcastBounded(
+    maxBound: Double,
+): Boolean =
+    multiBroadcastBounded(
         distanceSensor = distanceSensor,
         sources = allIds,
         value = stable,
-        maxBound = maxBound
+        maxBound = maxBound,
     ).values.all { it }
-
 
 /**
  * Gossip the done tasks to all the nodes.
  */
-fun Aggregate<Int>.gossipTasksDone(dones: Set<Node>): Set<Node> =
-    nonStabilizingGossip(dones) { left, right -> left + right }
+fun Aggregate<Int>.gossipTasksDone(dones: Set<Node>): Set<Node> = nonStabilizingGossip(dones) { left, right -> left + right }
 
 val shouldStopWindow = 180
 val cycleNumber = 10
-fun Aggregate<Int>.breakingCycle(env: EnvironmentVariables, locationSensor: LocationSensor, depotsSensor: DepotsSensor): Boolean {
+
+fun Aggregate<Int>.breakingCycle(
+    env: EnvironmentVariables,
+    locationSensor: LocationSensor,
+    depotsSensor: DepotsSensor,
+): Boolean {
     val positionTrack = history(locationSensor.coordinates(), shouldStopWindow)
     val sorted = positionTrack.sortedWith(compareBy({ it.first }, { it.second }))
     val min = sorted.first()
@@ -117,7 +137,7 @@ fun Aggregate<Int>.breakingCycle(env: EnvironmentVariables, locationSensor: Loca
     // count how many max and min are inside
     val minCount = sorted.count { it == min }
     val maxCount = sorted.count { it == max }
-    if(minCount > cycleNumber && maxCount > cycleNumber && min != max) {
+    if (minCount > cycleNumber && maxCount > cycleNumber && min != max) {
         env["target"] = depotsSensor.destinationDepot.position
         return true
     }

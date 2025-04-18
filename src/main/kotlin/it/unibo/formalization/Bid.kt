@@ -1,7 +1,5 @@
 package it.unibo.formalization
 
-import it.unibo.alchemist.model.positions.Euclidean2DPosition
-
 data class Node(
     val position: Pair<Double, Double>,
     val id: Int,
@@ -13,9 +11,8 @@ data class Node(
     }
 }
 
-
 data class Bid(
     val task: Node,
     val robot: Int,
-    val cost: Double // Can be marginal cost or adjusted cost
+    val cost: Double, // Can be marginal cost or adjusted cost
 )

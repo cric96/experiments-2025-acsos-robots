@@ -37,9 +37,13 @@ class CollektiveDevice<P>(
     val environment: Environment<Any?, P>,
     override val node: Node<Any?>,
     private val retainMessagesFor: Time? = null,
-) : NodeProperty<Any?>, Mailbox<Int>, EnvironmentVariables where P : Position<P> {
-
-    private data class TimedMessage(val receivedAt: Time, val payload: Message<Int, *>)
+) : NodeProperty<Any?>,
+    Mailbox<Int>,
+    EnvironmentVariables where P : Position<P> {
+    private data class TimedMessage(
+        val receivedAt: Time,
+        val payload: Message<Int, *>,
+    )
 
     override val inMemory: Boolean = true
 
@@ -61,18 +65,22 @@ class CollektiveDevice<P>(
 
     private val validMessages: MutableMap<Int, TimedMessage> = mutableMapOf()
 
-    private fun receiveMessage(time: Time, message: Message<Int, *>) {
+    private fun receiveMessage(
+        time: Time,
+        message: Message<Int, *>,
+    ) {
         validMessages += message.senderId to TimedMessage(time, message)
     }
 
     /**
      * Returns the distances to the neighboring nodes.
      */
-    fun <ID : Any> Aggregate<ID>.distances(): Field<ID, Double> = environment.getPosition(node).let { nodePosition ->
-        neighboring(nodePosition.coordinates).map { position ->
-            nodePosition.distanceTo(environment.makePosition(position))
+    fun <ID : Any> Aggregate<ID>.distances(): Field<ID, Double> =
+        environment.getPosition(node).let { nodePosition ->
+            neighboring(nodePosition.coordinates).map { position ->
+                nodePosition.distanceTo(environment.makePosition(position))
+            }
         }
-    }
 
     override fun cloneOnNewNode(node: Node<Any?>): NodeProperty<Any?> =
         CollektiveDevice(randomGenerator, environment, node, retainMessagesFor)
@@ -113,7 +121,10 @@ class CollektiveDevice<P>(
             override val neighbors: Set<Int> get() = messages.keys
 
             @Suppress("UNCHECKED_CAST")
-            override fun <Value> dataAt(path: Path, dataSharingMethod: DataSharingMethod<Value>): Map<Int, Value> =
+            override fun <Value> dataAt(
+                path: Path,
+                dataSharingMethod: DataSharingMethod<Value>,
+            ): Map<Int, Value> =
                 messages
                     .mapValues { (_, message) ->
                         message.sharedData.getOrElse(path) { NoValue } as Value
@@ -126,14 +137,21 @@ class CollektiveDevice<P>(
     @Suppress("UNCHECKED_CAST")
     override fun <T> get(name: String): T = node.getConcentration(SimpleMolecule(name)) as T
 
-    override fun <T> getOrNull(name: String): T? = when {
-        isDefined(name) -> get(name)
-        else -> null
-    }
+    override fun <T> getOrNull(name: String): T? =
+        when {
+            isDefined(name) -> get(name)
+            else -> null
+        }
 
-    override fun <T> getOrDefault(name: String, default: T): T = getOrNull(name) ?: default
+    override fun <T> getOrDefault(
+        name: String,
+        default: T,
+    ): T = getOrNull(name) ?: default
 
     override fun isDefined(name: String): Boolean = node.contains(SimpleMolecule(name))
 
-    override fun <T> set(name: String, value: T): T = value.also { node.setConcentration(SimpleMolecule(name), it) }
+    override fun <T> set(
+        name: String,
+        value: T,
+    ): T = value.also { node.setConcentration(SimpleMolecule(name), it) }
 }

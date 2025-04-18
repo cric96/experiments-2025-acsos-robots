@@ -6,13 +6,13 @@ import it.unibo.alchemist.model.NodeProperty
 import it.unibo.alchemist.model.Position
 import org.apache.commons.math3.random.RandomGenerator
 import it.unibo.formalization.Node as NodeFormalization
+
 class LocationSensorProperty<T : Any, P : Position<P>>(
     private val environment: Environment<T, P>,
     override val node: Node<T>,
     val randomGenerator: RandomGenerator,
 ) : LocationSensor,
-    NodeProperty<T>
-{
+    NodeProperty<T> {
     override fun cloneOnNewNode(node: Node<T>): NodeProperty<T> = LocationSensorProperty(environment, node, randomGenerator)
 
     override fun coordinates(): Pair<Double, Double> {
@@ -33,9 +33,9 @@ class LocationSensorProperty<T : Any, P : Position<P>>(
 
         val position = environment.getPosition(nodeAlchemist).coordinates
         // add a gaussian noise for each coordinate:
-        //for (i in position.indices) {
+        // for (i in position.indices) {
         //    position[i] += (randomGenerator.nextGaussian() * chaosAmount)
-        //}
+        // }
         return position.toList()
     }
 }

@@ -22,7 +22,7 @@ class TrajectoryEffect : it.unibo.alchemist.boundary.swingui.effect.api.Effect {
 
     private var trackEnabled: Boolean = true
 
-    //private var snapshotSize: Int = 1000
+    // private var snapshotSize: Int = 1000
 
     private var nodeSize: Int = 4
 
@@ -32,14 +32,13 @@ class TrajectoryEffect : it.unibo.alchemist.boundary.swingui.effect.api.Effect {
 
     private var maxValue: String = ""
 
-
     override fun <T : Any, P : Position2D<P>> apply(
         g: Graphics2D,
         node: Node<T>,
         environment: Environment<T, P>,
         wormhole: Wormhole2D<P>,
     ) {
-        if(!node.contents.containsKey(SimpleMolecule("agent"))) return
+        if (!node.contents.containsKey(SimpleMolecule("agent"))) return
         val nodePosition: P = environment.getPosition(node)
         val viewPoint: Point = wormhole.getViewPoint(nodePosition)
         val (x, y) = Pair(viewPoint.x, viewPoint.y)
@@ -47,7 +46,6 @@ class TrajectoryEffect : it.unibo.alchemist.boundary.swingui.effect.api.Effect {
     }
 
     override fun getColorSummary(): Color = Color.BLACK
-
 
     private fun <T : Any, P : Position2D<P>> drawDirectedNode(
         graphics2D: Graphics2D,
@@ -74,7 +72,7 @@ class TrajectoryEffect : it.unibo.alchemist.boundary.swingui.effect.api.Effect {
         shape: Shape,
     ) {
         val positions = positionsMemory[node.id] ?: emptyList()
-        val trajectory = positions//.takeLast(snapshotSize)
+        val trajectory = positions // .takeLast(snapshotSize)
         if (trajectory.size > 1) {
             trajectory.zipWithNext().forEachIndexed { index, value ->
                 @Suppress("UNCHECKED_CAST")
@@ -90,31 +88,46 @@ class TrajectoryEffect : it.unibo.alchemist.boundary.swingui.effect.api.Effect {
         }
     }
 
-    private fun computeTransform(x: Int, y: Int, size: Double, rotation: Double): AffineTransform =
+    private fun computeTransform(
+        x: Int,
+        y: Int,
+        size: Double,
+        rotation: Double,
+    ): AffineTransform =
         AffineTransform().apply {
             translate(x.toDouble(), y.toDouble())
             scale(size, size)
             rotate(rotation)
         }
 
-    private fun computeColorOrBlack(node: Node<*>, environment: Environment<*, *>): Color = node
-        .takeIf { it.contains(SimpleMolecule(colorMolecule)) }
-        ?.getConcentration(SimpleMolecule(colorMolecule))
-        ?.let { it as? Number }
-        ?.toDouble()
-        ?.let {
-            Color.getHSBColor(
-                (it / (maxValue.toDoubleOrNull() ?: environment.nodeCount.toDouble())).toFloat(),
-                1f,
-                1f,
-            )
-        }
-        ?: Color.BLACK
+    private fun computeColorOrBlack(
+        node: Node<*>,
+        environment: Environment<*, *>,
+    ): Color =
+        node
+            .takeIf { it.contains(SimpleMolecule(colorMolecule)) }
+            ?.getConcentration(SimpleMolecule(colorMolecule))
+            ?.let { it as? Number }
+            ?.toDouble()
+            ?.let {
+                Color.getHSBColor(
+                    (it / (maxValue.toDoubleOrNull() ?: environment.nodeCount.toDouble())).toFloat(),
+                    1f,
+                    1f,
+                )
+            }
+            ?: Color.BLACK
 
-    private fun <P : Position2D<P>, T> updateTrajectory(node: Node<T>, environment: Environment<T, P>) {
+    private fun <P : Position2D<P>, T> updateTrajectory(
+        node: Node<T>,
+        environment: Environment<T, P>,
+    ) {
         val positions = positionsMemory[node.id] ?: mutableListOf()
         val lastDraw = lastDrawMemory[node.id] ?: 0
-        val roundedTime = environment.simulation.time.toDouble().toInt()
+        val roundedTime =
+            environment.simulation.time
+                .toDouble()
+                .toInt()
         val threshouldRedraw = 0.05
         if (roundedTime >= lastDraw) {
             lastDrawMemory[node.id] = lastDraw
@@ -123,7 +136,7 @@ class TrajectoryEffect : it.unibo.alchemist.boundary.swingui.effect.api.Effect {
             val currentPosition = environment.getPosition(node)
             val shouldNotUpdate = lastPosition?.distanceTo(currentPosition)?.let { it < threshouldRedraw } ?: false
             // if it is to near, do not put the new position
-            if(shouldNotUpdate) return
+            if (shouldNotUpdate) return
             positions.add(environment.getPosition(node) to rotation(node))
             if (positions.size > MAX_SNAPSHOT_LENGTH) {
                 positions.removeAt(0)
@@ -132,12 +145,13 @@ class TrajectoryEffect : it.unibo.alchemist.boundary.swingui.effect.api.Effect {
         }
     }
 
-    private fun <T> rotation(node: Node<T>): Double = node
-        .takeIf { it.contains(SimpleMolecule(velocityMolecule)) }
-        ?.getConcentration(SimpleMolecule(velocityMolecule))
-        ?.let { it as? DoubleArray }
-        ?.let { Math.atan2(it[0], it[1]) }
-        ?: 0.0
+    private fun <T> rotation(node: Node<T>): Double =
+        node
+            .takeIf { it.contains(SimpleMolecule(velocityMolecule)) }
+            ?.getConcentration(SimpleMolecule(velocityMolecule))
+            ?.let { it as? DoubleArray }
+            ?.let { Math.atan2(it[0], it[1]) }
+            ?: 0.0
 
     private companion object {
         private const val MAX_NODE_SIZE: Int = 20
@@ -146,24 +160,14 @@ class TrajectoryEffect : it.unibo.alchemist.boundary.swingui.effect.api.Effect {
 
         private const val MAX_SNAPSHOT_LENGTH: Int = 1000
 
-        private const val MIN_SNAPSHOT_LENGTH: Int = 10
-
-        private const val DEFAULT_SNAPSHOT_LENGTH: Int = 140
-
-        private const val ADJUST_ALPHA_FACTOR: Int = 4
-
-        private const val CLOCK: Int = 10
-
-        private const val MAX_COLOR: Double = 255.0
-
         private const val DRONE_SIZE = 4.0
 
-        private val DRONE_SHAPE: Ellipse2D.Float = Ellipse2D.Float(-DRONE_SIZE.toFloat() / 2.0f, -DRONE_SIZE.toFloat() / 2.0f, DRONE_SIZE.toFloat(), DRONE_SIZE.toFloat())
-
+        private val DRONE_SHAPE: Ellipse2D.Float =
+            Ellipse2D.Float(
+                -DRONE_SIZE.toFloat() / 2.0f,
+                -DRONE_SIZE.toFloat() / 2.0f,
+                DRONE_SIZE.toFloat(),
+                DRONE_SIZE.toFloat(),
+            )
     }
 }
-
-
-
-
-
