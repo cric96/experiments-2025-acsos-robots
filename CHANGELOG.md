@@ -1,3 +1,28 @@
+## [1.11.0](https://github.com/angelacorte/experiments-2025-acsos-robots/compare/1.10.1...1.11.0) (2025-04-18)
+
+### Features
+
+* add ENV variable for leader based flag ([9f32bc0](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/9f32bc054d103142c4eb54a36bcc3bfcc70a7c87))
+
+### Dependency updates
+
+* **deps:** update collektive to v22.3.1 ([2d5074e](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/2d5074e0d656a2e650298c5c4c92d100017ffa3b))
+
+### Bug Fixes
+
+* change seed and output directory ([4973d21](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/4973d21bc4cf70b790ffa05293d39db1e9522248))
+* **ci:** add missing env variables ([74d7551](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/74d7551a43bc715df31ae0d287116c958347385e))
+* make variable consistent among simulations ([10db467](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/10db467582d712d690ac20bec7e4ee16acac038e))
+* remove check on windows and docker simulations ([a3a0ade](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/a3a0ade5c59c0db7b7dcb907c969afad693abbfc))
+* remove line left from refactoring ([fa8e6ed](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/fa8e6edcea143cf986e83bbaf43e3fb9a1850f0e))
+* update docker compose to run simulations in different services ([fb49df6](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/fb49df67e7db781c6cb4c28ab6c238a4a1ca8731))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.10.1 [skip ci] ([28ac80f](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/28ac80f16dfac20bb0f72b3f318b39826ff1d26b))
+* remove charts generation ([d38c29f](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/d38c29f7a559def6cb95997e37d7be0d73e2e8a2))
+* update project name ([70dae14](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/70dae14a8f848926bf9243008b2d956442c70392))
+
 ## [1.10.1](https://github.com/angelacorte/depot-tasks-environment/compare/1.10.0...1.10.1) (2025-04-17)
 
 ### Dependency updates
