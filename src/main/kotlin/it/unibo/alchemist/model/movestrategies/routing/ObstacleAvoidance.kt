@@ -38,10 +38,12 @@ data class ObstacleAvoidance<W, T, P>(
                         val randomDirection = randomGenerator.nextInt(2)
                         if (randomDirection == 0) finalIndex = -index
                         val angle = atan2(segment.x, segment.y) + finalIndex * 2 * PI / SLICES
-                        val newDestination = currentPos + doubleArrayOf(
-                            maxDistance * cos(angle),
-                            maxDistance * sin(angle)
-                        )
+                        val newDestination =
+                            currentPos +
+                                doubleArrayOf(
+                                    maxDistance * cos(angle),
+                                    maxDistance * sin(angle),
+                                )
                         angle to environment.next(currentPos, newDestination)
                     }.maxWith(
                         compareBy<Pair<Double, P>> { (_, it) -> currentPos.distanceTo(it) }

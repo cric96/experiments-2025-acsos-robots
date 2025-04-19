@@ -60,7 +60,8 @@ class DepotsSensorProperty<T : Any, P : Position<P>>(
     override fun isAgent(): Boolean = node.contents[SimpleMolecule("agent")] as Boolean
 
     override fun alive(): Boolean {
-        val deathCondition = !iAmAlone() &&
+        val deathCondition =
+            !iAmAlone() &&
                 deathTime != Double.POSITIVE_INFINITY &&
                 deathTime < environment.simulation.time.toDouble()
         if (deathCondition) {
@@ -92,8 +93,7 @@ class DepotsSensorProperty<T : Any, P : Position<P>>(
             environment.nodes
                 .filter { it.contents[SimpleMolecule("down")] == false }
                 .filter { it.contents[SimpleMolecule("agent")] == true }
-                .filter { it.id != node.id }
-                .isEmpty()
+                .any { it.id != node.id }
         return result
     }
 
@@ -112,8 +112,10 @@ class DepotsSensorProperty<T : Any, P : Position<P>>(
     companion object {
         /** Source depot molecule name. */
         const val SOURCE_DEPOT_MOLECULE = "source"
+
         /** Destination depot molecule name. */
         const val DESTINATION_DEPOT_MOLECULE = "destination"
+
         /** Task molecule name. */
         const val TASK_MOLECULE = "task"
         private const val MINIMUM_RADIUS = 0.01

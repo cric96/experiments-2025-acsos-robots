@@ -27,10 +27,9 @@ class AllocationBasedOnFormalization<T, P : Position<P>>(
         tasks: List<Node<T>>,
         sourceDepot: Node<T>,
         targetDepot: Node<T>,
-    ): List<Allocation<T>> {
-        return updateCacheOrEmpty(
+    ): List<Allocation<T>> =
+        updateCacheOrEmpty(
             robots,
             computeAllocator(robots, tasks, targetDepot),
         ) { cache.size != robots.size }
-    }
 }

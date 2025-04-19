@@ -13,24 +13,24 @@ class ReallocatedAtTheEnd<T, P : Position<P>>(
     environment: Environment<T, P>,
     distribution: TimeDistribution<T>,
 ) : CacheBasedAllocationStrategy<T, P>(environment, distribution) {
+    private fun areAllAtTheEnd(
+        robots: List<Node<T>>,
+        targetDepot: Node<T>,
+    ): Boolean =
+        robots.all {
+            environment.getDistanceBetweenNodes(it, targetDepot) < RADIUS
+        }
+
     override fun allocate(
         robots: List<Node<T>>,
         tasks: List<Node<T>>,
         sourceDepot: Node<T>,
         targetDepot: Node<T>,
-    ): List<Allocation<T>> {
-        val robotsPosition =
-            robots.map { it.toNodeFormalization(environment) }
-        // get if every node are near to the target depot or no allocation is given
-        val areAllAtTheEnd =
-            robotsPosition.all {
-                environment.getDistanceBetweenNodes(environment.getNodeByID(it.id), targetDepot) < RADIUS
-            }
-        return updateCacheOrEmpty(
+    ): List<Allocation<T>> =
+        updateCacheOrEmpty(
             robots,
-            computeAllocator(tasks, robots, targetDepot),
-        ) { areAllAtTheEnd || allocationCache.isEmpty() }
-    }
+            computeAllocator(robots, tasks, targetDepot),
+        ) { areAllAtTheEnd(robots, targetDepot) || allocationCache.isEmpty() }
 
     private companion object {
         private const val RADIUS = 0.01

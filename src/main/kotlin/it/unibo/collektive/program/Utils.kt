@@ -11,7 +11,8 @@ import it.unibo.formalization.Node
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-/* Export utils **/
+// Export utils *
+
 /**
  * A function that computes the distance between two points in a 2D space.
  */
@@ -61,6 +62,7 @@ fun <D> Aggregate<Int>.multiBroadcastBounded(
         },
     ).filter { it.value.second < maxBound }.mapValues { it.value.first }
 }
+
 /**
  * Gossip the node coordinates to all the nodes.
  * @param source what the node should gossip
@@ -106,7 +108,8 @@ fun Aggregate<Int>.isGlobalPathConsistent(
         maxBound = maxBound,
     ).values.all { it == paths.hashCode() }
 
-/* Stable check (time aspect) **/
+// Stable check (time aspect) *
+
 /**
  * A function that tracks the history of a value.
  * @param value the value to track
@@ -145,7 +148,8 @@ fun <E, Y> Aggregate<Int>.stableForBy(
     return history.size > 2 && history.all { by(it) == by(value) }
 }
 
-/* Stable check (space aspect) **/
+// Stable check (space aspect) *
+
 /**
  * Check if a value is stable in the whole system via gossiping.
  * @param stable the value to check
@@ -171,8 +175,7 @@ fun Aggregate<Int>.areAllStable(
  * Note! this is not self-stabilizing,
  * so if a node dies, the information will remain in the system.
  */
-fun Aggregate<Int>.gossipTasksDone(dones: Set<Node>): Set<Node> =
-    nonStabilizingGossip(dones) { left, right -> left + right }
+fun Aggregate<Int>.gossipTasksDone(dones: Set<Node>): Set<Node> = nonStabilizingGossip(dones) { l, r -> l + r }
 
 private const val SHOULD_STOP_WINDOW = 180
 private const val CYCLE_NUMBER = 10

@@ -18,7 +18,11 @@ class LocationSensorProperty<T : Any, P : Position<P>>(
 ) : LocationSensor,
     NodeProperty<T> {
     override fun cloneOnNewNode(node: Node<T>): NodeProperty<T> =
-        LocationSensorProperty(environment, node, randomGenerator)
+        LocationSensorProperty(
+            environment,
+            node,
+            randomGenerator,
+        )
 
     override fun coordinates(): Pair<Double, Double> {
         val position = environment.getPosition(node).coordinates

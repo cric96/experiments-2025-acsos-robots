@@ -50,8 +50,10 @@ abstract class InitialAllocationStrategy<T, P : Position<P>>(
             it.robot.setConcentration(
                 SimpleMolecule(TASKS_MOLECULE),
                 (it.tasks).map { node ->
-                    val position: Pair<Double, Double> = environment.getPosition(node)
-                        .let { position -> position.coordinates[0] to position.coordinates[1] }
+                    val position: Pair<Double, Double> =
+                        environment
+                            .getPosition(node)
+                            .let { position -> position.coordinates[0] to position.coordinates[1] }
                     NodeFormalization(position, node.id)
                 } as T,
             )

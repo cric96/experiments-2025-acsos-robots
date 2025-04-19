@@ -14,14 +14,16 @@ import it.unibo.collektive.stdlib.spreading.gradientCast
 import it.unibo.formalization.GreedyAllocationStrategy
 import it.unibo.formalization.Node as NodeFormalization
 
-/* Utils **/
+// Utils *
+
 /**
  * A simple function which returns the tasks without the source depot.
  */
 fun allTasksWithoutSource(depotsSensor: DepotsSensor): List<NodeFormalization> =
     (depotsSensor.tasks.toSet() - setOf(depotsSensor.sourceDepot)).toList().sortedBy { it.id }
 
-/* Programs */
+// Programs
+
 /**
  * The replanning function is used to recompute the path of the robot
  * when the environment changes.
@@ -87,10 +89,10 @@ fun Aggregate<Int>.gossipReplanning(
     evolve(ReplanningState.createFrom(allTasks, depotsSensor)) { state ->
         val nodeFormalization = NodeFormalization(locationSensor.coordinates(), localId)
 
-        /* All task ever done (via nonStabilizingGossip) */
+        // All task ever done (via nonStabilizingGossip)
         val allTaskDone = gossipTasksDone(state.dones.filter { it.value }.keys) // avoid to recompute task already done
 
-        /* All robots that I may see with multipath communication */
+        // All robots that I may see with multipath communication
         val allRobots = gossipNodeCoordinates(nodeFormalization, distanceSensor, allIds, MAX_BOUND)
         val stableCondition =
             gossipStabilityCondition(
@@ -100,9 +102,9 @@ fun Aggregate<Int>.gossipReplanning(
                 allRobots,
             )
         when {
-            /* stability condition is not satisfied, recompute the path */
+            // stability condition is not satisfied, recompute the path
             !stableCondition -> {
-                /* allocation part: recompute the path giving the new information */
+                // allocation part: recompute the path giving the new information
                 val reducedTasks = allTasks.filter { it !in allTaskDone }
                 val globalPlan =
                     GreedyAllocationStrategy(
@@ -141,11 +143,11 @@ fun Aggregate<Int>.gossipStabilityCondition(
     allIds: Set<Int>,
     allRobots: List<NodeFormalization>,
 ): Boolean {
-    /* Consensus part: check if the node should recompute the path */
+    // Consensus part: check if the node should recompute the path
     val pathMap = state.allocations.associate { it.robot.id to it.route.map { robot -> robot.id } }
     val globalConsistency = isGlobalPathConsistent(pathMap, distanceSensor, allIds, MAX_BOUND)
     val allConsistent = areAllStable(globalConsistency, distanceSensor, allIds, MAX_BOUND)
-    /* Check if the robots are stable */
+    // Check if the robots are stable
     val areRobotStable = stableFor(allRobots.map { it.id }.toSet(), TIME_WINDOW)
     return areRobotStable && allConsistent
 }
@@ -193,7 +195,10 @@ fun Aggregate<Int>.boundedElectionReplanning(
                 env["replanning"] = 0
                 state.allocations
             }
-        val isLocalPlanStable = stableForBy(newPlan, TIME_WINDOW) { it.map { it.robot.id }.toSet() }
+        val isLocalPlanStable =
+            stableForBy(newPlan, TIME_WINDOW) {
+                it.map { allocation -> allocation.robot.id }.toSet()
+            }
         // share
         val distanceField = with(distanceSensor) { distances() }
         val leaderPlan = gradientCast(isLeader, newPlan, distanceField)

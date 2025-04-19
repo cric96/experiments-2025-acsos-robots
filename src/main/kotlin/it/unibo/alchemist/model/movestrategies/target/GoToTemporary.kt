@@ -49,14 +49,17 @@ class GoToTemporary<T, P>(
                         (0 until slices)
                             .asSequence()
                             .map { index ->
-                                val angle = atan2(
-                                    segment.getCoordinate(1),
-                                    segment.getCoordinate(0)
-                                ) + index * 2 * PI / slices
-                                val newDestination = currentPosition + doubleArrayOf(
-                                    maxDistance * cos(angle),
-                                    maxDistance * sin(angle)
-                                )
+                                val angle =
+                                    atan2(
+                                        segment.getCoordinate(1),
+                                        segment.getCoordinate(0),
+                                    ) + index * 2 * PI / slices
+                                val newDestination =
+                                    currentPosition +
+                                        doubleArrayOf(
+                                            maxDistance * cos(angle),
+                                            maxDistance * sin(angle),
+                                        )
                                 angle to environment.next(currentPosition, newDestination)
                             }.maxWith(
                                 compareBy<Pair<Double, P>> { (_, it) -> currentPosition.distanceTo(it) }

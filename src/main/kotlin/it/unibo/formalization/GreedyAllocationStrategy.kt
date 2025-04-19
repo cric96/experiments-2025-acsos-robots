@@ -93,11 +93,12 @@ class GreedyAllocationStrategy(
         val assignedRobots = mutableSetOf<Int>()
         val tasksToRemove = mutableListOf<Node>()
         var assignedAny = false
-        val taskWithBids = sortedTasks.mapNotNull { task ->
-            taskBids[task]?.takeIf { it.isNotEmpty() }?.let { nonEmptyBids ->
-                task to nonEmptyBids
+        val taskWithBids =
+            sortedTasks.mapNotNull { task ->
+                taskBids[task]?.takeIf { it.isNotEmpty() }?.let { nonEmptyBids ->
+                    task to nonEmptyBids
+                }
             }
-        }
 
         for ((task, bids) in taskWithBids) { // Destructuring declaration for Pair(task, bids)
 

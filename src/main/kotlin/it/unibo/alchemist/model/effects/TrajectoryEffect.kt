@@ -17,22 +17,17 @@ import java.awt.geom.Ellipse2D
 @Suppress("DEPRECATION")
 class TrajectoryEffect : it.unibo.alchemist.boundary.swingui.effect.api.Effect {
     @Transient
-    private var positionsMemory: MutableMap<Int, MutableList<Pair<Position2D<*>, Double>>> = mutableMapOf()
+    private val positionsMemory: MutableMap<Int, MutableList<Pair<Position2D<*>, Double>>> = mutableMapOf()
 
     @Transient
-    private var lastDrawMemory: MutableMap<Int, Int> = mutableMapOf()
-
-    private var trackEnabled: Boolean = true
-
+    private val lastDrawMemory: MutableMap<Int, Int> = mutableMapOf()
     // private var snapshotSize: Int = 1000
 
-    private var nodeSize: Int = 4
+    private val nodeSize: Int = 4
 
-    private var colorMolecule: String = "hue"
+    private val colorMolecule: String = "hue"
 
-    private var velocityMolecule: String = "velocity"
-
-    private var maxValue: String = ""
+    private val velocityMolecule: String = "velocity"
 
     override fun <T : Any, P : Position2D<P>> apply(
         g: Graphics2D,
@@ -60,7 +55,7 @@ class TrajectoryEffect : it.unibo.alchemist.boundary.swingui.effect.api.Effect {
         val transform = computeTransform(x, y, nodeSize.toDouble(), 1.0)
         val color = computeColorOrBlack(node, environment)
         val transformedShape = transform.createTransformedShape(DRONE_SHAPE)
-        if (trackEnabled) drawTrajectory(graphics2D, node, color, wormhole)
+        drawTrajectory(graphics2D, node, color, wormhole)
         graphics2D.color = color
         graphics2D.fill(transformedShape)
         updateTrajectory(node, environment)
@@ -72,13 +67,15 @@ class TrajectoryEffect : it.unibo.alchemist.boundary.swingui.effect.api.Effect {
         colorBase: Color,
         wormhole2D: Wormhole2D<P>,
     ) {
-        val positions = positionsMemory[node.id] ?: emptyList()
+        val positions = positionsMemory[node.id].orEmpty()
         val trajectory = positions // .takeLast(snapshotSize)
         if (trajectory.size > 1) {
             trajectory.zipWithNext().forEachIndexed { index, value ->
                 @Suppress("UNCHECKED_CAST")
-                val alphaValue = ((index.toFloat() / trajectory.size) * ADJUST_COLOR_FACTOR).toInt()
-                    .coerceIn(MINIMUM_COLOR_ALPHA, ADJUST_COLOR_FACTOR)
+                val alphaValue =
+                    ((index.toFloat() / trajectory.size) * ADJUST_COLOR_FACTOR)
+                        .toInt()
+                        .coerceIn(MINIMUM_COLOR_ALPHA, ADJUST_COLOR_FACTOR)
                 val (first, second) = value
                 val startPoint = wormhole2D.getViewPoint(first.first as P)
                 val endPoint = wormhole2D.getViewPoint(second.first as P)
@@ -113,7 +110,7 @@ class TrajectoryEffect : it.unibo.alchemist.boundary.swingui.effect.api.Effect {
             ?.toDouble()
             ?.let {
                 Color.getHSBColor(
-                    (it / (maxValue.toDoubleOrNull() ?: environment.nodeCount.toDouble())).toFloat(),
+                    (it / (environment.nodeCount.toDouble())).toFloat(),
                     1f,
                     1f,
                 )

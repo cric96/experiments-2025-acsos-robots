@@ -26,5 +26,4 @@ class RandomFail<T, P : Position<P>>(
             toKill.setConcentration(SimpleMolecule("down"), true as T)
         }
     }
-
 }
