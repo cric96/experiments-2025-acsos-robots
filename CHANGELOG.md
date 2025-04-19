@@ -1,3 +1,23 @@
+## [1.11.4](https://github.com/angelacorte/experiments-2025-acsos-robots/compare/1.11.3...1.11.4) (2025-04-19)
+
+### Dependency updates
+
+* **deps:** update collektive to v22.3.2 ([2113b47](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/2113b47413dfacc07d6f06de415a7b4b80e8fbe1))
+
+### Bug Fixes
+
+* newline in yaml to trigger a release ([2b8e13e](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/2b8e13e2ef5c0452f9524855730a2c37c608e8fe))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.11.3 [skip ci] ([77d8d4e](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/77d8d4e624364a357df16a90ab5920227fbbb3f5))
+
+### Style improvements
+
+* complete the pass on style following the guidelines ([7ca8f2e](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/7ca8f2e78f6a56b30802c7d12d734de66e51d13f))
+* more on style ([5ac853b](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/5ac853b2314029348717cfa0d69b36ebc6fc9d2f))
+* pass with ktlint ([b8e424d](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/b8e424d22bed28e13ac89b731191459ca1f29d31))
+
 ## [1.11.3](https://github.com/angelacorte/experiments-2025-acsos-robots/compare/1.11.2...1.11.3) (2025-04-18)
 
 ### Bug Fixes
