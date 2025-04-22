@@ -1,3 +1,13 @@
+## [1.12.0](https://github.com/angelacorte/experiments-2025-acsos-robots/compare/1.11.6...1.12.0) (2025-04-22)
+
+### Features
+
+* reduce the simulation time ([0c1c67d](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/0c1c67df1efd7f68e4f47e5fd8a764721ac1a716))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.11.6 [skip ci] ([6f22491](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/6f22491f13d27d11faaf04cc5fbd43a42b5f48f5))
+
 ## [1.11.6](https://github.com/angelacorte/experiments-2025-acsos-robots/compare/1.11.5...1.11.6) (2025-04-22)
 
 ### Bug Fixes
