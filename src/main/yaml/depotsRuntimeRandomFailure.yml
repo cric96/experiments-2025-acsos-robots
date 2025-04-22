@@ -21,7 +21,8 @@ variables:
     formula: System.getenv("LEADER_BASED").toBoolean()
     language: kotlin
   fileName: &fileName
-    formula: "runtime-random-failure_leaderBased-${leaderBased}"
+    formula: >
+      "runtime-random-failure_leaderBased-${leaderBased}"
     language: kotlin
   totalNodes: &totalNodes
     type: ArbitraryVariable
