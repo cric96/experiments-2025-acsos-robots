@@ -1,3 +1,13 @@
+## [1.12.1](https://github.com/angelacorte/experiments-2025-acsos-robots/compare/1.12.0...1.12.1) (2025-04-22)
+
+### Bug Fixes
+
+* rollback to temurin 23 ([13e03ca](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/13e03ca7fc181e7bb68b13c506234c127964f6f5))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.12.0 [skip ci] ([13a9433](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/13a9433cc9d3b9603d180d4584cae00532b8850e))
+
 ## [1.12.0](https://github.com/angelacorte/experiments-2025-acsos-robots/compare/1.11.6...1.12.0) (2025-04-22)
 
 ### Features
