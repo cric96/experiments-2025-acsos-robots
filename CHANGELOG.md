@@ -1,3 +1,14 @@
+## [1.11.6](https://github.com/angelacorte/experiments-2025-acsos-robots/compare/1.11.5...1.11.6) (2025-04-22)
+
+### Bug Fixes
+
+* bind filename to leader based variable ([cd54c3b](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/cd54c3b8ee06754da97eec599700ea716d75ac11))
+
+### General maintenance
+
+* add lightweight versions of plotteters ([768fd42](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/768fd426ec3bb29630ef46860edd011ea46e19bb))
+* **release:** update gradle.properties .env versions to 1.11.5 [skip ci] ([7caadfb](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/7caadfb41d3e32f35a9d92448986ddbea00d1581))
+
 ## [1.11.5](https://github.com/angelacorte/experiments-2025-acsos-robots/compare/1.11.4...1.11.5) (2025-04-22)
 
 ### Dependency updates
