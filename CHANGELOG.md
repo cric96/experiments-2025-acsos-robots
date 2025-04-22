@@ -1,3 +1,18 @@
+## [1.11.5](https://github.com/angelacorte/experiments-2025-acsos-robots/compare/1.11.4...1.11.5) (2025-04-22)
+
+### Dependency updates
+
+* **deps:** update alchemist to v42.0.9 ([449198d](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/449198dd3858d01abe4249a04080130c284901cc))
+* **deps:** update eclipse-temurin docker tag to v24 ([02ee510](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/02ee510dd38a0bdfd98a7c8ec45042d836649544))
+
+### Bug Fixes
+
+* update folder positions ([fc9367b](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/fc9367b298ed9202d53815b2bc6ad222ac192e9b))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.11.4 [skip ci] ([1d64145](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/1d6414502c171e02675cfaa51fc70475a1a8cc31))
+
 ## [1.11.4](https://github.com/angelacorte/experiments-2025-acsos-robots/compare/1.11.3...1.11.4) (2025-04-19)
 
 ### Dependency updates
