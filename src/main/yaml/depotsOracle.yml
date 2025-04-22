@@ -155,4 +155,4 @@ export:
 
 terminate:
   - type: DoneIsStableForTime
-    parameters: [ 600.0, 10.0 ] # 10 minutes
+    parameters: [ 60.0, 10.0 ] # 10 minutes

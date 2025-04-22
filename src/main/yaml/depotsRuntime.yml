@@ -16,7 +16,7 @@ variables:
   communication: &communication
     type: ArbitraryVariable
     # bluetooth (50, 100, 150) -> 500 full range
-    parameters: [ 20, [ 20, 50, 100, 500 ] ]
+    parameters: [ 50, [ 20, 50, 100, 500 ] ]
   leaderBased: &leaderBased
     formula: System.getenv("LEADER_BASED").toBoolean()
     language: kotlin
@@ -178,4 +178,4 @@ export:
 
 terminate:
   - type: DoneIsStableForTime
-    parameters: [ 600.0, 10.0 ] # 10 minutes
+    parameters: [ 60.0, 10.0 ] # 10 minutes
