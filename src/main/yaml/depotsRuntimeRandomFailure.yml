@@ -20,6 +20,9 @@ variables:
   leaderBased: &leaderBased
     formula: System.getenv("LEADER_BASED").toBoolean()
     language: kotlin
+  fileName: &fileName
+    formula: "runtime-random-failure_leaderBased-${leaderBased}"
+    language: kotlin
   totalNodes: &totalNodes
     type: ArbitraryVariable
     parameters: [ 40, [ 5, 10, 20, 40 ] ]
@@ -127,7 +130,7 @@ deployments:
 export:
   - type: CSVExporter
     parameters:
-      fileNameRoot: runtime-random-failure
+      fileNameRoot: *fileName
       interval: 1.0
       exportPath: data/runtime-random-failure
     data:
