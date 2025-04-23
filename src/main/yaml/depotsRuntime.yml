@@ -18,12 +18,8 @@ variables:
     # bluetooth (50, 100, 150) -> 500 full range
     parameters: [ 50, [ 20, 50, 100, 500 ] ]
   leaderBased: &leaderBased
-    formula: System.getenv("LEADER_BASED").toBoolean()
-    language: kotlin
-  fileName: &fileName
-    formula: >
-      "runtime_leaderBased-${leaderBased}"
-    language: kotlin
+    type: SystemEnvVariable
+    parameters: [ true, "LEADER_BASED" ]
   totalNodes: &totalNodes
     type: ArbitraryVariable
     #parameters: [ 40, [ 5, 10, 20, 40 ] ]
@@ -37,7 +33,7 @@ variables:
 
 launcher:
   parameters:
-    batch: [seed, communication, totalNodes, totalTaskFactor] #leaderBased
+    batch: [seed, communication, totalNodes, totalTaskFactor, leaderBased]
     showProgress: true
     autoStart: true
 # TIME UNITS = seconds
@@ -144,7 +140,7 @@ deployments:
 export:
   - type: CSVExporter
     parameters:
-      fileNameRoot: *fileName
+      fileNameRoot: runtime
       interval: 1.0
       exportPath: data/runtime
     data:
