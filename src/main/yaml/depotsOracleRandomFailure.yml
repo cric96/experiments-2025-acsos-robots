@@ -135,12 +135,13 @@ export:
       - molecule: distance
         aggregators: [sum, mean]
         value-filter: "onlyFinite"
-      - molecule: done # task completed by nodes
+      - molecule: dones # task completed by nodes
         aggregators: [ mean ]
         value-filter: "onlyFinite"
       - type: DonesExtractor
         parameters: [ ]
-
+      - molecule: lastMovingTime
+        aggregators: [ max ]
 terminate:
   - type: DoneIsStableForTime
-    parameters: [ 60.0, 10.0 ] # 10 minutes
+    parameters: [ 60.0, 20.0 ] # 10 minutes

@@ -16,7 +16,7 @@ variables:
   communication: &communication
     type: ArbitraryVariable
     # bluetooth (50, 100, 150) -> 500 full range
-    parameters: [ 50, [ 20, 50, 100, 500 ] ]
+    parameters: [ 100, [ 20, 50, 100, 500 ] ]
   leaderBased: &leaderBased
     type: SystemEnvVariable
     parameters: [ true, "LEADER_BASED" ]
@@ -171,7 +171,8 @@ export:
         value-filter: "onlyFinite"
       - type: DonesExtractor
         parameters: [ ]
-
+      - molecule: lastMovingTime
+        aggregators: [ max ]
 terminate:
   - type: DoneIsStableForTime
-    parameters: [ 60.0, 10.0 ] # 10 minutes
+    parameters: [ 60.0, 20.0 ] # 10 minutes

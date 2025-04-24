@@ -10,7 +10,9 @@ import it.unibo.collektive.alchemist.device.sensors.EnvironmentVariables
 import it.unibo.collektive.field.Field.Companion.fold
 import it.unibo.collektive.stdlib.accumulation.convergeCast
 import it.unibo.collektive.stdlib.consensus.boundedElection
+import it.unibo.collektive.stdlib.spreading.distanceTo
 import it.unibo.collektive.stdlib.spreading.gradientCast
+import it.unibo.collektive.stdlib.util.hops
 import it.unibo.formalization.GreedyAllocationStrategy
 import it.unibo.formalization.Node as NodeFormalization
 
@@ -67,6 +69,7 @@ fun Aggregate<Int>.replanning(
     env["hue"] = localId // for debugging
     distanceTracking(env, locationSensor)
     env["neighbors"] = neighboring(1).fold(0) { acc, value -> acc + value }
+    lastMovingTime(env, locationSensor, depotsSensor)
     breakingCycle(env, locationSensor, depotsSensor)
 }
 
@@ -171,10 +174,13 @@ fun Aggregate<Int>.boundedElectionReplanning(
         } else {
             0.0
         }
+
+    val distanceField = hops().map { it.toDouble() }
     val nodePosition = NodeFormalization(locationSensor.coordinates(), localId)
+    val potential: Double = distanceTo(isLeader, metric = distanceField)
     // collect nodes
     val allRobotsFromLeader =
-        convergeCast(listOf(nodePosition), isLeader) { left, right ->
+        convergeCast(listOf(nodePosition), potential) { left, right ->
             left + right
         }
     val areRobotsStable = stableForBy(allRobotsFromLeader, TIME_WINDOW) { it.map { node -> node.id }.toSet() }
@@ -200,7 +206,6 @@ fun Aggregate<Int>.boundedElectionReplanning(
                 it.map { allocation -> allocation.robot.id }.toSet()
             }
         // share
-        val distanceField = with(distanceSensor) { distances() }
         val leaderPlan = gradientCast(isLeader, newPlan, distanceField)
         val leaderStable = gradientCast(isLeader, areRobotsStable && isLeader && isLocalPlanStable, distanceField)
         env["stable"] = leaderStable
@@ -217,7 +222,7 @@ fun Aggregate<Int>.boundedElectionReplanning(
                 ),
             )
         } else {
-            standStill(env, locationSensor) // avoid flickering
+            //standStill(env, locationSensor) // avoid flickering
             state.copy(
                 allocations = leaderPlan,
             )

@@ -29,4 +29,5 @@ fun Aggregate<Int>.followTasks(
         env["target"] = locationSensor.coordinates()
     }
     distanceTracking(env, locationSensor)
+    lastMovingTime(env, locationSensor, depotsSensor)
 }

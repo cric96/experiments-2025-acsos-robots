@@ -1,7 +1,7 @@
 incarnation: collektive
 variables:
   speed: &speed
-    formula: 0.5 # 1 m/s
+    formula: 0.5 # 0.5 m/s
   obstaclesRepulsion: &obstaclesRepulsion
     formula: 0.5
   isDone: &isDone
@@ -158,7 +158,9 @@ export:
         value-filter: "onlyFinite"
       - type: DonesExtractor
         parameters: [ ]
+      - molecule: lastMovingTime
+        aggregators: [ max ]
 
 terminate:
   - type: DoneIsStableForTime
-    parameters: [ 60.0, 10.0 ] # 10 minutes
+    parameters: [ 60.0, 20.0 ] # 10 minutes

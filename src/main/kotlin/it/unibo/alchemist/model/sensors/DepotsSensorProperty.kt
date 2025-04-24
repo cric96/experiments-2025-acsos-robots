@@ -106,6 +106,9 @@ class DepotsSensorProperty<T : Any, P : Position<P>>(
         return isInMyNeighborhood && task.id == destinationDepot.id
     }
 
+    override fun currentTime(): Double = environment.simulation.time.toDouble()
+
+
     /**
      * Constant used for the depots sensor.
      */

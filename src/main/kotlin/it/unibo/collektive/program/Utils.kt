@@ -36,6 +36,24 @@ fun Aggregate<Int>.distanceTracking(
     env["distance"] = distance
 }
 
+fun Aggregate<Int>.lastMovingTime(
+    env: EnvironmentVariables,
+    locationSensor: LocationSensor,
+    depotsSensor: DepotsSensor,
+) {
+    val (lastTime, _) =
+        evolve(0.0 to locationSensor.coordinates()) { (lastTime, myPosition) ->
+            val currentPosition = locationSensor.coordinates()
+            val distance = currentPosition.distance(myPosition)
+            if (distance > 0.0) {
+                depotsSensor.currentTime() to currentPosition
+            } else {
+                lastTime to myPosition
+            }
+        }
+    env["lastMovingTime"] = lastTime
+}
+
 /* Aggregate functions
    Utility: gossip information with stabilization,
    namely when one node dies,

@@ -41,4 +41,9 @@ interface DepotsSensor {
      * Check if the task is the last one.
      */
     fun isReachLastTask(task: NodeFormalization): Boolean
+
+    /**
+     * Current time of the simulation.
+     */
+    fun currentTime(): Double
 }
