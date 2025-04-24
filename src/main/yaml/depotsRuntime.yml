@@ -12,21 +12,23 @@ variables:
       formula: System.getenv("MAX_SEED").toDouble()
       language: kotlin
     step: 1
-    default: 0
+    default: 3
   communication: &communication
     type: ArbitraryVariable
     # bluetooth (50, 100, 150) -> 500 full range
-    parameters: [ 100, [ 20, 50, 100, 500 ] ]
+    parameters: [ 50, [ 20, 50, 100, 500 ] ]
   leaderBased: &leaderBased
     type: SystemEnvVariable
     parameters: [ true, "LEADER_BASED" ]
+    #type: Flag
+    #parameters: [ true ]
   totalNodes: &totalNodes
     type: ArbitraryVariable
     #parameters: [ 40, [ 5, 10, 20, 40 ] ]
-    parameters: [ 40, [ 5, 10, 20, 40 ] ]
+    parameters: [ 20, [ 5, 10, 20, 40 ] ]
   totalTaskFactor: &totalTaskFactor
     type: ArbitraryVariable
-    parameters: [ 4, [ 0.5, 1, 2, 4 ] ]
+    parameters: [ 0.5, [ 0.5, 1, 2, 4 ] ]
   totalTasks: &totalTasks
     formula: totalNodes * totalTaskFactor
     language: kotlin
@@ -175,4 +177,4 @@ export:
         aggregators: [ max ]
 terminate:
   - type: DoneIsStableForTime
-    parameters: [ 60.0, 20.0 ] # 10 minutes
+    parameters: [ 60.0, 60.0 ] # one hour

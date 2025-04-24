@@ -201,13 +201,10 @@ fun Aggregate<Int>.boundedElectionReplanning(
                 env["replanning"] = 0
                 state.allocations
             }
-        val isLocalPlanStable =
-            stableForBy(newPlan, TIME_WINDOW) {
-                it.map { allocation -> allocation.robot.id }.toSet()
-            }
+
         // share
         val leaderPlan = gradientCast(isLeader, newPlan, distanceField)
-        val leaderStable = gradientCast(isLeader, areRobotsStable && isLeader && isLocalPlanStable, distanceField)
+        val leaderStable = gradientCast(isLeader, isLeader, distanceField) // namely, a leader may exists
         env["stable"] = leaderStable
         env["path"] = state.path.map { it.id }
         val myPlan = leaderPlan.find { it.robot.id == localId }
@@ -223,8 +220,13 @@ fun Aggregate<Int>.boundedElectionReplanning(
             )
         } else {
             //standStill(env, locationSensor) // avoid flickering
-            state.copy(
-                allocations = leaderPlan,
+            followPlan(
+                env,
+                depotsSensor,
+                locationSensor,
+                state.copy(
+                    allocations = leaderPlan,
+                )
             )
         }
     }

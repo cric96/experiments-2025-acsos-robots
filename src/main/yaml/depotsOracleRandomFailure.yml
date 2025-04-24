@@ -142,6 +142,7 @@ export:
         parameters: [ ]
       - molecule: lastMovingTime
         aggregators: [ max ]
+
 terminate:
   - type: DoneIsStableForTime
-    parameters: [ 60.0, 20.0 ] # 10 minutes
+    parameters: [ 60.0, 60.0 ] # one hour

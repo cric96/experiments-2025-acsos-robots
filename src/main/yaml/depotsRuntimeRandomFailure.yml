@@ -20,6 +20,8 @@ variables:
   leaderBased: &leaderBased
     type: SystemEnvVariable
     parameters: [ true, "LEADER_BASED" ]
+    #type: Flag
+    #parameters: [ true ]
   totalNodes: &totalNodes
     type: ArbitraryVariable
     parameters: [ 40, [ 5, 10, 20, 40 ] ]
@@ -163,4 +165,4 @@ export:
 
 terminate:
   - type: DoneIsStableForTime
-    parameters: [ 60.0, 20.0 ] # 10 minutes
+    parameters: [ 60.0, 60.0 ] # one hour
