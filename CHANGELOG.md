@@ -1,3 +1,14 @@
+## [1.13.1](https://github.com/angelacorte/experiments-2025-acsos-robots/compare/1.13.0...1.13.1) (2025-04-24)
+
+### Bug Fixes
+
+* minor to trigger a release ([43d1796](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/43d1796895ac606215e2eda6fcd8093e495953bf))
+
+### General maintenance
+
+* fix leader based performance ([464a910](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/464a91048bc3951dd651bbb505a55eae2f13c7f5))
+* **release:** update gradle.properties .env versions to 1.13.0 [skip ci] ([5e40031](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/5e40031358a09ecc4dfff5333ae87f69b2089161))
+
 ## [1.13.0](https://github.com/angelacorte/experiments-2025-acsos-robots/compare/1.12.1...1.13.0) (2025-04-23)
 
 ### Features
