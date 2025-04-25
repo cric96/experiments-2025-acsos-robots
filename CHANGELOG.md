@@ -1,3 +1,18 @@
+## [1.13.2](https://github.com/angelacorte/experiments-2025-acsos-robots/compare/1.13.1...1.13.2) (2025-04-25)
+
+### Dependency updates
+
+* **deps:** update node.js to 22.15 ([604383a](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/604383a9aa9c3eec9418c95da5b3a8c4238b82ec))
+
+### Bug Fixes
+
+* minor to trigger a release ([d634c30](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/d634c30b8910714691a9f071939b574491b123d7))
+
+### General maintenance
+
+* minors on breaking cycle ([df507b4](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/df507b44943e5dd5886fffaafb72d0af8d835f33))
+* **release:** update gradle.properties .env versions to 1.13.1 [skip ci] ([597e646](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/597e646c1d67b0e790c152230d2305a90e44d69e))
+
 ## [1.13.1](https://github.com/angelacorte/experiments-2025-acsos-robots/compare/1.13.0...1.13.1) (2025-04-24)
 
 ### Bug Fixes
