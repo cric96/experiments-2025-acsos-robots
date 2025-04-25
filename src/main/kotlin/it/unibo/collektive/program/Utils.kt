@@ -196,7 +196,7 @@ fun Aggregate<Int>.areAllStable(
 fun Aggregate<Int>.gossipTasksDone(dones: Set<Node>): Set<Node> = nonStabilizingGossip(dones) { l, r -> l + r }
 
 private const val SHOULD_STOP_WINDOW = 180
-private const val CYCLE_NUMBER = 10
+private const val CYCLE_NUMBER = 5
 
 /**
  * A utility used to avoid the nodes to go back and forth.
@@ -213,8 +213,13 @@ fun Aggregate<Int>.breakingCycle(
     // count how many max and min are inside
     val minCount = sorted.count { it == min }
     val maxCount = sorted.count { it == max }
+    env["min"] = min
+    env["max"] = max
+    env["min_count"] = minCount
+    env["max_count"] = maxCount
     if (minCount > CYCLE_NUMBER && maxCount > CYCLE_NUMBER && min != max) {
         env["target"] = depotsSensor.destinationDepot.position
+        env["in_cycle"] = true
         return true
     }
     return false
