@@ -1,3 +1,20 @@
+## [1.13.3](https://github.com/angelacorte/experiments-2025-acsos-robots/compare/1.13.2...1.13.3) (2025-04-25)
+
+### Dependency updates
+
+* **deps:** update dependency gradle to v8.14 ([a5c7262](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/a5c7262e16e6ac79bd792eb4188a1202c963bd99))
+* **deps:** update plugin gitsemver to v5.1.2 ([9ff10e5](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/9ff10e5811b944345b37737f76d0da4b8537d65f))
+* **deps:** update plugin kotlin-qa to v0.86.1 ([e0da6a7](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/e0da6a7eb9d47f0c4240a89054ef6acf7892812f))
+* **deps:** update plugin multijvmtesting to v3.4.1 ([3c3a5d4](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/3c3a5d458e06eb878f36d7afa010b02eb10f5f0d))
+
+### Bug Fixes
+
+* change leaderBased logic (it is more gossip + leader) ([94cc1de](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/94cc1deaa7c9f5cd96bb94c25aad8baeb7fc1969))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.13.2 [skip ci] ([26adae7](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/26adae782f96c8239a80d70bbb0b0bdaec5072cc))
+
 ## [1.13.2](https://github.com/angelacorte/experiments-2025-acsos-robots/compare/1.13.1...1.13.2) (2025-04-25)
 
 ### Dependency updates
