@@ -61,9 +61,10 @@ class DepotsSensorProperty<T : Any, P : Position<P>>(
 
     override fun alive(): Boolean {
         val deathCondition =
-            !iAmAlone() &&
+            iAmNotAlone() &&
                 deathTime != Double.POSITIVE_INFINITY &&
                 deathTime < environment.simulation.time.toDouble()
+
         if (deathCondition) {
             node.setConcentration(SimpleMolecule("down"), true as T)
         }
@@ -88,7 +89,7 @@ class DepotsSensorProperty<T : Any, P : Position<P>>(
         return isInMyNeighborhood && isDone
     }
 
-    private fun iAmAlone(): Boolean {
+    private fun iAmNotAlone(): Boolean {
         val result =
             environment.nodes
                 .filter { it.contents[SimpleMolecule("down")] == false }
@@ -107,6 +108,9 @@ class DepotsSensorProperty<T : Any, P : Position<P>>(
     }
 
     override fun currentTime(): Double = environment.simulation.time.toDouble()
+    override fun maxHops(): Int = environment.nodes
+        .filter { it.contents[SimpleMolecule("agent")] == true }
+        .size
 
 
     /**

@@ -4,7 +4,12 @@ import it.unibo.alchemist.collektive.device.CollektiveDevice
 import it.unibo.alchemist.model.sensors.DepotsSensor
 import it.unibo.alchemist.model.sensors.LocationSensor
 import it.unibo.collektive.aggregate.api.Aggregate
+import it.unibo.collektive.aggregate.api.neighborhood
+import it.unibo.collektive.aggregate.api.neighboring
+import it.unibo.collektive.aggregate.api.share
 import it.unibo.collektive.alchemist.device.sensors.EnvironmentVariables
+import it.unibo.collektive.field.Field.Companion.fold
+import it.unibo.collektive.field.Field.Companion.hood
 import it.unibo.collektive.stdlib.spreading.multiGradientCast
 import it.unibo.collektive.stdlib.spreading.nonStabilizingGossip
 import it.unibo.formalization.Node
@@ -193,7 +198,10 @@ fun Aggregate<Int>.areAllStable(
  * Note! this is not self-stabilizing,
  * so if a node dies, the information will remain in the system.
  */
-fun Aggregate<Int>.gossipTasksDone(dones: Set<Node>): Set<Node> = nonStabilizingGossip(dones) { l, r -> l + r }
+fun Aggregate<Int>.gossipTasksDone(dones: Set<Node>): Set<Node> =
+    share(dones) {
+        (it.fold(dones) { l, r -> l + r }) + it.localValue
+    }
 
 private const val SHOULD_STOP_WINDOW = 180
 private const val CYCLE_NUMBER = 5
@@ -218,9 +226,12 @@ fun Aggregate<Int>.breakingCycle(
     env["min_count"] = minCount
     env["max_count"] = maxCount
     if (minCount > CYCLE_NUMBER && maxCount > CYCLE_NUMBER && min != max) {
-        env["target"] = depotsSensor.destinationDepot.position
+        env["target"] = locationSensor.estimateCoordinates(depotsSensor.destinationDepot)
+        env["selected"] = depotsSensor.destinationDepot.id
         env["in_cycle"] = true
         return true
+    } else {
+        env["in_cycle"] = false
     }
     return false
 }

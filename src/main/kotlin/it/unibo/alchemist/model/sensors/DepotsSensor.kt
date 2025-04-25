@@ -46,4 +46,9 @@ interface DepotsSensor {
      * Current time of the simulation.
      */
     fun currentTime(): Double
+
+    /**
+     * Max hops of the network.
+     */
+    fun maxHops(): Int
 }

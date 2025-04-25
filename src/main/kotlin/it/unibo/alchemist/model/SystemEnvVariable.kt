@@ -4,7 +4,7 @@ import it.unibo.alchemist.boundary.variables.AbstractPrintableVariable
 import java.io.Serializable
 import java.util.stream.Stream
 
-class SystemEnvVariable<V: Serializable>(default: V, val variable: String): AbstractPrintableVariable<V>() {
+class SystemEnvVariable<V: Serializable>(private val default: V, val variable: String): AbstractPrintableVariable<V>() {
     override fun getDefault(): V {
         return default
     }

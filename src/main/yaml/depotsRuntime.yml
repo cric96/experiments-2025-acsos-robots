@@ -12,7 +12,7 @@ variables:
       formula: System.getenv("MAX_SEED").toDouble()
       language: kotlin
     step: 1
-    default: 3
+    default: 5
   communication: &communication
     type: ArbitraryVariable
     # bluetooth (50, 100, 150) -> 500 full range
@@ -25,10 +25,10 @@ variables:
   totalNodes: &totalNodes
     type: ArbitraryVariable
     #parameters: [ 40, [ 5, 10, 20, 40 ] ]
-    parameters: [ 20, [ 5, 10, 20, 40 ] ]
+    parameters: [ 40, [ 5, 10, 20, 40 ] ]
   totalTaskFactor: &totalTaskFactor
     type: ArbitraryVariable
-    parameters: [ 0.5, [ 0.5, 1, 2, 4 ] ]
+    parameters: [ 4, [ 0.5, 1, 2, 4 ] ]
   totalTasks: &totalTasks
     formula: totalNodes * totalTaskFactor
     language: kotlin

@@ -9,6 +9,7 @@ import it.unibo.collektive.aggregate.api.share
 import it.unibo.collektive.alchemist.device.sensors.EnvironmentVariables
 import it.unibo.collektive.field.Field.Companion.fold
 import it.unibo.collektive.stdlib.accumulation.convergeCast
+import it.unibo.collektive.stdlib.accumulation.findParents
 import it.unibo.collektive.stdlib.consensus.boundedElection
 import it.unibo.collektive.stdlib.spreading.distanceTo
 import it.unibo.collektive.stdlib.spreading.gradientCast
@@ -70,7 +71,9 @@ fun Aggregate<Int>.replanning(
     distanceTracking(env, locationSensor)
     env["neighbors"] = neighboring(1).fold(0) { acc, value -> acc + value }
     lastMovingTime(env, locationSensor, depotsSensor)
-    breakingCycle(env, locationSensor, depotsSensor)
+    if(depotsSensor.alive()) {
+        breakingCycle(env, locationSensor, depotsSensor)
+    }
 }
 
 private const val MAX_BOUND = 1000.0
@@ -174,18 +177,17 @@ fun Aggregate<Int>.boundedElectionReplanning(
         } else {
             0.0
         }
-
     val distanceField = hops().map { it.toDouble() }
     val nodePosition = NodeFormalization(locationSensor.coordinates(), localId)
     val potential: Double = distanceTo(isLeader, metric = distanceField)
     // collect nodes
+    val allIds = share(setOf(localId)) { it.fold(setOf(localId)) { acc, value -> acc + value } }
     val allRobotsFromLeader =
-        convergeCast(listOf(nodePosition), potential) { left, right ->
-            left + right
-        }
+        gossipNodeCoordinates(nodePosition, distanceSensor, allIds, MAX_BOUND)
     val areRobotsStable = stableForBy(allRobotsFromLeader, TIME_WINDOW) { it.map { node -> node.id }.toSet() }
     evolve(ReplanningState.createFrom(allTasks, depotsSensor)) { state ->
         val taskEverDone = gossipTasksDone(state.dones.filter { it.value }.keys)
+        env["taskEverDone"] = taskEverDone.map { it.id }
         env["taskSize"] = state.path.size
         val reducedTasks = allTasks.filter { it !in taskEverDone }
         val newPlan =
@@ -201,7 +203,6 @@ fun Aggregate<Int>.boundedElectionReplanning(
                 env["replanning"] = 0
                 state.allocations
             }
-
         // share
         val leaderPlan = gradientCast(isLeader, newPlan, distanceField)
         val leaderStable = gradientCast(isLeader, isLeader, distanceField) // namely, a leader may exists
