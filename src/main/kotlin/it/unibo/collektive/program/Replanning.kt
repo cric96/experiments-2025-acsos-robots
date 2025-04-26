@@ -8,10 +8,7 @@ import it.unibo.collektive.aggregate.api.neighboring
 import it.unibo.collektive.aggregate.api.share
 import it.unibo.collektive.alchemist.device.sensors.EnvironmentVariables
 import it.unibo.collektive.field.Field.Companion.fold
-import it.unibo.collektive.stdlib.accumulation.convergeCast
-import it.unibo.collektive.stdlib.accumulation.findParents
 import it.unibo.collektive.stdlib.consensus.boundedElection
-import it.unibo.collektive.stdlib.spreading.distanceTo
 import it.unibo.collektive.stdlib.spreading.gradientCast
 import it.unibo.collektive.stdlib.util.hops
 import it.unibo.formalization.GreedyAllocationStrategy
@@ -169,12 +166,12 @@ fun Aggregate<Int>.boundedElectionReplanning(
     val distanceField = hops().map { it.toDouble() }
     val leaderId = boundedElection(MAX_BOUND, distanceField)
     val isLeader = leaderId == localId
-    /*env["isLeader"] =
+    env["isLeader"] =
         if (isLeader) {
             1.0
         } else {
             0.0
-        }*/
+        }
     val nodePosition = NodeFormalization(locationSensor.coordinates(), localId)
     // collect nodes
     val allIds = share(setOf(localId)) { it.fold(setOf(localId)) { acc, value -> acc + value } }
@@ -182,7 +179,6 @@ fun Aggregate<Int>.boundedElectionReplanning(
         gossipNodeCoordinates(nodePosition, distanceSensor, allIds, MAX_BOUND)
     val isLocalLeaderStable = stableFor(isLeader, TIME_WINDOW)
     val areRobotsStable = stableForBy(allRobotsFromLeader, TIME_WINDOW) { it.map { node -> node.id }.toSet() }
-    val lederSotry = history(isLeader, TIME_WINDOW)
 
     evolve(ReplanningState.createFrom(allTasks, depotsSensor)) { state ->
         val taskEverDone = gossipTasksDone(state.dones.filter { it.value }.keys)
@@ -191,8 +187,6 @@ fun Aggregate<Int>.boundedElectionReplanning(
         val reducedTasks = allTasks.filter { it !in taskEverDone }
         val newPlan =
             if (!isLocalLeaderStable || (!areRobotsStable && isLeader)) {
-                println("replanning")
-                println(localId)
                 env["replanning"] = 1
                 env["totalReplanning"] = (env.getOrNull<Int>("totalReplanning") ?: 0) + 1
                 GreedyAllocationStrategy(
