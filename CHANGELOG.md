@@ -1,3 +1,13 @@
+## [1.13.4](https://github.com/angelacorte/experiments-2025-acsos-robots/compare/1.13.3...1.13.4) (2025-04-26)
+
+### Bug Fixes
+
+* remove breaking cycle ([b1ba792](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/b1ba79271d7ed7f33ccefae4386739edbb7dfc38))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.13.3 [skip ci] ([cf96ebb](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/cf96ebbeabcb0df06e9090e039d8787092d0fa0f))
+
 ## [1.13.3](https://github.com/angelacorte/experiments-2025-acsos-robots/compare/1.13.2...1.13.3) (2025-04-25)
 
 ### Dependency updates
