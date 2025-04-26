@@ -1,3 +1,14 @@
+## [1.13.5](https://github.com/angelacorte/experiments-2025-acsos-robots/compare/1.13.4...1.13.5) (2025-04-26)
+
+### Bug Fixes
+
+* do replan at the end should affect replanning ([d2a5fbb](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/d2a5fbb9ea98a00d10fa4e851e3195f436064841))
+* remove printing ([bf27bda](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/bf27bda0c454da5610c6a97ef95eb9a9b36c0a42))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.13.4 [skip ci] ([69987b7](https://github.com/angelacorte/experiments-2025-acsos-robots/commit/69987b728aff605bdf80ba8471e5df4189b7610e))
+
 ## [1.13.4](https://github.com/angelacorte/experiments-2025-acsos-robots/compare/1.13.3...1.13.4) (2025-04-26)
 
 ### Bug Fixes
