@@ -166,29 +166,33 @@ fun Aggregate<Int>.boundedElectionReplanning(
     depotsSensor: DepotsSensor,
 ) {
     val allTasks = allTasksWithoutSource(depotsSensor)
-    val leaderId = boundedElection(MAX_BOUND, with(distanceSensor) { distances() })
+    val distanceField = hops().map { it.toDouble() }
+    val leaderId = boundedElection(MAX_BOUND, distanceField)
     val isLeader = leaderId == localId
-    env["isLeader"] =
+    /*env["isLeader"] =
         if (isLeader) {
             1.0
         } else {
             0.0
-        }
-    val distanceField = hops().map { it.toDouble() }
+        }*/
     val nodePosition = NodeFormalization(locationSensor.coordinates(), localId)
-    val potential: Double = distanceTo(isLeader, metric = distanceField)
     // collect nodes
     val allIds = share(setOf(localId)) { it.fold(setOf(localId)) { acc, value -> acc + value } }
     val allRobotsFromLeader =
         gossipNodeCoordinates(nodePosition, distanceSensor, allIds, MAX_BOUND)
+    val isLocalLeaderStable = stableFor(isLeader, TIME_WINDOW)
     val areRobotsStable = stableForBy(allRobotsFromLeader, TIME_WINDOW) { it.map { node -> node.id }.toSet() }
+    val lederSotry = history(isLeader, TIME_WINDOW)
+
     evolve(ReplanningState.createFrom(allTasks, depotsSensor)) { state ->
         val taskEverDone = gossipTasksDone(state.dones.filter { it.value }.keys)
         env["taskEverDone"] = taskEverDone.map { it.id }
         env["taskSize"] = state.path.size
         val reducedTasks = allTasks.filter { it !in taskEverDone }
         val newPlan =
-            if (!areRobotsStable && isLeader) {
+            if (!isLocalLeaderStable || (!areRobotsStable && isLeader)) {
+                println("replanning")
+                println(localId)
                 env["replanning"] = 1
                 env["totalReplanning"] = (env.getOrNull<Int>("totalReplanning") ?: 0) + 1
                 GreedyAllocationStrategy(
@@ -243,22 +247,31 @@ fun Aggregate<Int>.followPlan(
     val path = state.path.drop(1) // source depot is not a task
     // find first available
     val firstAvailable = path.firstOrNull { !(state.dones[it] ?: false) }
-    val selected = firstAvailable ?: state.path.last()
-    if (depotsSensor.isReachLastTask(selected)) {
-        env["target"] = locationSensor.coordinates()
+    // val get current tark form env
+    val oldSelected = env.get<Int>("selected")
+    val previousPosition = locationSensor.estimateCoordinates(oldSelected).toList()
+    val distanceToPrevious = locationSensor.coordinates().distance(previousPosition[0] to previousPosition[1])
+    // if it changes the plan but it can complete the task, do not change
+    if (distanceToPrevious < 0.05 && !depotsSensor.isTaskOver(oldSelected) && !depotsSensor.isReachLastTask(oldSelected)) {
         return state
     }
-    env["target"] = locationSensor.estimateCoordinates(selected)
-    env["selected"] = selected.id
-    // check if the task is done
-    val isDone = depotsSensor.isTaskOver(selected)
-    if (isDone) {
-        env["dones"] = (env.getOrNull<Int>("dones") ?: 0) + 1
+    val selected = firstAvailable ?: state.path.last()
+    if (depotsSensor.isReachLastTask(selected.id)) {
+        env["target"] = locationSensor.coordinates()
+        return state
+    } else {
+        env["target"] = locationSensor.estimateCoordinates(selected.id)
+        env["selected"] = selected.id
+        // check if the task is done
+        val isDone = depotsSensor.isTaskOver(selected.id)
+        if (isDone) {
+            env["dones"] = (env.getOrNull<Int>("dones") ?: 0) + 1
+        }
+        val updated = state.dones.toMutableMap()
+        updated[selected] = isDone
+        // update the state
+        return state.copy(dones = updated)
     }
-    val updated = state.dones.toMutableMap()
-    updated[selected] = isDone
-    // update the state
-    return state.copy(dones = updated)
 }
 
 /**

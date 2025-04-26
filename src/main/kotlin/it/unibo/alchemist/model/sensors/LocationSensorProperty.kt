@@ -35,8 +35,11 @@ class LocationSensorProperty<T : Any, P : Position<P>>(
         }
 
     // TODO better cast for this (also consider to add task sensor
-    override fun estimateCoordinates(node: NodeFormalization): Iterable<Double> {
-        val nodeAlchemist = environment.getNodeByID(node.id)
+    override fun estimateCoordinates(node: Int): Iterable<Double> {
+        if(node == -1) { // when I do not know, just return infinity
+            return listOf(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY)
+        }
+        val nodeAlchemist = environment.getNodeByID(node)
         // val gaussianNoise = randomGenerator.nextGaussian()
         // add the gaussian noise to the coordinates
 

@@ -20,5 +20,5 @@ interface LocationSensor {
     /**
      * Estimate the coordinate of a remote node.
      */
-    fun estimateCoordinates(node: Node): Iterable<Double>
+    fun estimateCoordinates(node: Int): Iterable<Double>
 }

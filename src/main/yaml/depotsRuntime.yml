@@ -12,11 +12,11 @@ variables:
       formula: System.getenv("MAX_SEED").toDouble()
       language: kotlin
     step: 1
-    default: 5
+    default: 4
   communication: &communication
     type: ArbitraryVariable
     # bluetooth (50, 100, 150) -> 500 full range
-    parameters: [ 50, [ 20, 50, 100, 500 ] ]
+    parameters: [ 500, [ 20, 50, 100, 500 ] ]
   leaderBased: &leaderBased
     type: SystemEnvVariable
     parameters: [ true, "LEADER_BASED" ]

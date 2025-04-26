@@ -226,7 +226,7 @@ fun Aggregate<Int>.breakingCycle(
     env["min_count"] = minCount
     env["max_count"] = maxCount
     if (minCount > CYCLE_NUMBER && maxCount > CYCLE_NUMBER && min != max) {
-        env["target"] = locationSensor.estimateCoordinates(depotsSensor.destinationDepot)
+        env["target"] = locationSensor.estimateCoordinates(depotsSensor.destinationDepot.id)
         env["selected"] = depotsSensor.destinationDepot.id
         env["in_cycle"] = true
         return true

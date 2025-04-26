@@ -35,12 +35,12 @@ interface DepotsSensor {
     /**
      * Check if the task is over.
      */
-    fun isTaskOver(task: NodeFormalization): Boolean
+    fun isTaskOver(task: Int): Boolean
 
     /**
      * Check if the task is the last one.
      */
-    fun isReachLastTask(task: NodeFormalization): Boolean
+    fun isReachLastTask(task: Int): Boolean
 
     /**
      * Current time of the simulation.

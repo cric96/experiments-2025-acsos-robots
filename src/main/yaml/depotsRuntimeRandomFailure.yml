@@ -24,10 +24,10 @@ variables:
     #parameters: [ true ]
   totalNodes: &totalNodes
     type: ArbitraryVariable
-    parameters: [ 40, [ 5, 10, 20, 40 ] ]
+    parameters: [ 5, [ 5, 10, 20, 40 ] ]
   totalTaskFactor: &totalTaskFactor
     type: ArbitraryVariable
-    parameters: [ 4, [ 0.5, 1, 2, 4 ] ]
+    parameters: [ 0, [ 0.5, 1, 2, 4 ] ]
   failureTimeAverage: &failureTimeAverage
     type: ArbitraryVariable
     parameters: [ 1000.0, [ 1000.0, 2000.0, 5000.0, 10000.0, 50000.0 ] ]

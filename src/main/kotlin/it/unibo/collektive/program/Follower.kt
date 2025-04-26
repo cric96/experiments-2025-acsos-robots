@@ -19,9 +19,9 @@ fun Aggregate<Int>.followTasks(
     if (depotsSensor.alive()) {
         val tasks = env.get<List<NodeFormalization>>("tasks")
         val task = tasks[0]
-        env["target"] = locationSensor.estimateCoordinates(task)
+        env["target"] = locationSensor.estimateCoordinates(task.id)
         env["selected"] = task.id
-        if (depotsSensor.isTaskOver(task)) {
+        if (depotsSensor.isTaskOver(task.id)) {
             env["tasks"] = tasks.drop(1)
             env["dones"] = (env.getOrNull<Int>("dones") ?: 0) + 1
         }

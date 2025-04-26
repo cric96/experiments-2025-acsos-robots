@@ -71,8 +71,8 @@ class DepotsSensorProperty<T : Any, P : Position<P>>(
         return !(node.contents[SimpleMolecule("down")] as Boolean)
     }
 
-    override fun isTaskOver(task: NodeFormalization): Boolean {
-        val taskRaw = environment.getNodeByID(task.id)
+    override fun isTaskOver(task: Int): Boolean {
+        val taskRaw = environment.getNodeByID(task)
         // get my neighborhood
         val myNeighbours = lookup.computeNeighborhood(node, environment)
         // search if the task is in my neighborhood
@@ -98,13 +98,13 @@ class DepotsSensorProperty<T : Any, P : Position<P>>(
         return result
     }
 
-    override fun isReachLastTask(task: NodeFormalization): Boolean {
+    override fun isReachLastTask(task: Int): Boolean {
         // get my neighborhood
         val myNeighbours = lookup.computeNeighborhood(node, environment)
         // search if the task is in my neighborhood
-        val isInMyNeighborhood = myNeighbours.any { it.id == task.id }
+        val isInMyNeighborhood = myNeighbours.any { it.id == task }
         // check if the task is done
-        return isInMyNeighborhood && task.id == destinationDepot.id
+        return isInMyNeighborhood && task == destinationDepot.id
     }
 
     override fun currentTime(): Double = environment.simulation.time.toDouble()
