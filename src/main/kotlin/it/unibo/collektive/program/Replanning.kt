@@ -71,9 +71,6 @@ fun Aggregate<Int>.replanning(
     distanceTracking(env, locationSensor)
     env["neighbors"] = neighboring(1).fold(0) { acc, value -> acc + value }
     lastMovingTime(env, locationSensor, depotsSensor)
-    if(depotsSensor.alive()) {
-        breakingCycle(env, locationSensor, depotsSensor)
-    }
 }
 
 private const val MAX_BOUND = 1000.0

@@ -25,10 +25,10 @@ variables:
   totalNodes: &totalNodes
     type: ArbitraryVariable
     #parameters: [ 40, [ 5, 10, 20, 40 ] ]
-    parameters: [ 40, [ 5, 10, 20, 40 ] ]
+    parameters: [ 5, [ 5, 10, 20, 40 ] ]
   totalTaskFactor: &totalTaskFactor
     type: ArbitraryVariable
-    parameters: [ 4, [ 0.5, 1, 2, 4 ] ]
+    parameters: [ 0.5, [ 0.5, 1, 2, 4 ] ]
   totalTasks: &totalTasks
     formula: totalNodes * totalTaskFactor
     language: kotlin
