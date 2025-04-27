@@ -9,6 +9,7 @@ import it.unibo.alchemist.model.Reaction
 import it.unibo.alchemist.model.Time
 import it.unibo.alchemist.model.linkingrules.ConnectWithinDistance
 import it.unibo.alchemist.model.molecules.SimpleMolecule
+import it.unibo.alchemist.model.sensors.DepotsSensorProperty
 import it.unibo.alchemist.model.times.DoubleTime
 
 /**
@@ -58,6 +59,6 @@ class LookupTasksToExecute<P : Position2D<P>>(
 
     private companion object {
         private const val AMOUNT_TO_SOLVE = 60.0
-        private const val RADIUS = 0.005
+        private const val RADIUS = DepotsSensorProperty.MINIMUM_RADIUS * 2
     }
 }

@@ -125,7 +125,8 @@ class DepotsSensorProperty<T : Any, P : Position<P>>(
 
         /** Task molecule name. */
         const val TASK_MOLECULE = "task"
-        private const val MINIMUM_RADIUS = 0.01
+        /** Minimum Radius for lookup */
+        const val MINIMUM_RADIUS = 0.01
     }
 
     override fun cloneOnNewNode(node: Node<T>): NodeProperty<T> = DepotsSensorProperty(environment, node, random)

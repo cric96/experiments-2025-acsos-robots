@@ -2,6 +2,7 @@ package it.unibo.collektive.program
 
 import it.unibo.alchemist.collektive.device.CollektiveDevice
 import it.unibo.alchemist.model.sensors.DepotsSensor
+import it.unibo.alchemist.model.sensors.DepotsSensorProperty
 import it.unibo.alchemist.model.sensors.LocationSensor
 import it.unibo.collektive.aggregate.api.Aggregate
 import it.unibo.collektive.aggregate.api.neighboring
@@ -246,7 +247,10 @@ fun Aggregate<Int>.followPlan(
     val previousPosition = locationSensor.estimateCoordinates(oldSelected).toList()
     val distanceToPrevious = locationSensor.coordinates().distance(previousPosition[0] to previousPosition[1])
     // if it changes the plan but it can complete the task, do not change
-    if (distanceToPrevious < 0.05 && !depotsSensor.isTaskOver(oldSelected) && !depotsSensor.isReachLastTask(oldSelected)) {
+    if (distanceToPrevious < DepotsSensorProperty.MINIMUM_RADIUS &&
+        !depotsSensor.isTaskOver(oldSelected) &&
+        !depotsSensor.isReachLastTask(oldSelected)
+    ) {
         return state
     }
     val selected = firstAvailable ?: state.path.last()

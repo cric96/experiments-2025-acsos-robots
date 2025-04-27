@@ -16,21 +16,21 @@ variables:
   communication: &communication
     type: ArbitraryVariable
     # bluetooth (50, 100, 150) -> 500 full range
-    parameters: [ 20, [ 20, 50, 100, 500 ] ]
+    parameters: [ 500, [ 20, 50, 100, 500 ] ]
   leaderBased: &leaderBased
     type: SystemEnvVariable
-    parameters: [ true, "LEADER_BASED" ]
+    parameters: [ false, "LEADER_BASED" ]
     #type: Flag
     #parameters: [ true ]
   totalNodes: &totalNodes
     type: ArbitraryVariable
-    parameters: [ 5, [ 5, 10, 20, 40 ] ]
+    parameters: [ 40, [ 5, 10, 20, 40 ] ]
   totalTaskFactor: &totalTaskFactor
     type: ArbitraryVariable
-    parameters: [ 0, [ 0.5, 1, 2, 4 ] ]
+    parameters: [ 4, [ 0.5, 1, 2, 4 ] ]
   failureTimeAverage: &failureTimeAverage
     type: ArbitraryVariable
-    parameters: [ 1000.0, [ 1000.0, 2000.0, 5000.0, 10000.0, 50000.0 ] ]
+    parameters: [ 5000.0, [ 1000.0, 2000.0, 5000.0, 10000.0, 50000.0 ] ]
 
   totalTasks: &totalTasks
     formula: totalNodes * totalTaskFactor
