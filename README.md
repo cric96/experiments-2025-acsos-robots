@@ -87,26 +87,29 @@ In order to successfully download and execute the graphical experiments are need
 
 The experiments are the following:
 - _depotsBaseline_: where the replanning is done at the end of the mission, after all robots have completed their tasks;
-- _depotsBaselineRandomFailure_: where the replanning is done at the end of the mission, after all robots have completed their tasks,
-  but with random robot failures during the mission;
 - _depotsOracle_: the replanning is centralized, there is an oracle that knows the state of the environment and the robots,
   once a node fails, there is a server that replans the mission and sends the new plan to the robots;
-- _depotsOracleRandomFailure_: the replanning is centralized, there is an oracle that knows the state of the environment and the robots,
-  once a node fails, there is a server that replans the mission and sends the new plan to the robots,
-  but with random robot failures during the mission;
 - _depotsRuntime_: our proposed field-based runtime replanning approach,
   where robots are able to adapt their plan in real-time based on the current state of the environment. 
   This approach has two different types of coordination:
     - leader-based: where a leader is elected in a distributed and adaptive way (resilient to failures),
         and is responsible for deciding the plan for all the robots;
     - gossip-based: creates a global state of the system in a distributed way, then replans the mission based on the global state.
-- _depotsRuntimeRandomFailure_: the same as _depotsRuntime_, but with random robot failures during the mission;
+
+The mentioned experiments have just three nodes that fail during the mission,
+at different times.
+Meanwhile, the ones named with the suffix _RandomFailure_ are the same as the ones without the suffix,
+but in addition, every robot has a negative exponential probability of failure during the mission.
 
 ### Walk-through the experiments
 
-This section provides a brief overview of the _?????_ experiment,
+This section provides a brief overview of the _depotsRuntime_ experiment with the leader-based coordination,
 to give an idea of how the experiments work.
-The _????_ experiment simulates the 
+The _depotsRuntime_ experiment, has as default parameters:
+- 20 robots;
+- task factor of 4 (i.e., 80 tasks);
+- full communication range (i.e., robots can communicate with all other robots);
+- 
 
 The detailed instructions to reproduce the experiment are in the section "[Reproduce the entire experiment](#reproduce-the-entire-experiment)".
 
