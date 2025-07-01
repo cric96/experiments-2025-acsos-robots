@@ -11,7 +11,7 @@ on:
       - '.mergify.yml'
       - 'CHANGELOG.md'
       - 'LICENSE'
-      - 'README.md'
+      - '../../README.mdx'
       - 'renovate.json'
   pull_request:
   workflow_dispatch:
