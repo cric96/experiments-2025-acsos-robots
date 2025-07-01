@@ -32,8 +32,6 @@ network-model:
 variables:
   speed: &speed
     formula: 0.5 # 1 m/s
-  obstaclesRepulsion: &obstaclesRepulsion
-    formula: 0.5
   isDone: &isDone
     formula: 0.0
   seed: &seed
