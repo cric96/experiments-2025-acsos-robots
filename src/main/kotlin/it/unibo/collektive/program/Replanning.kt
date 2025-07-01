@@ -199,7 +199,6 @@ fun Aggregate<Int>.boundedElectionReplanning(
                 env["replanning"] = 0
                 state.allocations
             }
-        // share
         val leaderPlan = gradientCast(isLeader, newPlan, distanceField)
         val leaderStable = gradientCast(isLeader, isLeader, distanceField) // namely, a leader may exists
         env["stable"] = leaderStable
