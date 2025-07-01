@@ -20,7 +20,6 @@ Anonymized for double-blind review
         * [Simulation entrypoint](#simulation-entrypoint)
         * [Experiments features recap](#experiments-features-recap)
 
-
 ## About
 
 Ensuring mission success for multi-robot systems operating
@@ -86,41 +85,52 @@ In order to successfully download and execute the graphical experiments are need
 ### Understanding the experiments
 
 The experiments are the following:
-- _depotsBaseline_: where the replanning is done at the end of the mission, after all robots have completed their tasks;
+- _depotsBaseline_: where the replanning is done at the end of the mission, after each robot has completed its tasks, it has been used for benchmarking;
 - _depotsOracle_: the replanning is centralized, there is an oracle that knows the state of the environment and the robots,
-  once a node fails, there is a server that replans the mission and sends the new plan to the robots;
+  once a node fails, there is a server that replans the mission and sends the new plan to the robots, it has been used for benchmarking;
 - _depotsRuntime_: our proposed field-based runtime replanning approach,
   where robots are able to adapt their plan in real-time based on the current state of the environment. 
-  This approach has two different types of coordination:
+  This approach has two different types of planning:
     - leader-based: where a leader is elected in a distributed and adaptive way (resilient to failures),
         and is responsible for deciding the plan for all the robots;
     - gossip-based: creates a global state of the system in a distributed way, then replans the mission based on the global state.
 
 The mentioned experiments have just three nodes that fail during the mission,
 at different times.
+
 Meanwhile, the ones named with the suffix _RandomFailure_ are the same as the ones without the suffix,
-but in addition, every robot has a negative exponential probability of failure during the mission.
+but in addition, every robot has a probability of failure during the mission.
+The failure is modeled through a Poisson process,
+where each robot is assigned a mean failure time drawn
+from an exponential (memoryless) distribution. The mean
+of this exponential distribution $(λ^{−1})$ represents the mean
+time between failures.
 
 ### Walk-through the experiments
 
-This section provides a brief overview of the _depotsRuntime_ experiment with the leader-based coordination,
-to give an idea of how the experiments work.
-The _depotsRuntime_ experiment, has as default parameters:
-- 20 robots;
-- task factor of 4 (i.e., 80 tasks);
+This section provides a brief overview of the _depotsRuntime_ experiment with the leader-based planning.
+It is executed with the following default parameters:
+- $20$ nodes (robots) in the simulation;
+- total number of tasks in the environment to complete is $totalNodes * totalTaskFactor$, 
+  where `totalTaskFactor` as default is $4$, so the total number of tasks is $80$;
 - full communication range (i.e., robots can communicate with all other robots);
-- 
+- the type of replanning is a default too, which is, in fact, the leader-based planning.
 
 The detailed instructions to reproduce the experiment are in the section "[Reproduce the entire experiment](#reproduce-the-entire-experiment)".
 
-The simulation can be launched with the command `./gradlew run`,
+The simulation can be launched with the command `MAX_SEED=0 ./gradlew runDepotsRuntimeGraphic` on a Unix terminal,
 or the one in the section "[Extremely quick-start](#extremely-quick-start-of-a-basic-experiment----bazfish-users-only)".
-Once the simulation has started, the Alchemist GUI will open.
-After the time needed for Alchemist to load the simulation,
-it will show the initial structure,
+Note that the `MAX_SEED` is a parameter used for batch experiments,
+which allows running the experiment with a fixed number of seeds, but it does not affect the graphical experiments.
 
-For more details of the simulation (e.g., the appearance, the meaning of the different shapes, etc.)
-see section [Understanding the experiments](#understanding-the-experiments).
+Once the simulation has started, the Alchemist GUI will open.
+Once the simulation starts, the Alchemist GUI will appear.
+After Alchemist finishes loading, you will see the initial setup:
+the tasks distributed throughout the environment,
+and all robots positioned at their common starting point, ready to begin the mission.
+
+For more details of the simulation (e.g., the appearance, the meaning of the different colors, etc.)
+see the section [Understanding the experiments](#understanding-the-experiments).
 Now the simulation can be started by pressing the <kbd>P</kbd> key on the keyboard.
 By pressing the <kbd>P</kbd> key again, the simulation will pause (and resume).
 When the simulation starts,
@@ -128,7 +138,21 @@ if you wish to execute it at "real time" speed,
 press the <kbd>R</kbd> key (and again to return to the fast speed).
 For other features of the GUI, please refer to the [Simulation Graphical Interface](#simulation-graphical-interface) section.
 
-
+As seen in the sequence above, (section [experiments](#experiments)),
+the robots start moving towards the red tasks, which are the tasks to complete,
+then will turn green once completed.
+A task can take a different amount of time to complete, depending on the task type.
+Once a robot completes a task, it will continue to the next task,
+until all tasks are completed or the robot fails.
+If a robot fails, it will stop moving and will not complete any more tasks,
+it will be marked as inactive (gray box) in the simulation;
+the leader will then replan the mission based on the current state of the environment,
+and the robots will adapt their plan accordingly.
+It is possible to observe robots moving back and forth to complete tasks until all are finished.
+If a leader fails, a new leader will be elected in a distributed way,
+and the mission will continue with the new leader.
+The path that each robot has taken during the mission is shown in different reddish colors,
+based on the id of the robot.
 
 ### Reproduce the entire experiment
 
@@ -150,6 +174,11 @@ curl https://raw.githubusercontent.com/angelacorte/experiments-2025-acsos-robots
 ``` 
 - the repository is in your `Downloads` folder for further inspection.
 
+**Note** that this runs the _depotsRuntime_ experiment with the leader-based planning and the default parameters.
+To change that and run the experiment with the gosisp-based planning,
+you need to edit the `depotsRuntime.yaml` file located in the `src/main/yaml` folder,
+as will be explained in the section "[Changing experiment's parameters](#changing-experiments-parameters)".
+
 #### Reproduce the experiments through Gradle
 
 1. Install a Gradle-compatible version of Java.
@@ -167,9 +196,18 @@ curl https://raw.githubusercontent.com/angelacorte/experiments-2025-acsos-robots
 6. Substitute `<ExperimentName>` with the name of the experiment (in PascalCase) specified in the YAML simulation file.
    Or execute ```./gradlew tasks``` to view the list of available tasks.
 
+**Note** that before each experiment command, it must be set the `MAX_SEED` environment variable to a specific value to run the experiment,
+since that parameter is relevant only for batch experiments,
+it is suggested to set it to `0` for the graphical experiments.
+
 The corresponding YAML simulation files to the experiments cited above are the following:
-- _ ?????_:  ```./gradlew runLegacySelfConstructionGraphic```,
-- 
+- _depotsBaseline_:  ```MAX_SEED=0 ./gradlew runDepotsBaselineGraphic```,
+- _depotsBaselineRandomFailure_: ```MAX_SEED ./gradlew runDepotsBaselineRandomFailureGraphic```,
+- _depotsOracle_: ```MAX_SEED ./gradlew runDepotsOracleGraphic```,
+- _depotsOracleRandomFailure_: ```MAX_SEED ./gradlew runDepotsOracleRandomFailureGraphic```,
+- _depotsRuntime_: ```MAX_SEED ./gradlew runDepotsRuntimeGraphic```,
+- _depotsRuntimeRandomFailure_: ```MAX_SEED ./gradlew runDepotsRuntimeRandomFailureGraphic```.
+
 **NOTE:**
 The tasks above *in graphic mode* will run the experiments with the default parameters.
 
