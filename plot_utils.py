@@ -242,7 +242,7 @@ def run_chart_generation(directory, experiments, floatPrecision, timeSamples, ti
     def eval_data(minTime, maxTime):
         means = {}
         stdevs = {}
-
+        full = {}
         timefun = np.logspace if logarithmicTime else np.linspace
         for experiment in experiments:
             # Collect all files for the experiment of interest
@@ -304,7 +304,8 @@ def run_chart_generation(directory, experiments, floatPrecision, timeSamples, ti
                 mergingVariables = [seed for seed in seedVars if seed in dataset.coords]
                 means[experiment] = dataset.mean(dim = mergingVariables, skipna=True)
                 stdevs[experiment] = dataset.std(dim = mergingVariables, skipna=True)
-        return (means, stdevs)
+                full[experiment] = dataset
+        return (means, stdevs, full)
     # QUICK CHARTING
 
 

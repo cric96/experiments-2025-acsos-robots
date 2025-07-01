@@ -184,7 +184,7 @@ if __name__ == '__main__':
     # How to name the summary of the processed data
     pickleOutput = 'data_summary'
     # Experiment prefixes: one per experiment (root of the file name)
-    experiments = ['baseline', 'baseline-random-failure', 'oracle', 'oracle-random-failure', 'runtime', 'runtime-random-failure']
+    experiments = ['baseline-random-failure', 'oracle-random-failure', 'runtime-random-failure']
     floatPrecision = '{: 0.3f}'
     # Number of time samples 
     timeSamples = 500
@@ -267,12 +267,14 @@ if __name__ == '__main__':
             try:
                 means = pickle.load(open(pickleOutput + '_mean', 'rb'))
                 stdevs = pickle.load(open(pickleOutput + '_std', 'rb'))
+                full = pickle.load(open(pickleOutput + '_full', 'rb'))
             except:
                 shouldRecompute = True
         if shouldRecompute:
             timefun = np.logspace if logarithmicTime else np.linspace
             means = {}
             stdevs = {}
+            full = {} 
             for experiment in experiments:
                 # Collect all files for the experiment of interest
                 import fnmatch
@@ -331,16 +333,18 @@ if __name__ == '__main__':
                                 darray.loc[experimentVars] = data[:, idx].A1
                     # Fold the dataset along the seed variables, producing the mean and stdev datasets
                     mergingVariables = [seed for seed in seedVars if seed in dataset.coords]
+                    full[experiment] = dataset
                     means[experiment] = dataset.mean(dim = mergingVariables, skipna=True)
                     stdevs[experiment] = dataset.std(dim = mergingVariables, skipna=True)
             # Save the datasets
             pickle.dump(means, open(pickleOutput + '_mean', 'wb'), protocol=-1)
             pickle.dump(stdevs, open(pickleOutput + '_std', 'wb'), protocol=-1)
+            pickle.dump(dataset, open(pickleOutput + '_full', 'wb'), protocol=-1)
             pickle.dump(newestFileTime, open('timeprocessed', 'wb'))
     else:
         means = { experiment: xr.Dataset() for experiment in experiments }
         stdevs = { experiment: xr.Dataset() for experiment in experiments }
-
+        full = { experiment: xr.Dataset() for experiment in experiments }
     # QUICK CHARTING
 
     import matplotlib
