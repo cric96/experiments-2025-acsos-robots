@@ -6,7 +6,7 @@ import java.util.stream.Stream
 
 class SystemEnvVariable<V: Serializable>(private val default: V, val variable: String): AbstractPrintableVariable<V>() {
     override fun getDefault(): V {
-        return default
+        return stream().toList().first();
     }
 
     override fun stream(): Stream<V> {
