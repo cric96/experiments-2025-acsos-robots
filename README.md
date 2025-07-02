@@ -232,6 +232,45 @@ please refer to the [Alchemist documentation](https://alchemistsimulator.github.
 
 #### Simulation entrypoint
 
+The baseline experiments (i.e., _depotsBaseline_ and _depotsOracle_) are implemented using a simple simulation entrypoint,
+where each robot perceives the plan and then follows it (see `src/main/kotlin/it/unibo/Follower.kt`).
+The difference between the two is that _depotsBaseline_ replans the mission at the end of each robot's mission,
+while _depotsOracle_ replans the mission in real-time, using an oracle that knows the state of the environment and the robots.
+
+This is implemented using a global reaction described in `src/main/kotlin/it/unibo/alchemist/model/global/AllocationBasedOnFormalization.kt`,
+which has two different implementations:
+- `CacheBasedAllocation`: the oracle continuously reallocates tasks to robots based on the current state of the environment, enabling real-time centralized replanning;
+- `ReallocatedAtTheEnd`: the oracle reallocates tasks to robots only at the end of each robot's mission, implementing centralized replanning at mission completion.
+
+The _runtime_ experiments (i.e., _depotsRuntime_ and _depotsRuntimeRandomFailure_) use a more complex simulation entrypoint
+that fully leverages aggregate computing to allow robots to adapt their plans in real-time.
+
+This entrypoint is described in `src/main/kotlin/it/unibo/Replanning.kt`.
+To select between leader-based or gossip-based planning, the `replanning` function
+perceives a molecule (a variable injected in the configuration) that indicates whether the node should act as a leader.
+
+The `gossipReplanning` function implements the gossip-based planning approach,
+which creates a global state of the system in a distributed manner and then replans the mission based on this global state.
+The main steps are:
+1. Gather distributed information: Collect all tasks in the system and maintain a set of all node IDs ever seen through gossip communication
+2. Share task completion status: Use gossip to propagate information about which tasks have been completed across the network
+1. Discover available robots: Gossip node coordinates to build a global view of all robots in the system within communication range
+1. Check stability condition: Evaluate whether the current system state is stable enough to continue with existing plans
+1. Replan if unstable: When stability condition fails, filter out completed tasks and run a greedy allocation strategy to generate new global plans for all robots
+1. Execute plan: Either follow the newly computed plan (if replanning occurred) or continue with the existing plan (if system is stable)
+
+
+The `leaderReplanning` function implements the leader-based planning approach,
+where a leader is elected in a distributed and adaptive way (resilient to failures)
+and is responsible for deciding the plan for all robots in the swarm.
+In this case, the main steps are:
+1. Elect a leader: Use bounded election algorithm within a maximum distance bound to select a leader node based on distance field (hop count)
+1. Gather network information: Collect all node IDs in the system and gossip node coordinates to build a view of available robots
+1. Check stability conditions: Verify if the current leader is stable over a time window and if the robot network composition is stable
+1. Leader-driven replanning: Only the leader triggers replanning when either the leader role is unstable or the robot network changes, using a greedy allocation strategy on uncompleted tasks
+1. Distribute plans via gradient: Use gradient cast to propagate the new plan from the leader to all nodes in the network following the distance field
+1. Execute coordinated action: All nodes follow their assigned plans when a stable leader exists, otherwise continue with previous allocations
+
 ### Reproduce the experiment results
 
 
