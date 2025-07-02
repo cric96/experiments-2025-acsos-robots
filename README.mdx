@@ -170,13 +170,17 @@ please refer to the [Alchemist documentation](https://alchemistsimulator.github.
 - `curl` must be installed
 - run:
 ```bash
+# leader-based replanning
 curl https://raw.githubusercontent.com/angelacorte/experiments-2025-acsos-robots/master/runtime-replanning-leader-based.sh | bash 
-``` 
+```
+```bash
+# gossip-based replanning
+curl https://raw.githubusercontent.com/angelacorte/experiments-2025-acsos-robots/master/runtime-replanning-gossip-based.sh | bash
+```
 - the repository is in your `Downloads` folder for further inspection.
 
-**Note** that this runs the _depotsRuntime_ experiment with the leader-based planning and the default parameters.
-To change that and run the experiment with the gosisp-based planning,
-you need to edit the `depotsRuntime.yaml` file located in the `src/main/yaml` folder,
+**Note** that this runs the _depotsRuntime_ experiment with the default parameters;
+to change them, you need to edit the `depotsRuntime.yaml` file located in the `src/main/yaml` folder,
 as will be explained in the section "[Changing experiment's parameters](#changing-experiments-parameters)".
 
 #### Reproduce the experiments through Gradle
@@ -206,9 +210,11 @@ The corresponding YAML simulation files to the experiments cited above are the f
   ```MAX_SEED=0 ./gradlew runDepotsBaselineRandomFailureGraphic```,
 - _depotsOracle_: benchmark experiment with an oracle that replans the mission in real-time ```MAX_SEED=0 ./gradlew runDepotsOracleGraphic```,
 - _depotsOracleRandomFailure_: benchmark experiment with an oracle that replans the mission in real-time and random nodes failures ```MAX_SEED=0 ./gradlew runDepotsOracleRandomFailureGraphic```,
-- _depotsRuntime_: our proposed field-based runtime replanning approach with (default) leader-based planning ```MAX_SEED=0 ./gradlew runDepotsRuntimeGraphic``` (editable in `src/main/yaml/depotsRuntime.yaml`),
+- _depotsRuntime_: our proposed field-based runtime replanning approach with (default) leader-based planning ```MAX_SEED=0 ./gradlew runDepotsRuntimeGraphic```,
+    to run it with gossip-based planning instead, the command is ```MAX_SEED=0 LEADER_BASED=false ./gradlew runDepotsRuntimeGraphic```,
 - _depotsRuntimeRandomFailure_: our proposed field-based runtime replanning approach with (default) leader-based planning and random nodes failures
-  ```MAX_SEED=0 ./gradlew runDepotsRuntimeRandomFailureGraphic``` (editable in `src/main/yaml/depotsRuntimeRandomFailure.yaml`).
+  ```MAX_SEED=0 ./gradlew runDepotsRuntimeRandomFailureGraphic```,
+    to run it with gossip-based planning instead, the command is ```MAX_SEED=0 LEADER_BASED=false ./gradlew runDepotsRuntimeRandomFailureGraphic```.
 
 **NOTE:**
 The tasks above *in graphic mode* will run the experiments with the default parameters.
@@ -234,21 +240,29 @@ please refer to the [Alchemist documentation](https://alchemistsimulator.github.
 
 ### Reproduce the experiment results
 
-
-## // TODO: from below, take the content for the plotting and remove the rest.
-# Experiments 2025 ACSOS robots
-
-## Reproduce the entire experiment
-
 **WARNING**: re-running the whole experiment may take a very long time on a normal computer.
 
-### Reproduce with containers (recommended)
+To collect the data for the analysis and the charts,
+the experiments have been run in "batch mode,"
+which means that the experiments are run without the graphical interface,
+and with different combinations of parameters.
 
-1. Install docker and docker-compose
-2. Run `docker-compose up`
-3. The charts will be available in the `charts` folder.
+Since to run the experiments in batch mode in a normal computer may take a very long time (e.g., days),
+we launched the experiments on a cluster to shorten the time needed to collect the data.
+The cluster used for the experiments has the following specifications:
 
-### Reproduce natively
+For the sake of simplicity,
+we provide the data collected in the experiments at [this link](https://figshare.com/articles/dataset/Data_for_A_Field-based_Approach_for_Runtime_Replanning_in_Swarm_Robotics_Missions_--_ACSOS_2025/29447825/2?file=55904084).
+
+#### Reproduce the experiments with containers (recommended)
+
+1. Install [Docker](https://www.docker.com/products/docker-desktop) and [docker-compose](https://docs.docker.com/compose/install/);
+2. Run `docker-compose up` in the root folder of the repository:
+    this will build the Docker images and run the containers needed to run the experiments.
+3. From the `docker-compose.yml` file, you can see that eight separate containers will be created, one for each experiment, and the data will be collected in the `data` folder.
+    Note that the `volumes` field has to be updated to match your local environment.
+
+#### Reproduce natively
 
 1. Install a Gradle-compatible version of Java.
   Use the [Gradle/Java compatibility matrix](https://docs.gradle.org/current/userguide/compatibility.html)
@@ -259,29 +273,20 @@ please refer to the [Alchemist documentation](https://alchemistsimulator.github.
 3. Launch either:
     - `./gradlew runAllBatch` on Linux, MacOS, or Windows if a bash-compatible shell is available;
     - `gradlew.bat runAllBatch` on Windows cmd or Powershell;
-4. Once the experiment is finished, the results will be available in the `data` folder. Run:
-    - `pip install --upgrade pip`
-    - `pip install -r requirements.txt`
-    - `python process.py`
-5. The charts will be available in the `charts` folder.
+    **Note** that you will need to set the `MAX_SEED` environment variable to a specific value to run the experiment (e.g., in our experiments, we set it to `31`).
+    and the `LEADER_BASED` environment variable to `true` or `false` to choose the type of replanning (leader-based or gossip-based).
+4. Once the experiment is finished, the results will be available in the `data` folder.
 
-## Inspect a single experiment
-
-Follow the instructions for reproducing the entire experiment natively, but instead of running `runAllBatch`,
-run `runEXPERIMENTGraphics`, replacing `EXPERIMENT` with the name of the experiment you want to run
-(namely, with the name of the YAML simulation file).
-
-If in doubt, run `./gradlew tasks` to see the list of available tasks.
-
-To make changes to existing experiments and explore/reuse,
-we recommend to use the IntelliJ Idea IDE.
-Opening the project in IntelliJ Idea will automatically import the project, download the dependencies,
-and allow for a smooth development experience.
-
-## Regenerate the charts
-
-We keep a copy of the data in this repository,
-so that the charts can be regenerated without having to run the experiment again.
-To regenerate the charts, run `docker compose run --no-deps charts`.
-Alternatively, follow the steps or the "reproduce natively" section,
-starting after the part describing how to re-launch the simulations.
+#### Generate the charts
+1. Make sure you have Python 3.10 or higher installed.
+2. Install the required Python packages by running:
+    ```bash
+    pip install --upgrade pip
+    pip install -r requirements.txt
+    ```
+3. Run the script to process the data and generate the charts:
+    ```bash
+    python plotter_all.py
+    ```
+4. The charts will be generated in the `charts` folder.
+5. If you want to regenerate the charts, you can run the script again.
