@@ -77,6 +77,9 @@ In order to successfully download and execute the graphical experiments are need
 - GPU with minimal OpenGL capabilities (OpenGL 2.0);
 - 4GB RAM.
 
+All the project dependencies are listed in the `gradle\libs.versions.toml` file,
+and the project uses [Gradle](https://gradle.org) as a build tool.
+
 ### Limitations
 
 - The experiments run in "batch mode" generate a lot of data,
@@ -191,11 +194,8 @@ as will be explained in the section "[Changing experiment's parameters](#changin
 1. Install a Gradle-compatible version of Java.
    Use the [Gradle/Java compatibility matrix](https://docs.gradle.org/current/userguide/compatibility.html) to learn which is the compatible version range.
    The Version of Gradle used in this experiment can be found in the gradle-wrapper.properties file located in the gradle/wrapper folder.
-
 2. Open a terminal
-
 3. Clone this repository on your pc with `git clone https://github.com/angelacorte/experiments-2025-acsos-robots`.
-
 4. Move into the root folder with `cd experiments-2025-acsos-robots`
 5. Depending on the platform, run the following command:
     - Bash compatible (Linux, Mac OS X, Git Bash, Cygwin): ``` ./gradlew run<ExperimentName>Graphic ```
