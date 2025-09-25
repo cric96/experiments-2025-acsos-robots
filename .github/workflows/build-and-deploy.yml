@@ -7,7 +7,7 @@ jobs:
   check-simulations-native:
     strategy:
       matrix:
-        os: [ macos-14, ubuntu-24.04 ] #windows-2025,
+        os: [ macos-15, ubuntu-24.04 ] #windows-2025,
     runs-on: ${{ matrix.os }}
     concurrency:
       group: sim-check${{ github.workflow }}${{ matrix.os }}${{ github.event.number || github.ref }}
